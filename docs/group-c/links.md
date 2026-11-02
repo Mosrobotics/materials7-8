@@ -13,3 +13,7 @@
 ## Программы
 
 - [Arduino IDE](https://www.arduino.cc/en/software) — среда для написания и загрузки скетчей.
+
+## Другие ссылки
+
+- [www.nextpcb.com](https://www.nextpcb.com/kicad-version-converter)
