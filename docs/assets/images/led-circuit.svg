@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 170" font-family="sans-serif" font-size="14">
+  <rect width="460" height="170" fill="#fff"/>
+  <g stroke="#222" stroke-width="2" fill="none">
+    <rect x="10" y="30" width="80" height="110" rx="6" fill="#e6f4f1"/>
+    <line x1="90" y1="55" x2="150" y2="55"/>
+    <rect x="150" y="45" width="60" height="20" fill="#fff"/>
+    <line x1="210" y1="55" x2="270" y2="55"/>
+    <polygon points="270,40 270,70 300,55" fill="#f44336"/>
+    <line x1="300" y1="40" x2="300" y2="70"/>
+    <line x1="300" y1="55" x2="390" y2="55"/>
+    <line x1="390" y1="55" x2="390" y2="115"/>
+    <line x1="390" y1="115" x2="90" y2="115"/>
+    <line x1="280" y1="30" x2="292" y2="18"/><line x1="290" y1="34" x2="302" y2="22"/>
+  </g>
+  <g fill="#222">
+    <text x="50" y="25" text-anchor="middle">Arduino</text>
+    <text x="96" y="48">D13</text>
+    <text x="96" y="108">GND</text>
+    <text x="180" y="88" text-anchor="middle">220 Ом</text>
+    <text x="285" y="92" text-anchor="middle">LED</text>
+    <text x="262" y="48" font-size="12">+</text>
+    <text x="304" y="48" font-size="12">−</text>
+  </g>
+</svg>
