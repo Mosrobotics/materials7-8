@@ -1,0 +1,21 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && GIT_TERMINAL_PROMPT=0 git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=15 pull --rebase --autostash --quiet 2>&1 || echo \"[hook] git pull не удался — разберись с этим, прежде чем менять файлы\"",
+            "timeout": 30,
+            "statusMessage": "Получаю изменения из GitHub..."
+          }
+        ]
+      }
+    ]
+  }
+}
