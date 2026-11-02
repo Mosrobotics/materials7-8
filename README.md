@@ -1,8 +1,25 @@
-# Учебные материалы Mosrobotics
+<div align="center">
 
-Сайт: **https://mosrobotics.github.io/materials7-8/**
+<img src="docs/assets/images/banner.svg" alt="Mosrobotics — робототехника своими руками" width="100%">
 
-Сайт собирается автоматически из файлов в папке `docs/`. После любого изменения в ветке `main` он обновляется сам примерно за 1–2 минуты.
+<br>
+
+<a href="https://mosrobotics.github.io/materials7-8/"><img src="https://img.shields.io/badge/%F0%9F%9A%80%20%D0%9E%D1%82%D0%BA%D1%80%D1%8B%D1%82%D1%8C%20%D1%81%D0%B0%D0%B9%D1%82-mosrobotics.github.io-0f9d8a?style=for-the-badge" alt="Открыть сайт"></a>
+
+<a href="https://github.com/Mosrobotics/materials7-8/actions/workflows/deploy.yml"><img src="https://github.com/Mosrobotics/materials7-8/actions/workflows/deploy.yml/badge.svg" alt="Публикация сайта"></a>
+<img src="https://img.shields.io/badge/MkDocs-Material-1565c0?logo=materialformkdocs&logoColor=white" alt="MkDocs Material">
+<img src="https://img.shields.io/badge/Arduino-скетчи-00979D?logo=arduino&logoColor=white" alt="Arduino">
+
+**Конспекты, схемы и скетчи с занятий по робототехнике для групп А и С.**
+
+</div>
+
+---
+
+> [!TIP]
+> Это страница с исходниками. **Сам сайт — по кнопке выше:** https://mosrobotics.github.io/materials7-8/
+>
+> Сайт собирается автоматически из папки `docs/`. После любого изменения в ветке `main` он обновляется сам примерно за 1–2 минуты.
 
 ## Как исправить страницу
 

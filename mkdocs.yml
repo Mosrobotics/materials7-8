@@ -35,7 +35,11 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Светлая тема
+  font:
+    text: Manrope
+    code: JetBrains Mono
   icon:
+    logo: material/robot-industrial
     repo: fontawesome/brands/github
     edit: material/pencil
 

@@ -1,4 +1,153 @@
-/* Карточки выбора курса на главной */
-.md-typeset .grid.cards > ul > li { border-radius: .6rem; }
-.md-typeset img.schema { display:block; margin: 1rem auto; max-width: 100%; }
+/* ===== Общие настройки ===== */
+:root {
+  --mr-grad-a: #0f9d8a;
+  --mr-grad-b: #1565c0;
+  --mr-orange: #ff7043;
+  --mr-radius: 1rem;
+}
+
+.md-typeset img.schema { display: block; margin: 1rem auto; max-width: 100%; }
 .md-typeset figure figcaption { font-size: .75rem; opacity: .8; }
+
+/* Градиентная шапка */
+.md-header, .md-tabs {
+  background: linear-gradient(90deg, var(--mr-grad-a), var(--mr-grad-b));
+}
+
+/* ===== Hero на главной ===== */
+.md-typeset .mr-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  margin: 0 0 2.5rem;
+  padding: 2.5rem 2.5rem 2rem;
+  border-radius: calc(var(--mr-radius) * 1.5);
+  color: #fff;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 40%),
+    radial-gradient(circle at 10% 110%, rgba(255,112,67,.45), transparent 45%),
+    linear-gradient(135deg, var(--mr-grad-a), var(--mr-grad-b));
+  box-shadow: 0 1.2rem 2.5rem -1rem rgba(21,101,192,.55);
+  overflow: hidden;
+}
+.md-typeset .mr-hero h1 {
+  margin: .8rem 0 1rem;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.md-typeset .mr-hero p { font-size: .95rem; opacity: .95; max-width: 34rem; }
+.md-typeset .mr-accent {
+  background: linear-gradient(90deg, #ffd180, var(--mr-orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.md-typeset .mr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .8rem;
+  border-radius: 2rem;
+  font-size: .7rem;
+  font-weight: 600;
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(4px);
+}
+
+/* Кнопки в hero */
+.md-typeset .mr-hero .md-button {
+  margin: .6rem .5rem 0 0;
+  border-radius: 2rem;
+  border-color: #fff;
+  color: #fff;
+  font-weight: 700;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.md-typeset .mr-hero .md-button--primary {
+  background: #fff;
+  color: var(--mr-grad-b);
+}
+.md-typeset .mr-hero .md-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 .6rem 1.2rem -.4rem rgba(0,0,0,.4);
+  background: var(--mr-orange);
+  border-color: var(--mr-orange);
+  color: #fff;
+}
+
+/* Картинка-робот */
+.mr-hero__art { color: #fff; }
+.mr-hero__art svg { width: 100%; max-width: 320px; display: block; margin: 0 auto; filter: drop-shadow(0 .5rem 1rem rgba(0,0,0,.25)); }
+.mr-wire { stroke-dasharray: 8 6; animation: mr-flow 1.6s linear infinite; opacity: .85; }
+.mr-led { fill: #ffd180; stroke: #ffd180; animation: mr-blink 1.2s ease-in-out infinite; }
+.mr-eye { fill: #fff; }
+@keyframes mr-flow { to { stroke-dashoffset: -28; } }
+@keyframes mr-blink { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) {
+  .mr-wire, .mr-led { animation: none; }
+}
+
+/* ===== Карточки ===== */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border-radius: var(--mr-radius);
+  border-width: 1px;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  transform: translateY(-4px);
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 1rem 2rem -1rem rgba(0,0,0,.35);
+}
+.md-typeset .grid.cards .lg { color: var(--md-primary-fg-color); }
+.md-typeset .mr-cards > ul > li > p:first-child { font-size: .9rem; }
+.md-typeset .grid.cards.mr-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+
+/* ===== Шаги «Как заниматься» ===== */
+.md-typeset .mr-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+  counter-reset: none;
+}
+.md-typeset .mr-steps > div {
+  position: relative;
+  padding: 1.2rem 1rem 1rem;
+  border-radius: var(--mr-radius);
+  background: var(--md-code-bg-color);
+  font-size: .75rem;
+  line-height: 1.5;
+}
+.md-typeset .mr-steps p { margin: 0; }
+.md-typeset .mr-step {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: .6rem;
+  border-radius: 50%;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, var(--mr-grad-a), var(--mr-orange));
+}
+
+/* ===== Телефоны ===== */
+@media screen and (max-width: 44.9375em) {
+  .md-typeset .mr-hero {
+    grid-template-columns: 1fr;
+    padding: 1.6rem 1.2rem;
+    margin-left: -.8rem;
+    margin-right: -.8rem;
+    border-radius: var(--mr-radius);
+  }
+  .md-typeset .mr-hero h1 { font-size: 1.7rem; }
+  .mr-hero__art { order: -1; }
+  .mr-hero__art svg { max-width: 180px; }
+}
