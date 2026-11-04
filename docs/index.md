@@ -5,7 +5,7 @@ hide:
 title: Главная
 ---
 
-<div class="mr-hero" markdown>
+<!-- <div class="mr-hero" markdown>
 
 <div class="mr-hero__text" markdown>
 
@@ -41,7 +41,7 @@ title: Главная
 </svg>
 </div>
 
-</div>
+</div> -->
 
 ## Выберите раздел
 
