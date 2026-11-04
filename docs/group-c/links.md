@@ -1,7 +1,8 @@
 # Полезные ссылки
 
 ## RoboCup
-- [Робокап в России](https://wiki.amperka.ru/](https://robocuprussiaopen.ru) — Российский оргокмитет. Новости, регламенты на Русском.
+- [Робокап в России](https://robocuprussiaopen.ru) — Российский оргкомитет. Новости, регламенты на Русском.
+- [RoboCup Junior](https://junior.robocup.org) — Глобальный сайт. Актуальные регламенты и новости.
 
 ## Справочники
 
@@ -16,7 +17,10 @@
 ## Программы
 
 - [Arduino IDE](https://www.arduino.cc/en/software) — среда для написания и загрузки скетчей.
+- [VS Code](https://code.visualstudio.com/download) - среда для разработки с расширенными возможностям.
 
-## Другие ссылки
+## Команды RoboCup
 
-- [www.nextpcb.com](https://www.nextpcb.com/kicad-version-converter)
+- [Delta](https://www.youtube.com/@deltarobocup) - Youtube канал команды лиги Vision Delta
+- [Gamma](https://t.me/GammaBotSoccer) - телеграм канал команды лиги Vision Gamma
+- 
