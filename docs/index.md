@@ -41,6 +41,14 @@ title: Главная
 
     [:octicons-arrow-right-24: Открыть](group-c/links.md)
 
+-   :material-toolbox:{ .lg .middle } **Оборудование**
+
+    ---
+
+    Паяльник, отвёртки, штангенциркуль и другие инструменты для занятий.
+
+    [:octicons-arrow-right-24: Смотреть](equipment.md)
+
 </div>
 
 ## Как заниматься
