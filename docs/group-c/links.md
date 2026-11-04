@@ -18,9 +18,10 @@
 
 - [Arduino IDE](https://www.arduino.cc/en/software) — среда для написания и загрузки скетчей.
 - [VS Code](https://code.visualstudio.com/download) - среда для разработки с расширенными возможностям.
+- [Orca](https://www.orcaslicer.com) - cлайсер для подготовки к печати.
 
 ## Команды RoboCup
 
 - [Delta](https://www.youtube.com/@deltarobocup) - Youtube канал команды лиги Vision Delta
 - [Gamma](https://t.me/GammaBotSoccer) - телеграм канал команды лиги Vision Gamma
-- 
+- [AZCrab](https://t.me/AZcrab) - телеграм канал команды лиги Rescue AZcrab
