@@ -5,7 +5,7 @@ hide:
 title: Главная
 ---
 
-<div class="mr-hero" markdown>
+<!-- <div class="mr-hero" markdown>
 
 <div class="mr-hero__text" markdown>
 
@@ -19,7 +19,7 @@ title: Главная
 [:material-chip: Группа С](group-c/index.md){ .md-button .md-button--primary }
 [:material-robot-happy: Группа А](group-a/index.md){ .md-button }
 
-</div>
+</div> -->
 
 <div class="mr-hero__art" aria-hidden="true">
 <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
