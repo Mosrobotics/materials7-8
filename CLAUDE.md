@@ -5,6 +5,9 @@
 
 - `docs/` — страницы сайта (Markdown), `docs/assets/` — картинки и файлы.
 - `mkdocs.yml` — настройки и меню (`nav:`): новую страницу обязательно добавить туда.
+- `equipment-links.txt` — ссылки на оборудование («Название: ссылка»); хук `hooks/equipment_links.py`
+  при сборке подставляет их в таблицы `docs/equipment.md` (незнакомое название — в раздел «Другое»).
+  Ссылки в саму таблицу руками не вписывать. Бот CPM_BOT дописывает в этот файл через `/material`.
 - `.github/workflows/deploy.yml` — workflow «Публикация сайта»: при push в `main` собирает и выкладывает сайт на GitHub Pages.
 - Проверка перед коммитом: `pip install -r requirements.txt` и `mkdocs build --strict` — должно пройти без ошибок и предупреждений.
 

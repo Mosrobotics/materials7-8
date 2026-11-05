@@ -46,6 +46,14 @@ theme:
 extra_css:
   - stylesheets/extra.css
 
+# Ссылки на оборудование из equipment-links.txt подставляются в таблицы docs/equipment.md
+hooks:
+  - hooks/equipment_links.py
+
+watch:
+  - equipment-links.txt
+  - hooks
+
 markdown_extensions:
   - admonition
   - pymdownx.details
