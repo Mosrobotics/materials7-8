@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Мои отчёты</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:var(--tg-theme-secondary-bg-color,#f2f3f7);
+  --card:var(--tg-theme-section-bg-color,var(--tg-theme-bg-color,#fff));
+  --text:var(--tg-theme-text-color,#0f1419);
+  --hint:var(--tg-theme-hint-color,#8a8f98);
+  --link:var(--tg-theme-link-color,#2481cc);
+  --accent:var(--tg-theme-button-color,#3390ec);
+  --sep:var(--tg-theme-section-separator-color,rgba(127,127,127,.18));
+  --ok:#2fb55a;--rev:#8b5cf6;--warn:#f0a020;--bad:#e5484d;--none:#9aa1ab;
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){:root:not(.tg){--bg:#101418;--card:#1b2128;--text:#f1f3f5;--hint:#8b95a1;--sep:rgba(255,255,255,.08)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:15px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif;padding:12px 14px calc(24px + env(safe-area-inset-bottom));min-height:100vh}
+.wrap{max-width:560px;margin:0 auto}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px 18px;color:#fff;
+  background:radial-gradient(120% 140% at 0% 0%,#4f8cff 0%,#6a5cff 45%,#9b4dff 100%);
+  box-shadow:0 10px 30px -12px rgba(90,80,255,.55)}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
+.hero .top{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+.ring{width:96px;height:96px;flex:none}
+.ring circle{fill:none;stroke-width:9}
+.ring .bgc{stroke:rgba(255,255,255,.22)}
+.ring .fg{stroke:#fff;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+.ring text{fill:#fff;font-weight:800}
+.hello{font-size:13px;opacity:.85}
+.title{font-size:22px;font-weight:800;letter-spacing:-.3px;margin:2px 0 6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.2)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;position:relative;z-index:1}
+.stat{background:rgba(255,255,255,.14);border-radius:12px;padding:9px 10px}
+.stat b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px}
+.stat span{font-size:11.5px;opacity:.85}
+
+/* sections */
+h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--hint);margin:22px 4px 8px}
+.card{background:var(--card);border-radius:var(--r);padding:14px 16px}
+
+.now .lbl{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.now .nm{font-size:18px;font-weight:700;margin:4px 0 2px}
+.now .meta{color:var(--hint);font-size:13.5px}
+.timebar{height:8px;border-radius:4px;background:var(--sep);overflow:hidden;margin:12px 0 6px}
+.timebar i{display:block;height:100%;border-radius:4px;width:0;transition:width 1s ease}
+.tl{display:flex;justify-content:space-between;font-size:12px;color:var(--hint)}
+.need{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.need span{font-size:12px;padding:4px 9px;border-radius:8px;background:var(--bg);color:var(--text)}
+.done-all{text-align:center;padding:22px 16px}
+.done-all .em{font-size:42px}
+
+/* timeline */
+.list{position:relative}
+.st{position:relative;display:flex;gap:12px;padding:0 0 10px 0}
+.st .rail{position:relative;width:30px;flex:none;display:flex;justify-content:center}
+.st .rail::before{content:"";position:absolute;top:32px;bottom:-10px;width:2px;background:var(--sep)}
+.st:last-child .rail::before{display:none}
+.dot{position:relative;z-index:1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:13px;margin-top:10px}
+.st .body{flex:1;min-width:0;background:var(--card);border-radius:var(--r);padding:11px 14px;cursor:pointer;transition:transform .15s}
+.st .body:active{transform:scale(.985)}
+.st.cur .body{box-shadow:0 0 0 2px var(--accent)}
+.row1{display:flex;align-items:center;gap:8px}
+.row1 b{flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{flex:none;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:8px}
+.sub{font-size:12.5px;color:var(--hint);margin-top:2px}
+.score{display:inline-flex;gap:2px;margin-left:4px;vertical-align:-1px}
+.score i{width:6px;height:10px;border-radius:2px;background:var(--sep)}
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.more>div{overflow:hidden}
+.st.open .more{grid-template-rows:1fr}
+.more p{margin:10px 0 0;font-size:13.5px}
+.more .k{color:var(--hint)}
+
+.foot{text-align:center;color:var(--hint);font-size:12px;margin-top:18px}
+.demo{display:none;margin:0 0 10px;text-align:center;font-size:12px;color:var(--hint)}
+.fallback-btn{display:none;width:100%;margin-top:14px;border:0;border-radius:12px;padding:14px;font:700 15px system-ui;background:var(--accent);color:#fff}
+
+.fade{opacity:0;transform:translateY(8px);animation:in .5s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes in{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none;opacity:1;transform:none}.ring .fg,.timebar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo" id="demo">Демо-данные: откройте страницу из бота командой /reports</div>
+
+  <section class="hero fade">
+    <div class="top">
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+        <circle class="bgc" cx="50" cy="50" r="42"/>
+        <circle class="fg" id="arc" cx="50" cy="50" r="42" transform="rotate(-90 50 50)" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+        <text id="ringTxt" x="50" y="57" text-anchor="middle" font-size="22"></text>
+      </svg>
+      <div>
+        <div class="hello" id="hello">Привет!</div>
+        <div class="title">Мои отчёты</div>
+        <span class="chip" id="group">ВсОШ</span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sAcc">–</b><span>принято</span></div>
+      <div class="stat"><b id="sAvg">–</b><span>средний балл</span></div>
+      <div class="stat"><b id="sNext">–</b><span id="sNextL">до срока</span></div>
+    </div>
+  </section>
+
+  <h2 class="fade" style="animation-delay:.05s">Сейчас</h2>
+  <section class="card now fade" id="now" style="animation-delay:.08s"></section>
+
+  <h2 class="fade" style="animation-delay:.1s">Все этапы</h2>
+  <section class="list" id="list"></section>
+
+  <button class="fallback-btn" id="fb"></button>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+(function(){
+const tg = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData !== undefined ? Telegram.WebApp : null;
+const inTg = !!(tg && tg.platform && tg.platform !== 'unknown');
+const $ = id => document.getElementById(id);
+
+const ST = {
+  a:{c:'var(--ok)', t:'принят', e:'✓'},
+  r:{c:'var(--rev)', t:'на проверке', e:'…'},
+  w:{c:'var(--warn)', t:'на доработке', e:'↻'},
+  n:{c:'var(--none)', t:'не сдан', e:''},
+  o:{c:'var(--bad)', t:'просрочен', e:'!'}
+};
+const NEED = {text:'📝 Что сделано', photo:'📷 Фото', disk_link:'📁 Ссылка на диск', code_link:'💻 Ссылка на код'};
+
+function decode(s){
+  s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '=';
+  const bin = atob(s), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+function readData(){
+  const q = new URLSearchParams(location.search).get('d');
+  if (q) { try { return decode(q); } catch (e) {} }
+  return null;
+}
+
+const now = Date.now()/1000, D = 86400;
+let data = readData(), demo = false;
+if (!data) {
+  demo = true;
+  data = {g:'ВсОШ', b:'', t:now, s:[
+    [1,'Сборка шасси','a',9,now-14*D,now-16*D,'Робот собран, моторы подключены',['text','photo']],
+    [2,'Управление движением','w',0,now+3*D,now-2*D,'Робот едет по командам',['text','disk_link','code_link']],
+    [3,'Датчики линии','n',0,now+17*D,0,'Робот едет по линии',['text','photo','code_link']],
+    [4,'ПИД-регулятор','n',0,now+31*D,0,'Плавное движение по линии',['text','code_link']]
+  ]};
+}
+
+const pad = v => (v < 10 ? '0' : '') + v;
+function msk(ts){ return new Date((ts + 3*3600)*1000); }
+function dmy(ts){ const t = msk(ts); return pad(t.getUTCDate()) + '.' + pad(t.getUTCMonth()+1); }
+function dmyhm(ts){ const t = msk(ts); return dmy(ts) + ' ' + pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()); }
+function plural(n, a, b, c){ n = Math.abs(n) % 100; const m = n % 10; return n > 10 && n < 20 ? c : m > 1 && m < 5 ? b : m === 1 ? a : c; }
+function left(ts){
+  const s = ts - now;
+  if (s <= 0) return {v:'0', l:'срок прошёл', txt:'срок прошёл'};
+  const d = Math.floor(s/D);
+  if (d >= 1) return {v:String(d), l:plural(d,'день','дня','дней') + ' до срока', txt:'осталось ' + d + ' ' + plural(d,'день','дня','дней')};
+  const h = Math.max(1, Math.ceil(s/3600));
+  return {v:h + ' ч', l:'до срока', txt:'осталось ' + h + ' ' + plural(h,'час','часа','часов')};
+}
+
+const stages = (data.s || []).map(x => ({id:x[0], title:x[1], st:x[2], score:x[3]|0, dl:x[4]|0, sb:x[5]|0, crit:x[6]||'', need:x[7]||[]}));
+const acc = stages.filter(s => s.st === 'a');
+const scored = acc.filter(s => s.score);
+const avg = scored.length ? (scored.reduce((a,s) => a + s.score, 0) / scored.length) : 0;
+const next = stages.find(s => s.st === 'w' || s.st === 'o' || s.st === 'n');
+
+/* hero */
+const user = inTg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+if (user && user.first_name) $('hello').textContent = 'Привет, ' + user.first_name + '!';
+$('group').textContent = '🤖 ' + (data.g || 'Отчёты');
+$('ringTxt').textContent = acc.length + '/' + stages.length;
+$('sAcc').textContent = acc.length + ' из ' + stages.length;
+$('sAvg').textContent = avg ? avg.toFixed(1).replace('.0','') : '—';
+if (next && next.dl) { const l = left(next.dl); $('sNext').textContent = l.v; $('sNextL').textContent = l.l; }
+else { $('sNext').textContent = '—'; $('sNextL').textContent = 'без срока'; }
+requestAnimationFrame(() => setTimeout(() => {
+  const frac = stages.length ? acc.length / stages.length : 0;
+  $('arc').style.strokeDashoffset = String(263.9 * (1 - frac));
+}, 150));
+
+/* now */
+const nowEl = $('now');
+if (!stages.length) {
+  nowEl.className = 'card done-all fade';
+  nowEl.innerHTML = '<div class="em">🗓️</div><b>Этапы пока не заданы</b><div class="sub">Тренер скоро добавит</div>';
+} else if (!next) {
+  const wait = stages.filter(s => s.st === 'r').length;
+  nowEl.className = 'card done-all fade';
+  nowEl.innerHTML = wait
+    ? '<div class="em">🕓</div><b>Всё сдано!</b><div class="sub">Ждём проверки тренера: ' + wait + ' ' + plural(wait,'этап','этапа','этапов') + '</div>'
+    : '<div class="em">🏆</div><b>Все этапы приняты</b><div class="sub">Отличная работа!</div>';
+} else {
+  const s = next, idx = stages.indexOf(s), prev = idx > 0 ? stages[idx-1].dl : 0;
+  const start = prev && prev < s.dl ? prev : s.dl - 14*D;
+  const pct = s.dl ? Math.min(100, Math.max(3, (now - start) / (s.dl - start) * 100)) : 0;
+  const color = s.st === 'o' || (s.dl && s.dl < now) ? 'var(--bad)' : pct > 75 ? 'var(--warn)' : 'var(--accent)';
+  const lbl = s.st === 'w' ? 'Нужно исправить' : s.st === 'o' ? 'Срок прошёл' : 'Следующий этап';
+  nowEl.innerHTML =
+    '<div class="lbl"></div><div class="nm"></div><div class="meta"></div>' +
+    (s.dl ? '<div class="timebar"><i></i></div><div class="tl"><span></span><span></span></div>' : '') +
+    '<div class="need"></div>';
+  nowEl.querySelector('.lbl').textContent = lbl;
+  nowEl.querySelector('.nm').textContent = 'Этап ' + s.id + '. ' + s.title;
+  nowEl.querySelector('.meta').textContent = s.crit || '';
+  if (s.dl) {
+    const bar = nowEl.querySelector('.timebar i'); bar.style.background = color;
+    setTimeout(() => { bar.style.width = pct + '%'; }, 250);
+    const sp = nowEl.querySelectorAll('.tl span');
+    sp[0].textContent = left(s.dl).txt; sp[1].textContent = 'до ' + dmyhm(s.dl);
+  }
+  const need = nowEl.querySelector('.need');
+  s.need.forEach(k => { if (NEED[k]) { const e = document.createElement('span'); e.textContent = NEED[k]; need.append(e); } });
+}
+
+/* list */
+const list = $('list');
+stages.forEach((s, i) => {
+  const c = ST[s.st] || ST.n;
+  const el = document.createElement('div');
+  el.className = 'st fade' + (s === next ? ' cur' : '');
+  el.style.animationDelay = (0.12 + i*0.04) + 's';
+  el.innerHTML =
+    '<div class="rail"><div class="dot"></div></div>' +
+    '<div class="body"><div class="row1"><b></b><span class="pill"></span></div><div class="sub"></div>' +
+    '<div class="more"><div></div></div></div>';
+  const dot = el.querySelector('.dot'); dot.style.background = c.c; dot.textContent = c.e || s.id;
+  el.querySelector('b').textContent = s.id + '. ' + s.title;
+  const pill = el.querySelector('.pill'); pill.textContent = c.t; pill.style.color = c.c;
+  pill.style.background = 'color-mix(in srgb, ' + c.c + ' 16%, transparent)';
+  const sub = el.querySelector('.sub');
+  if (s.st === 'a') {
+    sub.textContent = 'сдан ' + dmy(s.sb);
+    if (s.score) {
+      sub.append(' · ' + s.score + '/10');
+      const bars = document.createElement('span'); bars.className = 'score';
+      for (let k = 1; k <= 10; k++) { const b = document.createElement('i'); if (k <= s.score) b.style.background = 'var(--ok)'; bars.append(b); }
+      sub.append(bars);
+    }
+  } else if (s.st === 'r') sub.textContent = 'сдан ' + dmy(s.sb) + ' · ждёт тренера';
+  else if (s.dl) sub.textContent = 'до ' + dmy(s.dl) + ' · ' + left(s.dl).txt;
+  else sub.textContent = 'без срока';
+  const more = el.querySelector('.more>div');
+  if (s.crit) { const p = document.createElement('p'); p.innerHTML = '<span class="k">Критерий: </span>'; p.append(s.crit); more.append(p); }
+  if (s.dl) { const p = document.createElement('p'); p.innerHTML = '<span class="k">Срок: </span>'; p.append(dmyhm(s.dl) + ' (МСК)'); more.append(p); }
+  if (s.need.length) { const p = document.createElement('p'); p.innerHTML = '<span class="k">Приложить: </span>'; p.append(s.need.map(k => (NEED[k]||k).replace(/^\S+\s/, '').toLowerCase()).join(', ')); more.append(p); }
+  el.querySelector('.body').addEventListener('click', () => {
+    el.classList.toggle('open');
+    if (inTg) tg.HapticFeedback.selectionChanged();
+  });
+  list.append(el);
+});
+
+$('foot').textContent = demo ? '' : 'Данные на ' + dmyhm(data.t || now) + ' · обновить — /reports в боте';
+if (demo) $('demo').style.display = 'block';
+
+/* submit */
+function submit(){
+  if (!next) return;
+  if (!data.b) { if (inTg) tg.showAlert('Откройте бота и нажмите «📤 Сдать отчёт».'); return; }
+  const url = 'https://t.me/' + data.b + '?start=rpsub_' + next.id;
+  if (inTg) { tg.HapticFeedback.impactOccurred('medium'); tg.openTelegramLink(url); tg.close(); }
+  else location.href = url;
+}
+const btnText = next ? (next.st === 'w' ? '🔄 Исправить этап ' : '📤 Сдать этап ') + next.id : '';
+if (inTg) {
+  tg.ready(); tg.expand();
+  document.documentElement.classList.add('tg');
+  try { tg.setHeaderColor('secondary_bg_color'); tg.setBackgroundColor('secondary_bg_color'); } catch (e) {}
+  if (next) { tg.MainButton.setParams({text: btnText, is_visible: true}); tg.MainButton.onClick(submit); }
+} else if (next) {
+  const fb = $('fb'); fb.style.display = 'block'; fb.textContent = btnText; fb.onclick = submit;
+}
+})();
+</script>
+</body>
+</html>
