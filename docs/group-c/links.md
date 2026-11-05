@@ -10,7 +10,6 @@
 - [Настройка Arduino IDE](https://robotclass.ru/arduino-ide-rp2040/?ysclid=mw2ta727s9143042760) — Для использования ядра earlephilhower.
 - [Вики Амперки](https://wiki.amperka.ru/) — конспекты, схемы и уроки по Arduino на русском.
 - [Справочник языка Arduino](https://docs.arduino.cc/language-reference/) — все функции с примерами (англ.).
-- 
 
 ## Симуляторы
 
