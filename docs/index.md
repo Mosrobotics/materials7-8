@@ -50,33 +50,3 @@ title: Главная
     [:octicons-arrow-right-24: Смотреть](equipment.md)
 
 </div>
-
-## Как заниматься
-
-<div class="mr-steps" markdown>
-
-<div markdown>
-<span class="mr-step">1</span>
-**Прочитай теорию**  
-Разберись, как работает деталь и зачем она нужна.
-</div>
-
-<div markdown>
-<span class="mr-step">2</span>
-**Собери схему**  
-Повтори схему с картинки на макетной плате.
-</div>
-
-<div markdown>
-<span class="mr-step">3</span>
-**Загрузи код**  
-Скопируй скетч кнопкой :material-content-copy: и залей в Arduino.
-</div>
-
-<div markdown>
-<span class="mr-step">4</span>
-**Выполни задания**  
-Измени программу сам — так запоминается лучше всего.
-</div>
-
-</div>
