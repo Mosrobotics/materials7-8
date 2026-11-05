@@ -1,6 +1,8 @@
 ---
 title: Оборудование
 icon: material/toolbox
+hide:
+  - navigation
 ---
 
 <!--
@@ -17,9 +19,16 @@ icon: material/toolbox
   Править можно прямо на GitHub: значок карандаша вверху страницы сайта → Commit changes.
 -->
 
-# :material-toolbox: Оборудование
+<div class="mr-equip-hero" markdown>
 
-Инструменты и приборы, которые понадобятся на занятиях и дома.
+<span class="mr-badge">:material-toolbox: Для занятий и дома</span>
+
+# Оборудование
+
+Инструменты и приборы, которые понадобятся на занятиях робототехникой.
+Нажмите на кнопку магазина в строке — откроется подходящий товар.
+
+</div>
 
 ## :material-soldering-iron: Пайка
 

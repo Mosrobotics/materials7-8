@@ -5,7 +5,7 @@ MkDocs-хук: подставляет ссылки из equipment-links.txt в �
     Паяльник: https://www.ozon.ru/product/...
     Термоклеевой пистолет: https://... — Склеить детали
 Название ищется в первой колонке таблиц docs/equipment.md (регистр, «ё/е» и кавычки не важны).
-Несколько ссылок на один инструмент встают рядом. Незнакомое название — новой строкой
+Ссылки — кнопками магазинов столбиком; несколько ссылок на один инструмент встают друг под другом. Незнакомое название — новой строкой
 в разделе «Другое» (текст после « — » идёт в колонку «Для чего»).
 Строка без ссылки — предупреждение, при `mkdocs build --strict` сборка остановится.
 """
@@ -33,6 +33,7 @@ SHOPS = [  # (часть домена, подпись)
     ("wb.ru", "Wildberries"),
     ("market.yandex.", "Яндекс Маркет"),
     ("aliexpress.", "AliExpress"),
+    ("ali.click", "AliExpress"),
     ("chipdip.", "ЧипДип"),
     ("amperka.", "Амперка"),
     ("megamarket.", "Мегамаркет"),
@@ -83,13 +84,23 @@ def parse_links(text: str) -> list[tuple[str, str, str]]:
     return out
 
 
+SOON = '<span class="mr-soon">скоро</span>'
+
+
 def _links_md(urls: list[str]) -> str:
-    return " · ".join(f"[{shop_label(u)}]({_url(u)})" for u in urls)
+    """Кнопки магазинов (на сайте — столбиком, см. .mr-buy в extra.css); повторы нумеруются."""
+    seen: dict[str, int] = {}
+    out = []
+    for u in urls:
+        label = shop_label(u)
+        seen[label] = seen.get(label, 0) + 1
+        if seen[label] > 1:
+            label = f"{label} №{seen[label]}"
+        out.append(f"[:material-cart-outline: {label}]({_url(u)}){{ .mr-buy }}")
+    return " ".join(out)
 
 
 def apply_links(markdown: str, entries: list[tuple[str, str, str]]) -> str:
-    if not entries:
-        return markdown
     # группируем по нормализованному названию, сохраняя порядок
     groups: dict[str, dict] = {}
     for name, url, desc in entries:
@@ -112,13 +123,19 @@ def apply_links(markdown: str, entries: list[tuple[str, str, str]]) -> str:
         if not m:
             continue
         key = norm(m.group("name"))
-        g = groups.get(key)
-        if not g or re.fullmatch(r"[\s:-]*", m.group("name")):
+        if re.fullmatch(r"[\s:-]*", m.group("name")):
             continue
-        used.add(key)
         old = m.group("link").strip()
-        new = _links_md(g["urls"])
-        cell = new if old in ("", PLACEHOLDER, "—") else f"{old} · {new}"
+        empty = old in ("", PLACEHOLDER, "—")
+        g = groups.get(key)
+        if g:
+            used.add(key)
+            new = _links_md(g["urls"])
+            cell = new if empty else f"{old} {new}"
+        elif old == PLACEHOLDER:
+            cell = SOON
+        else:
+            continue
         lines[i] = f"|{m.group('name')}|{m.group('desc')}| {cell} |"
 
     rest = [g for k, g in groups.items() if k not in used]

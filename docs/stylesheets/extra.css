@@ -110,6 +110,136 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
 }
 
+/* ===== Страница «Оборудование» ===== */
+.md-typeset .mr-equip-hero {
+  position: relative;
+  margin: 0 0 2rem;
+  padding: 2rem 2.2rem 1.8rem;
+  border-radius: calc(var(--mr-radius) * 1.5);
+  color: #fff;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255,255,255,.2), transparent 40%),
+    radial-gradient(circle at 0% 120%, rgba(255,112,67,.5), transparent 50%),
+    linear-gradient(135deg, var(--mr-grad-a), var(--mr-grad-b));
+  box-shadow: 0 1.2rem 2.5rem -1.2rem rgba(21,101,192,.55);
+  overflow: hidden;
+}
+.md-typeset .mr-equip-hero::after {  /* большой полупрозрачный значок справа */
+  content: "";
+  position: absolute;
+  right: -1.5rem;
+  bottom: -2.5rem;
+  width: 11rem;
+  height: 11rem;
+  opacity: .14;
+  background: #fff;
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16h-2v-1H8v1H6v-1H2v5h20v-5h-4zm2-8h-3V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v4h4v-2h2v2h8v-2h2v2h4v-4c0-1.1-.9-2-2-2m-5 0H9V6h6z"/></svg>') center / contain no-repeat;
+          mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16h-2v-1H8v1H6v-1H2v5h20v-5h-4zm2-8h-3V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v4h4v-2h2v2h8v-2h2v2h4v-4c0-1.1-.9-2-2-2m-5 0H9V6h6z"/></svg>') center / contain no-repeat;
+}
+.md-typeset .mr-equip-hero h1 {
+  margin: .9rem 0 .6rem;
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: #fff;
+}
+.md-typeset .mr-equip-hero p { position: relative; z-index: 1; max-width: 36rem; margin: 0; font-size: .85rem; opacity: .95; }
+.md-typeset .mr-equip-hero .headerlink { display: none; }
+
+/* Заголовки разделов с цветной иконкой */
+.md-content:has(.mr-equip-hero) .md-typeset h2 {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  margin: 2.4rem 0 1rem;
+  font-weight: 700;
+}
+.md-content:has(.mr-equip-hero) .md-typeset h2 > .twemoji {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: .7rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--mr-grad-a), var(--mr-grad-b));
+  box-shadow: 0 .4rem .8rem -.4rem rgba(21,101,192,.6);
+}
+.md-content:has(.mr-equip-hero) .md-typeset h2 > .twemoji svg { width: 1.15rem; height: 1.15rem; }
+
+/* Таблицы: одинаковая ширина, скругления, подсветка строки */
+.md-content:has(.mr-equip-hero) .md-typeset__table { display: block; width: 100%; }
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: var(--mr-radius);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: .78rem;
+  box-shadow: 0 .8rem 1.6rem -1.2rem rgba(0,0,0,.35);
+}
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) th {
+  padding: .75rem 1rem;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+  background: linear-gradient(90deg, rgba(15,157,138,.1), rgba(21,101,192,.1));
+}
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) th:nth-child(1) { width: 30%; }
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) th:nth-child(3) { width: 11rem; }
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td {
+  padding: .8rem 1rem;
+  vertical-align: middle;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  transition: background .15s ease;
+}
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td:nth-child(1) { font-weight: 700; }
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td:nth-child(2) { color: var(--md-default-fg-color--light); }
+.md-content:has(.mr-equip-hero) .md-typeset table:not([class]) tbody tr:hover td {
+  background: var(--md-accent-fg-color--transparent);
+}
+
+/* Кнопки магазинов — столбиком */
+.md-typeset a.mr-buy {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  width: max-content;
+  max-width: 100%;
+  margin: .3rem 0;
+  padding: .32rem .8rem .32rem .65rem;
+  border-radius: 2rem;
+  font-size: .7rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  background: linear-gradient(135deg, var(--mr-grad-a), var(--mr-grad-b));
+  box-shadow: 0 .35rem .8rem -.4rem rgba(21,101,192,.7);
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.md-typeset a.mr-buy:hover,
+.md-typeset a.mr-buy:focus {
+  color: #fff;
+  background: var(--mr-orange);
+  transform: translateY(-1px);
+  box-shadow: 0 .5rem 1rem -.4rem rgba(255,112,67,.8);
+}
+.md-typeset a.mr-buy .twemoji svg { width: .95rem; height: .95rem; }
+.md-typeset .mr-soon {
+  display: inline-block;
+  padding: .25rem .7rem;
+  border-radius: 2rem;
+  font-size: .66rem;
+  font-weight: 600;
+  color: var(--md-default-fg-color--light);
+  background: var(--md-default-fg-color--lightest);
+}
+
 /* ===== Телефоны ===== */
 @media screen and (max-width: 44.9375em) {
   .md-typeset .mr-hero {
@@ -122,4 +252,27 @@
   .md-typeset .mr-hero h1 { font-size: 1.7rem; }
   .mr-hero__art { order: -1; }
   .mr-hero__art svg { max-width: 180px; }
+  .md-typeset .mr-equip-hero {
+    padding: 1.5rem 1.2rem;
+    margin-left: -.8rem;
+    margin-right: -.8rem;
+    border-radius: var(--mr-radius);
+  }
+  .md-typeset .mr-equip-hero h1 { font-size: 1.7rem; }
+  /* таблица → карточки: название, описание, кнопки друг под другом */
+  .md-content:has(.mr-equip-hero) .md-typeset__scrollwrap { margin: 1em 0; overflow: visible; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]),
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) tbody,
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) tr,
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td { display: block; width: 100%; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) thead { display: none; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) tr {
+    padding: .85rem 1rem;
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+  }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) tr:first-child { border-top: 0; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td { padding: 0; border: 0; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td:nth-child(1) { font-size: .85rem; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) td:nth-child(2) { margin: .15rem 0 .5rem; }
+  .md-content:has(.mr-equip-hero) .md-typeset table:not([class]) tbody tr:hover td { background: none; }
 }
