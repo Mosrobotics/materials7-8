@@ -1,21 +1,37 @@
 # Группа С
 
-<div class="grid cards" markdown>
+<div class="grid cards mr-cards" markdown>
 
--   :material-book-open-variant: **[Теория](theory/index.md)**
+-   :material-book-open-variant:{ .lg .middle } **Теория**
+
+    ---
 
     Электроника и устройство роботов: схемы, формулы, пояснения.
 
--   :material-code-braces: **[Основы программирования](programming/index.md)**
+    [:octicons-arrow-right-24: Читать](theory/index.md)
+
+-   :material-code-braces:{ .lg .middle } **Основы программирования**
+
+    ---
 
     Программирование контроллеров: скетчи с разбором по строкам.
 
--   :material-folder-download: **[Полезные файлы](files.md)**
+    [:octicons-arrow-right-24: Писать код](programming/index.md)
+
+-   :material-folder-download:{ .lg .middle } **Полезные файлы**
+
+    ---
 
     Скетчи, схемы, даташиты и методички.
 
--   :material-link-variant: **[Полезные ссылки](links.md)**
+    [:octicons-arrow-right-24: Скачать](files.md)
+
+-   :material-link-variant:{ .lg .middle } **Полезные ссылки**
+
+    ---
 
     Справочники, симуляторы и другие ресурсы.
+
+    [:octicons-arrow-right-24: Открыть](links.md)
 
 </div>
