@@ -21,6 +21,7 @@
 }
 @media (prefers-color-scheme:dark){:root:not(.tg){--bg:#101418;--card:#1b2128;--text:#f1f3f5;--hint:#8b95a1;--sep:rgba(255,255,255,.08)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html,body{margin:0;background:var(--bg);color:var(--text)}
 body{font:15px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif;padding:10px 14px calc(24px + env(safe-area-inset-bottom));min-height:100vh}
 .wrap{max-width:560px;margin:0 auto}
@@ -95,6 +96,31 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
 .bar{height:8px;border-radius:4px;background:var(--sep);overflow:hidden;margin-top:8px}
 .bar i{display:block;height:100%;border-radius:4px}
 
+/* проверка (тренер) */
+.hero.chk{background:radial-gradient(120% 140% at 0% 0%,#ff8a4c 0%,#f0569b 50%,#8b5cf6 100%);box-shadow:0 10px 30px -12px rgba(240,86,155,.5)}
+.hero .act.lt{background:#fff;color:#c2367a;margin-top:14px;position:relative;z-index:1}
+.dl{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--sep)}
+.dl:first-child{border-top:0;padding-top:0}.dl:last-child{padding-bottom:0}
+.dl .n{width:28px;height:28px;flex:none;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff}
+.dl .t{flex:1;min-width:0}.dl .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14.5px}
+.dl .t span{font-size:12.5px;color:var(--hint)}
+.dl .mini{flex:none;border:0;border-radius:9px;padding:6px 10px;background:var(--bg);color:var(--link);font-weight:700;font-size:12.5px}
+.search{display:flex;gap:8px;align-items:center;background:var(--card);border-radius:12px;padding:0 12px;margin-bottom:8px}
+.search input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:inherit;padding:11px 0}
+.search input::placeholder{color:var(--hint)}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:0;border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600;background:var(--card);color:var(--hint)}
+.chips button.on{background:var(--text);color:var(--card)}
+.mx{overflow-x:auto}
+.mx table{border-collapse:separate;border-spacing:4px;width:100%}
+.mx th{font-size:12px;font-weight:600;color:var(--hint);padding:0 0 2px}
+.mx td.nm{padding:0 6px 0 2px;font-size:14.5px;white-space:nowrap;max-width:46vw;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.mx td.nm i{font-style:normal;color:var(--hint);font-size:12px}
+.mx td.c{width:40px;min-width:40px;height:36px;border-radius:9px;text-align:center;font-weight:800;font-size:14px;color:#fff;background:var(--sep);cursor:pointer;transition:transform .12s}
+.mx td.c:active{transform:scale(.9)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--hint);margin-top:10px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
 .foot{text-align:center;color:var(--hint);font-size:12px;margin-top:18px}
 .demo{display:none;margin:0 0 10px;text-align:center;font-size:12px;color:var(--hint)}
 .fade{opacity:0;transform:translateY(8px);animation:in .5s cubic-bezier(.2,.8,.2,1) forwards}
@@ -108,14 +134,16 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
   <nav class="tabs" id="tabs">
     <button data-t="r" class="on">📚 Отчёты</button>
     <button data-t="k">🧪 Тесты</button>
+    <button data-t="c" hidden>🧑‍🏫 Проверка</button>
   </nav>
   <main class="pane on" id="pane-r"></main>
   <main class="pane" id="pane-k"></main>
+  <main class="pane" id="pane-c"></main>
   <div class="foot" id="foot"></div>
 </div>
 
 <script>
-(function(){
+(async function(){
 const tg = window.Telegram && Telegram.WebApp;
 const inTg = !!(tg && tg.platform && tg.platform !== 'unknown');
 const $ = id => document.getElementById(id);
@@ -129,8 +157,17 @@ function decode(s){
   for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
   return JSON.parse(new TextDecoder().decode(b));
 }
-let data = null;
-try { const q = new URLSearchParams(location.search).get('d'); if (q) data = decode(q); } catch (e) {}
+async function decodeZ(s){   // ?z= — то же, сжатое zlib (длинная сводка тренера)
+  s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '=';
+  const bin = atob(s), b = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+  const out = new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate'));
+  return JSON.parse(await new Response(out).text());
+}
+let data = null, zfail = false;
+const QS = new URLSearchParams(location.search);
+try { if (QS.get('d')) data = decode(QS.get('d')); } catch (e) {}
+if (!data && QS.get('z')) { try { data = await decodeZ(QS.get('z')); } catch (e) { zfail = true; } }
 if (data && !data.v && data.s) data = {v:2, b:data.b, t:data.t, r:{g:data.g, s:data.s}};   // старая ссылка «Мои отчёты»
 const now = Date.now()/1000, D = 86400;
 let demo = false;
@@ -142,7 +179,10 @@ if (!data && !inTg) {
       [2,'Управление движением','w',0,now+3*D,now-2*D,'Робот едет по командам',['text','disk_link','code_link']],
       [3,'Датчики линии','n',0,now+17*D,0,'Робот едет по линии',['text','disk_link','code_link']],
       [4,'ПИД-регулятор','n',0,now+31*D,0,'Плавное движение по линии',['text','code_link']]]},
-    k:{n:'0417', e:[[12,'Олимпиада — школьный этап','01.11.2026',34,40,1,now+25*D],[9,'Входной тест','15.10.2026',18,30,0,0]]}};
+    k:{n:'0417', e:[[12,'Олимпиада — школьный этап','01.11.2026',34,40,1,now+25*D],[9,'Входной тест','15.10.2026',18,30,0,0]]},
+    c:{g:'ВсОШ', q:3, a:1, s:[[1,'Сборка шасси',now-14*D],[2,'Управление движением',now+3*D],[3,'Датчики линии',now+17*D],[4,'ПИД-регулятор',now+31*D]],
+       u:[[1,'Волкова Д.','a7.r.n.n'],[2,'Зайцева В.','a10.a9.n.n'],[3,'Иванов А.','a9.r.n.n'],[4,'Козлов Р.','a8.n.n.n'],
+          [5,'Новиков Л.','o.n.n.n'],[6,'Орлова Е.','a9.r.n.n'],[7,'Петрова М.','a10.a8.n.n'],[8,'Смирнов К.','w.n.n.n',0]]}};
 }
 data = data || {v:2};
 const BOT = data.b || '';
@@ -319,22 +359,103 @@ function renderTests(){
   });
 }
 
-renderReports(); renderTests();
+/* ---------- проверка (только тренерам) ---------- */
+const CELL = {a:['var(--ok)', ''], r:['var(--rev)', '🕓'], w:['var(--warn)', '↻'], o:['var(--bad)', '!'], n:['', '']};
+function renderCheck(){
+  const pane = $('pane-c'), C = data.c;
+  if (!C) return;
+  const stages = (C.s || []).map(x => ({id:x[0], title:x[1], dl:x[2]|0}));
+  const people = (C.u || []).map(x => ({id:x[0], name:x[1], cells:String(x[2]).split('.').map(t => ({st:t[0] || 'n', score:+t.slice(1) || 0})), off:x[3] === 0}));
+  const count = st => people.reduce((a, p) => a + p.cells.filter(c => c.st === st).length, 0);
+  const rework = count('w'), late = count('o');
+  const s = hero('chk', null, null, '🤖 ' + (C.g || 'Проект'), 'Проверка отчётов', null,
+    [[String(people.length + (C.m || 0)), plural(people.length + (C.m || 0), 'ученик', 'ученика', 'учеников')],
+     [String(C.q || 0), 'ждут проверки'], [String(rework + late), 'доработка и долги']]);
+  const go = h('button', 'act lt', C.q ? '🔎 Проверить следующий (' + C.q + ')' : '✅ Очередь пуста — открыть /check');
+  go.onclick = () => openBot('rpnext'); s.append(go); pane.append(s);
+
+  if (stages.length) {
+    pane.append(h('h2', 'fade', 'Сроки этапов'));
+    const card = h('section', 'card fade');
+    const active = people.filter(p => !p.off).length;
+    stages.forEach((st, i) => {
+      const row = h('div', 'dl');
+      const past = st.dl && st.dl < now, soon = st.dl && !past && st.dl - now < 3*D;
+      const n = h('div', 'n', String(st.id)); n.style.background = !st.dl ? 'var(--none)' : past ? 'var(--hint)' : soon ? 'var(--warn)' : 'var(--accent)';
+      const done = people.filter(p => !p.off && p.cells[i] && p.cells[i].st !== 'n' && p.cells[i].st !== 'o').length;
+      const t = h('div', 't'); t.append(h('b', '', st.title));
+      t.append(h('span', '', (st.dl ? 'до ' + dmhm(st.dl) + ' · ' + (past ? 'срок прошёл' : left(st.dl).txt) : 'без срока') + ' · сдали ' + done + ' из ' + active));
+      row.append(n, t);
+      if (C.a) { const b = h('button', 'mini', 'Изменить'); b.onclick = () => openBot('rpdl_' + st.id); row.append(b); }
+      card.append(row);
+    });
+    pane.append(card);
+  }
+
+  pane.append(h('h2', 'fade', 'Ученики · нажмите на клетку'));
+  if (!people.length) return empty(pane, '🧑‍🎓', 'Учеников пока нет', 'Они появятся, когда зарегистрируются в /reports.');
+  const sb = h('label', 'search fade'), inp = h('input'); inp.type = 'search'; inp.placeholder = 'Поиск по фамилии'; inp.autocomplete = 'off';
+  sb.append(h('span', '', '🔍'), inp); pane.append(sb);
+  const FL = [['all', 'Все'], ['r', '🕓 Ждут проверки'], ['w', '↻ Доработка'], ['o', '! Просрочено']];
+  let filter = 'all';
+  const chips = h('div', 'chips fade');
+  FL.forEach(([k, t]) => { const b = h('button', k === filter ? 'on' : '', t); b.onclick = () => { filter = k; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); haptic('sel'); draw(); }; chips.append(b); });
+  pane.append(chips);
+  const box = h('section', 'card fade'), mx = h('div', 'mx'), tbl = h('table');
+  const head = h('tr'); head.append(h('th'));
+  stages.forEach(st => { const th = h('th', '', 'Э' + st.id); th.title = st.title; head.append(th); });
+  const thead = h('thead'); thead.append(head);
+  const tb = h('tbody'); tbl.append(thead, tb); mx.append(tbl); box.append(mx);
+  const note = h('div', 'sub'); note.style.marginTop = '8px';
+  const lg = h('div', 'legend');
+  [['var(--ok)', 'принят (балл)'], ['var(--rev)', 'на проверке'], ['var(--warn)', 'доработка'], ['var(--bad)', 'просрочен']]
+    .forEach(([c, t]) => { const e = h('span', '', t); e.style.setProperty('--c', c); lg.append(e); });
+  box.append(note, lg); pane.append(box);
+  const norm = v => v.toLowerCase().replace(/ё/g, 'е').trim();
+  function draw(){
+    const q = norm(inp.value);
+    const list = people.filter(p => (!q || norm(p.name).includes(q)) && (filter === 'all' || p.cells.some(c => c.st === filter)));
+    tb.textContent = '';
+    list.forEach(p => {
+      const tr = h('tr'), nm = h('td', 'nm', p.name);
+      if (p.off) nm.append(h('i', '', ' · не в группе'));
+      nm.onclick = () => openBot('rpst_' + p.id); tr.append(nm);
+      stages.forEach((st, i) => {
+        const c = p.cells[i] || {st:'n', score:0}, [col, ic] = CELL[c.st] || CELL.n, td = h('td', 'c', c.st === 'a' ? (c.score ? String(c.score) : '✓') : ic);
+        if (col) td.style.background = col;
+        td.title = 'Этап ' + st.id + ': ' + ((ST[c.st] || ST.n).t);
+        td.onclick = () => openBot(c.st === 'a' || c.st === 'r' || c.st === 'w' ? 'rpo_' + p.id + '_' + st.id : 'rpst_' + p.id);
+        tr.append(td);
+      });
+      tb.append(tr);
+    });
+    const parts = [];
+    if (!list.length) parts.push(q ? 'Никого не нашли по «' + inp.value.trim() + '»' : 'Таких сейчас нет');
+    if (C.m) parts.push('Ещё ' + C.m + ' ' + plural(C.m, 'ученик', 'ученика', 'учеников') + ' без отчётов к проверке не влезли — их ищите в боте: /student фамилия');
+    parts.push('Клетка — отчёт по этапу (принять, вернуть, оценить), фамилия — все отчёты ученика');
+    note.textContent = parts.join(' · ');
+  }
+  inp.oninput = draw; draw();
+}
+
+renderReports(); renderTests(); renderCheck();
 
 /* ---------- вкладки ---------- */
-let tab = 'r';
-try { tab = localStorage.getItem('tab') || 'r'; } catch (e) {}
-if (new URLSearchParams(location.search).get('tab')) tab = new URLSearchParams(location.search).get('tab');
+const hasC = !!data.c;
+if (hasC) document.querySelector('#tabs button[data-t="c"]').hidden = false;
+let tab = hasC && data.r && data.r.x === 'reg' ? 'c' : 'r';
+try { tab = localStorage.getItem('tab') || tab; } catch (e) {}
+if (QS.get('tab')) tab = QS.get('tab');
 function show(t){
-  tab = t === 'k' ? 'k' : 'r';
+  tab = t === 'k' ? 'k' : t === 'c' && hasC ? 'c' : 'r';
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
-  $('pane-r').classList.toggle('on', tab === 'r'); $('pane-k').classList.toggle('on', tab === 'k');
+  ['r', 'k', 'c'].forEach(x => $('pane-' + x).classList.toggle('on', tab === x));
   try { localStorage.setItem('tab', tab); } catch (e) {}
 }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { show(b.dataset.t); haptic('sel'); window.scrollTo(0, 0); });
 show(tab);
 
-$('foot').textContent = demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · обновляются сами, когда что-то меняется' : '';
+$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · обновляются сами, когда что-то меняется' : '';
 if (demo) $('demo').style.display = 'block';
 if (inTg) {
   tg.ready(); tg.expand();
