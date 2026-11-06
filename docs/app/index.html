@@ -121,6 +121,54 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
 .mx td.c:active{transform:scale(.9)}
 .legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--hint);margin-top:10px}
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+/* панель снизу: формы */
+.ov{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.on{opacity:1;pointer-events:auto}
+.sh{position:fixed;left:0;right:0;bottom:0;z-index:31;max-width:600px;margin:0 auto;max-height:92vh;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--bg);border-radius:22px 22px 0 0;padding:6px 16px calc(22px + env(safe-area-inset-bottom));
+  transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+.sh.on{transform:none}
+.sh::before{content:"";display:block;width:38px;height:5px;border-radius:3px;background:var(--sep);margin:4px auto 10px}
+.shh{display:flex;align-items:center;gap:8px;margin-bottom:4px}.shh b{flex:1;font-size:19px;letter-spacing:-.2px}
+.shh .x{flex:none;border:0;background:var(--card);border-radius:50%;width:32px;height:32px;color:var(--hint);font-size:15px}
+.sht{font-weight:700;font-size:15.5px}.shs{color:var(--hint);font-size:13px;margin-top:2px}
+.cmt{background:color-mix(in srgb,var(--warn) 15%,var(--card));border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px}
+.fld{display:block;background:var(--card);border-radius:12px;padding:9px 12px 8px;margin-top:10px;position:relative;transition:box-shadow .15s}
+.fld .fl{display:block;font-size:12px;font-weight:600;color:var(--hint);margin-bottom:2px;padding-right:60px}
+.fld textarea,.fld input{display:block;width:100%;border:0;outline:0;background:none;color:var(--text);font:inherit;resize:none;padding:2px 0}
+.fld textarea{min-height:44px}
+.fld input[type=datetime-local]{min-height:30px}
+.fld .cnt{position:absolute;right:12px;top:9px;font-size:11px;color:var(--hint)}.fld .cnt.bad{color:var(--bad);font-weight:700}
+.fld .fh{display:block;font-size:12px;color:var(--hint);margin-top:4px}
+.fld .fe{display:block;font-size:12.5px;color:var(--bad);margin-top:3px}.fld .fe:empty{display:none}
+.fld:focus-within{box-shadow:0 0 0 1.5px var(--accent)}.fld.bad{box-shadow:0 0 0 1.5px var(--bad)}
+.act.ok{background:var(--ok);color:#fff}
+.act.warn{background:color-mix(in srgb,var(--warn) 18%,var(--card));color:#c27a00}
+.act.ghost{background:none;color:var(--hint);font-weight:600;margin-top:4px}
+.row2{display:flex;gap:8px}.row2 .act{flex:1}
+.lbl2{font-size:12px;font-weight:600;color:var(--hint);margin:14px 2px 0}
+.scores{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
+.scores button{border:0;border-radius:11px;padding:11px 0;font-weight:800;font-size:15px;background:var(--card);color:var(--text);transition:transform .1s}
+.scores button:active{transform:scale(.92)}
+.scores button.on{background:var(--ok);color:#fff}
+.rtext{background:var(--card);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;white-space:pre-wrap;word-break:break-word}
+.rtext .k{font-size:12px;font-weight:600;color:var(--hint);margin-top:8px}.rtext .k:first-child{margin-top:0}.rtext p{margin:2px 0 0}
+.links{display:flex;gap:8px;margin-top:10px}
+.links button{flex:1;min-width:0;border:0;border-radius:11px;padding:10px;background:var(--card);color:var(--link);font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.qchips button{border:0;border-radius:99px;padding:6px 11px;font-size:12.5px;background:var(--card);color:var(--link)}
+.pi{background:var(--card);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:transform .15s}
+.pi:active{transform:scale(.985)}
+.pi .r1{display:flex;align-items:center;gap:8px}.pi .r1 b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi .ex{font-size:13px;color:var(--hint);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.late{color:var(--bad);font-weight:700}
+.banner{display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--accent) 14%,var(--card));border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.banner .t{flex:1;min-width:0;font-size:14px}.banner .act{width:auto;margin:0;padding:8px 14px}
+.banner .x{border:0;background:none;color:var(--hint);font-size:16px}
+.tn{display:flex;justify-content:space-between;gap:8px;font-weight:700;margin-top:12px;font-size:14px}
+.tq{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;padding:6px 0;border-top:1px solid var(--sep)}
+.tq .qi{flex:none;width:18px;text-align:center}.tq .qt{flex:1;min-width:0;word-break:break-word}
+.tq .qh{display:block;color:var(--hint);font-size:12.5px}.tq .qs{flex:none;font-weight:800}
 .foot{text-align:center;color:var(--hint);font-size:12px;margin-top:18px}
 .demo{display:none;margin:0 0 10px;text-align:center;font-size:12px;color:var(--hint)}
 .fade{opacity:0;transform:translateY(8px);animation:in .5s cubic-bezier(.2,.8,.2,1) forwards}
@@ -131,6 +179,7 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
 <body>
 <div class="wrap">
   <div class="demo" id="demo">Демо-данные: откройте приложение из бота</div>
+  <div id="banner"></div>
   <nav class="tabs" id="tabs">
     <button data-t="r" class="on">📚 Отчёты</button>
     <button data-t="k">🧪 Тесты</button>
@@ -141,6 +190,8 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
   <main class="pane" id="pane-c"></main>
   <div class="foot" id="foot"></div>
 </div>
+<div class="ov" id="ov"></div>
+<div class="sh" id="sh" role="dialog" aria-modal="true"></div>
 
 <script>
 (async function(){
@@ -179,10 +230,16 @@ if (!data && !inTg) {
       [2,'Управление движением','w',0,now+3*D,now-2*D,'Робот едет по командам',['text','disk_link','code_link']],
       [3,'Датчики линии','n',0,now+17*D,0,'Робот едет по линии',['text','disk_link','code_link']],
       [4,'ПИД-регулятор','n',0,now+31*D,0,'Плавное движение по линии',['text','code_link']]]},
-    k:{n:'0417', e:[[12,'Олимпиада — школьный этап','01.11.2026',34,40,1,now+25*D],[9,'Входной тест','15.10.2026',18,30,0,0]]},
+    k:{n:'0417', e:[[12,'Олимпиада — школьный этап','01.11.2026',34,40,1,now+25*D,
+        [['Теория',14,20,[['Задание 1','42',1,4],['Задание 2','3,14',1,4],['Задание 3','',0,0,'12',4],['Задание 4','B',1,6],['Задание 5','17',0,0,'21',2]]],
+         ['Практика',20,20,[['Робот проехал трассу','да',1,10],['Время, с','48',1,10],['Комментарий','аккуратная сборка',2,0]]]]],
+       [9,'Входной тест','15.10.2026',18,30,0,0]]},
     c:{g:'ВсОШ', q:3, a:1, s:[[1,'Сборка шасси',now-14*D],[2,'Управление движением',now+3*D],[3,'Датчики линии',now+17*D],[4,'ПИД-регулятор',now+31*D]],
-       u:[[1,'Волкова Д.','a7.r.n.n'],[2,'Зайцева В.','a10.a9.n.n'],[3,'Иванов А.','a9.r.n.n'],[4,'Козлов Р.','a8.n.n.n'],
-          [5,'Новиков Л.','o.n.n.n'],[6,'Орлова Е.','a9.r.n.n'],[7,'Петрова М.','a10.a8.n.n'],[8,'Смирнов К.','w.n.n.n',0]]}};
+       u:[[1,'Волкова Д.','a7_1.r_2.n.n'],[2,'Зайцева В.','a10_3.a9_4.n.n'],[3,'Иванов А.','a9_5.r_6.n.n'],[4,'Козлов Р.','a8_7.n.n.n'],
+          [5,'Новиков Л.','o.n.n.n'],[6,'Орлова Е.','a9_8.r_9.n.n'],[7,'Петрова М.','a10_10.a8_11.n.n'],[8,'Смирнов К.','w_12.n.n.n',0]],
+       p:[[6,3,2,1,now-3*D,0,'Робот едет вперёд и назад по командам с пульта, поворачивает на месте. Скорость регулируется кнопками.','Иногда теряется связь с пультом','https://disk.yandex.ru/d/demo','https://github.com/demo/robot',0],
+          [2,1,2,2,now-2*D,0,'Исправила: добавила видео поворотов и описание схемы подключения моторов.','','https://disk.yandex.ru/d/demo2','',0],
+          [9,6,2,1,now-5*3600,1,'Сделали управление через Bluetooth, робот проезжает квадрат.','Моторы греются','https://drive.google.com/demo','',1]]}};
 }
 data = data || {v:2};
 const BOT = data.b || '';
@@ -193,6 +250,68 @@ function openBot(arg){
   haptic('medium');
   if (inTg) { tg.openTelegramLink(url); tg.close(); } else location.href = url;
 }
+
+/* ---------- отправка боту ----------
+   Кнопка «📱 Приложение» под полем ввода (в ссылке kb=1) — страница отправляет Telegram.WebApp.sendData, бот отвечает
+   в чате и присылает свежую кнопку. Кнопка меню («Приложение» слева от поля ввода) так не умеет: там действие
+   сохраняется, бот присылает кнопку под полем ввода — оттуда оно уходит одним касанием. */
+const KB = inTg && QS.get('kb') === '1';
+const MAXT = 1500;
+function notify(t){ inTg ? tg.showAlert(t) : alert(t); }
+function store(k, v){ try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); } catch (e) {} }
+function load(k){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function send(action, what, after){
+  const raw = JSON.stringify(action);
+  if (new TextEncoder().encode(raw).length > 4096) return notify('Слишком длинно для приложения — сократите текст или сдайте в чате.');
+  if (!inTg) { closeSheet(); after && after(); return notify('Демо: в Telegram это сразу уйдёт боту — «' + what + '».'); }
+  after && after();
+  if (KB) { store('pending', null); haptic('medium'); tg.sendData(raw); return; }   // Telegram закроет приложение
+  store('pending', {raw, what, t: Date.now()});
+  tg.showPopup({title: 'Почти готово', message: 'Отправлять можно из кнопки «📱 Приложение» под полем ввода. Бот сейчас пришлёт её — нажмите, и «' + what + '» уйдёт одним касанием.', buttons: [{type: 'ok'}]}, () => openBot('app'));
+}
+
+/* ---------- панель снизу ---------- */
+const ov = $('ov'), sh = $('sh');
+function closeSheet(){
+  ov.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = '';
+  if (inTg) { try { tg.BackButton.offClick(closeSheet); tg.BackButton.hide(); } catch (e) {} }
+}
+function sheet(title, build){
+  sh.textContent = '';
+  const hd = h('div', 'shh'), x = h('button', 'x', '✕'); x.onclick = closeSheet; hd.append(h('b', '', title), x); sh.append(hd);
+  build(sh);
+  sh.scrollTop = 0; ov.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; haptic('light');
+  if (inTg) { try { tg.BackButton.onClick(closeSheet); tg.BackButton.show(); } catch (e) {} }
+}
+ov.onclick = closeSheet;
+function field(label, o){
+  const w = h('label', 'fld'); w.append(h('span', 'fl', label + (o.req ? ' *' : '')));
+  const inp = o.multi ? h('textarea') : h('input');
+  if (!o.multi) inp.type = o.type || 'text';
+  if (o.ph) inp.placeholder = o.ph;
+  inp.value = o.value || ''; w.append(inp);
+  if (o.multi) { inp.rows = o.rows || 3; const fit = () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 320) + 'px'; }; inp.addEventListener('input', fit); setTimeout(fit, 0); }
+  if (o.max) { const c = h('span', 'cnt'); w.append(c); const u = () => { c.textContent = inp.value.length + ' / ' + o.max; c.classList.toggle('bad', inp.value.length > o.max); }; inp.addEventListener('input', u); u(); }
+  if (o.hint) w.append(h('span', 'fh', o.hint));
+  const er = h('span', 'fe'); w.append(er);
+  inp.addEventListener('input', () => { er.textContent = ''; w.classList.remove('bad'); });
+  return {w, inp, val: () => inp.value.trim(), err: t => { er.textContent = t || ''; w.classList.toggle('bad', !!t); }};
+}
+function scorePicker(box, current, onPick){
+  const g = h('div', 'scores');
+  for (let n = 1; n <= 10; n++) {
+    const b = h('button', n === current ? 'on' : '', String(n));
+    b.onclick = () => { const on = !b.classList.contains('on'); g.querySelectorAll('button').forEach(x => x.classList.remove('on')); if (on) b.classList.add('on'); haptic('sel'); onPick(on ? n : 0); };
+    g.append(b);
+  }
+  box.append(g);
+}
+function linkBtn(box, items){
+  const r = h('div', 'links');
+  items.filter(([, u]) => u).forEach(([t, u]) => { const b = h('button', '', t); b.onclick = () => inTg ? tg.openLink(u) : window.open(u, '_blank'); r.append(b); });
+  if (r.childNodes.length) box.append(r);
+}
+const URL_RE = /^https?:\/\/\S+\.\S+$/i;
 
 /* ---------- helpers ---------- */
 const pad = v => (v < 10 ? '0' : '') + v;
@@ -242,7 +361,7 @@ function renderReports(){
   const pane = $('pane-r'), R = data.r;
   if (!R) return empty(pane, '📚', 'Загрузите свои данные', 'Бот обновит приложение — потом откройте его ещё раз.', '🔄 Загрузить мои данные', 'app');
   if (R.x === 'reg') return empty(pane, '📝', 'Вы ещё не в отчётах', 'Отправьте боту /reports — он зарегистрирует вас в проекте.');
-  const stages = (R.s || []).map(x => ({id:x[0], title:x[1], st:x[2], score:x[3]|0, dl:x[4]|0, sb:x[5]|0, crit:x[6]||'', need:x[7]||[]}));
+  const stages = (R.s || []).map(x => ({id:x[0], title:x[1], st:x[2], score:x[3]|0, dl:x[4]|0, sb:x[5]|0, crit:x[6]||'', need:x[7]||[], draft:x[8]||null}));
   const acc = stages.filter(s => s.st === 'a'), scored = acc.filter(s => s.score);
   const avg = scored.length ? scored.reduce((a, s) => a + s.score, 0) / scored.length : 0;
   const next = stages.find(s => s.st === 'w' || s.st === 'o' || s.st === 'n');
@@ -270,8 +389,9 @@ function renderReports(){
       const tl = h('div', 'tl'); tl.append(h('span', '', left(s.dl).txt), h('span', '', 'до ' + dmhm(s.dl))); c.append(tl);
     }
     if (s.need.length) { const nd = h('div', 'need'); s.need.forEach(k => NEED[k] && nd.append(h('span', '', NEED[k]))); c.append(nd); }
+    if (s.draft && s.draft.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Тренер: '), s.draft.c); c.append(cm); }
     const b = h('button', 'act', (s.st === 'w' ? '🔄 Исправить этап ' : '📤 Сдать этап ') + s.id);
-    b.onclick = () => openBot('rpsub_' + s.id); c.append(b);
+    b.onclick = () => openForm(s); c.append(b);
     pane.append(c);
   }
 
@@ -304,13 +424,50 @@ function renderReports(){
     if (s.need.length) line('Приложить', s.need.map(k => ({text:'что сделано', photo:'ссылку на диск с фото и видео', disk_link:'ссылку на диск с фото и видео', code_link:'ссылку на код'})[k] || k).join(', '));
     const canSub = s.st === 'w' || s.st === 'n' || s.st === 'o';
     const act = h('button', 'act' + (canSub ? '' : ' alt'), s.st === 'w' ? '🔄 Исправить отчёт' : canSub ? '📤 Сдать этот этап' : '📋 Посмотреть отчёт');
-    act.onclick = ev => { ev.stopPropagation(); openBot((canSub ? 'rpsub_' : 'rpview_') + s.id); };
+    if (s.draft && s.draft.c) line('Тренер', s.draft.c);
+    act.onclick = ev => { ev.stopPropagation(); canSub ? openForm(s) : openBot('rpview_' + s.id); };
     inner.append(act); more.append(inner);
     body.append(r1, sub, more);
     body.onclick = () => { el.classList.toggle('open'); haptic('sel'); };
     el.append(rail, body); list.append(el);
   });
   pane.append(list);
+}
+
+function openForm(s){
+  const dr = s.draft || {}, saved = load('draft_' + s.id) || {};
+  const v = (k, d) => saved[k] != null ? saved[k] : d || '';
+  sheet((s.st === 'w' ? 'Исправить этап ' : 'Сдать этап ') + s.id, b => {
+    b.append(h('div', 'sht', s.title));
+    if (s.crit) b.append(h('div', 'shs', 'Критерий: ' + s.crit));
+    if (s.dl) b.append(h('div', 'shs', 'Срок: ' + dmhm(s.dl) + ' (МСК) · ' + left(s.dl).txt + (s.dl < now && s.st !== 'w' ? ' — отметится «с опозданием»' : '')));
+    if (dr.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Тренер: '), dr.c); b.append(cm); }
+    const need = s.need || [];
+    const f1 = field('Что сделано', {multi: true, req: true, rows: 5, max: MAXT, value: v('done', dr.d), ph: 'Опишите, что получилось на этом этапе'});
+    const f2 = field('Проблемы', {multi: true, rows: 2, max: MAXT, value: v('prob', dr.p), ph: 'Что не получилось — если есть'});
+    const f3 = field('Ссылка на диск с фото и видео', {type: 'url', req: need.includes('disk_link'), value: v('disk', dr.k), ph: 'https://disk.yandex.ru/…',
+      hint: 'Загрузите фото и видео на Яндекс Диск или Google Drive и откройте доступ по ссылке'});
+    const f4 = field('Ссылка на код', {type: 'url', req: need.includes('code_link'), value: v('code', dr.g), ph: 'https://github.com/…'});
+    const all = [f1, f2, f3, f4];
+    all.forEach(f => { b.append(f.w); f.inp.addEventListener('input', () => store('draft_' + s.id, {done: f1.inp.value, prob: f2.inp.value, disk: f3.inp.value, code: f4.inp.value})); });
+    if (saved.done != null) b.append(h('div', 'shs', '✏️ Черновик сохранён на этом устройстве'));
+    const go = h('button', 'act', '📨 Отправить на проверку'), alt = h('button', 'act ghost', 'Сдать по шагам в чате');
+    alt.onclick = () => openBot('rpsub_' + s.id); b.append(go, alt);
+    go.onclick = () => {
+      let ok = true;
+      const chk = (f, good, msg) => { if (!good) { f.err(msg); ok = false; } };
+      chk(f1, f1.val(), 'Напишите, что сделано');
+      chk(f1, f1.inp.value.length <= MAXT, 'Слишком длинно — до ' + MAXT + ' символов (длиннее — сдайте в чате)');
+      chk(f2, f2.inp.value.length <= MAXT, 'Слишком длинно — до ' + MAXT + ' символов');
+      [[f3, 'disk_link', 'на диск'], [f4, 'code_link', 'на код']].forEach(([f, k, t]) => {
+        if (f.val()) chk(f, URL_RE.test(f.val()), 'Ссылка должна начинаться с https://');
+        else chk(f, !need.includes(k), 'Нужна ссылка ' + t);
+      });
+      if (!ok) { haptic('heavy'); const bad = sh.querySelector('.fld.bad'); bad && bad.scrollIntoView({block: 'center', behavior: 'smooth'}); return; }
+      send({a: 'sub', s: s.id, done: f1.val(), prob: f2.val(), disk: f3.val(), code: f4.val()}, 'отчёт по этапу ' + s.id,
+           () => { if (KB || !inTg) store('draft_' + s.id, null); });
+    };
+  });
 }
 
 /* ---------- тесты ---------- */
@@ -325,7 +482,7 @@ function renderTests(){
   const pane = $('pane-k'), K = data.k;
   if (!K) return empty(pane, '🧪', 'Загрузите свои данные', 'Бот обновит приложение — потом откройте его ещё раз.', '🔄 Загрузить мои данные', 'app');
   if (!K.n) { const x = KX[K.x] || KX.off; return empty(pane, ...x); }
-  const ev = (K.e || []).map(x => ({id:x[0], name:x[1], date:x[2], total:x[3], max:x[4], scan:!!x[5], until:x[6]|0}));
+  const ev = (K.e || []).map(x => ({id:x[0], name:x[1], date:x[2], total:x[3], max:x[4], scan:!!x[5], until:x[6]|0, tests:x[7]||null}));
   const sc = ev.filter(e => e.total != null && e.max), best = sc.length ? Math.max(...sc.map(e => e.total / e.max)) : 0;
   const s = hero('tst', null, null, hello, 'Мои тесты', '🔢 номер участника', null);
   const nb = h('div', 'top'); nb.style.cssText = 'margin-top:14px;justify-content:space-between';
@@ -349,31 +506,153 @@ function renderTests(){
     const body = h('div', 'body'), r1 = h('div', 'row1');
     const pill = h('span', 'pill', frac == null ? 'баллы' : fmt(e.total) + ' / ' + fmt(e.max)); pill.style.color = col; pill.style.background = 'color-mix(in srgb, ' + col + ' 16%, transparent)';
     r1.append(h('b', '', e.name), pill);
+    if (e.tests) r1.append(h('span', 'cv', '›'));
     const sub = h('div', 'sub', e.date + ' · ' + (e.scan && e.until > now ? 'скан до ' + dm(e.until) : 'только баллы'));
     body.append(r1, sub);
     if (frac != null) { const b = h('div', 'bar'), q = h('i'); q.style.background = col; q.style.width = '0'; b.append(q); body.append(b); setTimeout(() => { q.style.width = Math.max(3, frac*100) + '%'; q.style.transition = 'width 1s ease'; }, 250); }
-    const act = h('button', 'act alt', e.scan && e.until > now ? '📊 Баллы по заданиям и скан' : '📊 Баллы по заданиям');
-    act.onclick = ev2 => { ev2.stopPropagation(); openBot('konr_' + e.id); };
-    body.append(act);
+    const scan = e.scan && e.until > now;
+    if (e.tests) {
+      const ok = e.tests.reduce((a, t) => a + t[3].filter(f => f[2] === 1).length, 0), all = e.tests.reduce((a, t) => a + t[3].filter(f => f[2] !== 2).length, 0);
+      sub.append(' · верно ' + ok + ' из ' + all + ' · нажмите — по заданиям');
+      const more = h('div', 'more'), inner = h('div');
+      e.tests.forEach(t => {
+        const tn = h('div', 'tn'); tn.append(h('span', '', t[0]), h('span', '', fmt(t[1]) + ' из ' + fmt(t[2]))); inner.append(tn);
+        t[3].forEach(f => {
+          const r = h('div', 'tq'), tx = h('span', 'qt');
+          tx.append(h('b', '', f[0] + ': '), f[1] || (f[2] === 2 ? '—' : 'нет ответа'));
+          if (f[2] === 0) tx.append(h('span', 'qh', f[4] ? 'верный ответ — ' + f[4] : 'за верный ответ — ' + fmt(f[5]) + ' б.'));
+          r.append(h('span', 'qi', f[2] === 1 ? '✅' : f[2] === 0 ? '❌' : '•'), tx, h('span', 'qs', f[2] === 2 ? '' : fmt(f[3])));
+          inner.append(r);
+        });
+      });
+      if (scan) { const a2 = h('button', 'act alt', '📎 Скан работы — в чат'); a2.onclick = ev2 => { ev2.stopPropagation(); openBot('konr_' + e.id); }; inner.append(a2); }
+      more.append(inner); body.append(more);
+      body.onclick = () => { el.classList.toggle('open'); haptic('sel'); };
+    } else {
+      const act = h('button', 'act alt', scan ? '📊 Баллы по заданиям и скан' : '📊 Баллы по заданиям');
+      act.onclick = ev2 => { ev2.stopPropagation(); openBot('konr_' + e.id); };
+      body.append(act);
+    }
     el.append(rail, body); pane.append(el);
   });
 }
 
 /* ---------- проверка (только тренерам) ---------- */
 const CELL = {a:['var(--ok)', ''], r:['var(--rev)', '🕓'], w:['var(--warn)', '↻'], o:['var(--bad)', '!'], n:['', '']};
+const PAGE = 40;   // учеников за раз — длинный список дорисовывается кнопкой, чтобы не тормозило
+const REWORK_HINTS = ['Нет фото или видео', 'Ссылка на диск не открывается', 'Опишите подробнее, что сделано', 'Нет ссылки на код', 'Робот не выполняет критерий'];
 function renderCheck(){
   const pane = $('pane-c'), C = data.c;
   if (!C) return;
   const stages = (C.s || []).map(x => ({id:x[0], title:x[1], dl:x[2]|0}));
-  const people = (C.u || []).map(x => ({id:x[0], name:x[1], cells:String(x[2]).split('.').map(t => ({st:t[0] || 'n', score:+t.slice(1) || 0})), off:x[3] === 0}));
+  const stageTitle = id => (stages.find(s => s.id === id) || {title: 'Этап ' + id}).title;
+  const people = (C.u || []).map(x => ({id:x[0], name:x[1], off:x[3] === 0,
+    cells:String(x[2]).split('.').map(t => { const [head, rid] = t.split('_'); return {st:head[0] || 'n', score:+head.slice(1) || 0, rid:+rid || 0}; })}));
+  const byId = Object.fromEntries(people.map(p => [p.id, p]));
+  const pend = (C.p || []).map(x => ({rid:x[0], sid:x[1], stage:x[2], ver:x[3], sb:x[4], late:!!x[5], done:x[6], prob:x[7], disk:x[8], code:x[9], cut:!!x[10]}))
+    .map(p => Object.assign(p, {name: (byId[p.sid] || {name: 'Ученик'}).name}));
+  const pendByRid = Object.fromEntries(pend.map(p => [p.rid, p]));
   const count = st => people.reduce((a, p) => a + p.cells.filter(c => c.st === st).length, 0);
-  const rework = count('w'), late = count('o');
-  const s = hero('chk', null, null, '🤖 ' + (C.g || 'Проект'), 'Проверка отчётов', null,
-    [[String(people.length + (C.m || 0)), plural(people.length + (C.m || 0), 'ученик', 'ученика', 'учеников')],
-     [String(C.q || 0), 'ждут проверки'], [String(rework + late), 'доработка и долги']]);
-  const go = h('button', 'act lt', C.q ? '🔎 Проверить следующий (' + C.q + ')' : '✅ Очередь пуста — открыть /check');
-  go.onclick = () => openBot('rpnext'); s.append(go); pane.append(s);
+  const total = people.length + (C.m || 0);
 
+  /* --- решения по отчёту --- */
+  function openReview(p){
+    sheet('Отчёт на проверке', b => {
+      b.append(h('div', 'sht', p.name + ' · этап ' + p.stage), h('div', 'shs', stageTitle(p.stage) + ' · версия ' + p.ver + ' · сдан ' + dmhm(p.sb)));
+      if (p.late) b.lastChild.append(' · ', h('span', 'late', 'с опозданием'));
+      const tx = h('div', 'rtext'); tx.append(h('div', 'k', 'Что сделано'), h('p', '', p.done || '—'));
+      if (p.prob) tx.append(h('div', 'k', 'Проблемы'), h('p', '', p.prob));
+      b.append(tx);
+      linkBtn(b, [['📁 Диск', p.disk], ['💻 Код', p.code]]);
+      if (p.cut) { const full = h('button', 'act ghost', 'Текст обрезан — полностью в чате ›'); full.onclick = () => openBot('rpo_' + p.sid + '_' + p.stage); b.append(full); }
+      let score = 0;
+      if (C.a) { b.append(h('div', 'lbl2', 'Оценка — можно сразу (по желанию)')); scorePicker(b, 0, v => { score = v; acc.textContent = v ? '✅ Принять · ' + v : '✅ Принять'; }); }
+      const acc = h('button', 'act ok', '✅ Принять'), rw = h('button', 'act warn', '🔄 На доработку');
+      acc.onclick = () => send(score ? {a: 'acc', r: p.rid, v: score} : {a: 'acc', r: p.rid}, 'принять: ' + p.name + ', этап ' + p.stage);
+      rw.onclick = () => openRework(p);
+      const r2 = h('div', 'row2'); r2.append(acc, rw); b.append(r2);
+      const card = h('button', 'act ghost', 'Открыть в чате'); card.onclick = () => openBot('rpo_' + p.sid + '_' + p.stage); b.append(card);
+    });
+  }
+  function openRework(p){
+    sheet('На доработку', b => {
+      b.append(h('div', 'sht', p.name + ' · этап ' + p.stage), h('div', 'shs', 'Ученик получит комментарий и исправит отчёт'));
+      const f = field('Что исправить', {multi: true, req: true, rows: 4, max: 1000, value: (load('rw_' + p.rid) || {}).c, ph: 'Комментарий для ученика'});
+      f.inp.addEventListener('input', () => store('rw_' + p.rid, {c: f.inp.value}));
+      b.append(f.w);
+      const q = h('div', 'qchips');
+      REWORK_HINTS.forEach(t => { const c = h('button', '', '+ ' + t); c.onclick = e => { e.preventDefault(); f.inp.value = (f.inp.value.trim() ? f.inp.value.trim() + '. ' : '') + t; f.inp.dispatchEvent(new Event('input')); haptic('sel'); }; q.append(c); });
+      b.append(q);
+      const go = h('button', 'act warn', '🔄 Вернуть на доработку'), back = h('button', 'act ghost', '← К отчёту');
+      go.onclick = () => {
+        if (!f.val()) { f.err('Напишите, что исправить'); return haptic('heavy'); }
+        if (f.val().length > 1000) { f.err('Слишком длинно — до 1000 символов'); return haptic('heavy'); }
+        send({a: 'rw', r: p.rid, c: f.val()}, 'на доработку: ' + p.name + ', этап ' + p.stage, () => store('rw_' + p.rid, null));
+      };
+      back.onclick = () => openReview(p);
+      b.append(go, back);
+    });
+  }
+  function openScore(p, st, c){
+    sheet('Оценка', b => {
+      b.append(h('div', 'sht', p.name + ' · этап ' + st.id), h('div', 'shs', st.title + ' · отчёт принят' + (c.score ? ', сейчас ' + c.score + ' из 10' : ', без оценки')));
+      let score = c.score;
+      scorePicker(b, c.score, v => { score = v; go.textContent = v ? '⭐ Поставить ' + v : '⭐ Выберите оценку'; });
+      const go = h('button', 'act', c.score ? '⭐ Поставить ' + c.score : '⭐ Выберите оценку');
+      go.onclick = () => score ? send({a: 'sc', r: c.rid, v: score}, 'оценка ' + score + ': ' + p.name) : haptic('heavy');
+      b.append(go);
+      if (c.score) { const rm = h('button', 'act ghost', 'Убрать оценку'); rm.onclick = () => send({a: 'sc', r: c.rid, v: 0}, 'убрать оценку: ' + p.name); b.append(rm); }
+      const card = h('button', 'act ghost', 'Отчёт в чате'); card.onclick = () => openBot('rpo_' + p.id + '_' + st.id); b.append(card);
+    });
+  }
+  function openDeadline(st){
+    sheet('Срок этапа ' + st.id, b => {
+      b.append(h('div', 'sht', st.title), h('div', 'shs', st.dl ? 'Сейчас: до ' + dmhm(st.dl) + ' (МСК)' : 'Сейчас: без срока'));
+      const t = msk(st.dl || (Math.floor(now / D) + 7) * D + 20*3600 + 59*60);
+      const f = field('Новый срок (время московское)', {type: 'datetime-local', value: t.getUTCFullYear() + '-' + pad(t.getUTCMonth() + 1) + '-' + pad(t.getUTCDate()) + 'T' + pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes())});
+      b.append(f.w);
+      const go = h('button', 'act', '⏰ Сохранить срок');
+      go.onclick = () => {
+        const m = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(f.inp.value);
+        if (!m) { f.err('Выберите дату и время'); return haptic('heavy'); }
+        send({a: 'dl', s: st.id, d: m[3] + '.' + m[2] + '.' + m[1] + ' ' + m[4] + ':' + m[5]}, 'срок этапа ' + st.id + ': ' + m[3] + '.' + m[2] + ' ' + m[4] + ':' + m[5]);
+      };
+      const none = h('button', 'act ghost', 'Сделать без срока'), file = h('button', 'act ghost', 'Вернуть срок из файла этапов');
+      none.onclick = () => send({a: 'dl', s: st.id, d: 'none'}, 'этап ' + st.id + ' без срока');
+      file.onclick = () => send({a: 'dl', s: st.id, d: 'file'}, 'срок этапа ' + st.id + ' как в файле');
+      b.append(go, none, file);
+    });
+  }
+
+  /* --- шапка --- */
+  const s = hero('chk', null, null, '🤖 ' + (C.g || 'Проект'), 'Проверка отчётов', null,
+    [[String(total), plural(total, 'ученик', 'ученика', 'учеников')], [String(C.q || 0), 'ждут проверки'], [String(count('w') + count('o')), 'доработка и долги']]);
+  const go = h('button', 'act lt', pend.length ? '🔎 Проверить следующий (' + (C.q || pend.length) + ')' : C.q ? '🔎 Проверить в чате (' + C.q + ')' : '✅ Всё проверено');
+  go.onclick = () => pend.length ? openReview(pend[0]) : C.q ? openBot('rpnext') : haptic('light');
+  s.append(go); pane.append(s);
+
+  /* --- ждут проверки --- */
+  if (pend.length) {
+    pane.append(h('h2', 'fade', 'Ждут проверки · ' + (C.q || pend.length)));
+    const list = h('section', 'fade');
+    const SHOW = 5;
+    const item = p => {
+      const it = h('div', 'pi'), r1 = h('div', 'r1');
+      const pill = h('span', 'pill', 'этап ' + p.stage); pill.style.color = 'var(--rev)'; pill.style.background = 'color-mix(in srgb, var(--rev) 16%, transparent)';
+      r1.append(h('b', '', p.name), pill, h('span', 'cv', '›'));
+      const sub = h('div', 'sub', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : ''));
+      if (p.late) sub.append(' · ', h('span', 'late', 'с опозданием'));
+      it.append(r1, sub, h('div', 'ex', p.done));
+      it.onclick = () => openReview(p);
+      return it;
+    };
+    pend.slice(0, SHOW).forEach(p => list.append(item(p)));
+    if (pend.length > SHOW) { const more = h('button', 'act alt', 'Показать ещё ' + (pend.length - SHOW)); more.onclick = () => { pend.slice(SHOW).forEach(p => list.insertBefore(item(p), more)); more.remove(); haptic('sel'); }; list.append(more); }
+    if (C.pm) list.append(h('div', 'sub', '…и ещё ' + C.pm + ' — появятся здесь, когда проверите эти (или «Проверить в чате»: /check)'));
+    pane.append(list);
+  }
+
+  /* --- сроки этапов --- */
   if (stages.length) {
     pane.append(h('h2', 'fade', 'Сроки этапов'));
     const card = h('section', 'card fade');
@@ -386,59 +665,87 @@ function renderCheck(){
       const t = h('div', 't'); t.append(h('b', '', st.title));
       t.append(h('span', '', (st.dl ? 'до ' + dmhm(st.dl) + ' · ' + (past ? 'срок прошёл' : left(st.dl).txt) : 'без срока') + ' · сдали ' + done + ' из ' + active));
       row.append(n, t);
-      if (C.a) { const b = h('button', 'mini', 'Изменить'); b.onclick = () => openBot('rpdl_' + st.id); row.append(b); }
+      if (C.a) { const b = h('button', 'mini', 'Изменить'); b.onclick = () => openDeadline(st); row.append(b); }
       card.append(row);
     });
     pane.append(card);
   }
 
+  /* --- сводка ученики × этапы --- */
   pane.append(h('h2', 'fade', 'Ученики · нажмите на клетку'));
   if (!people.length) return empty(pane, '🧑‍🎓', 'Учеников пока нет', 'Они появятся, когда зарегистрируются в /reports.');
   const sb = h('label', 'search fade'), inp = h('input'); inp.type = 'search'; inp.placeholder = 'Поиск по фамилии'; inp.autocomplete = 'off';
   sb.append(h('span', '', '🔍'), inp); pane.append(sb);
   const FL = [['all', 'Все'], ['r', '🕓 Ждут проверки'], ['w', '↻ Доработка'], ['o', '! Просрочено']];
-  let filter = 'all';
+  let filter = 'all', shown = PAGE;
   const chips = h('div', 'chips fade');
-  FL.forEach(([k, t]) => { const b = h('button', k === filter ? 'on' : '', t); b.onclick = () => { filter = k; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); haptic('sel'); draw(); }; chips.append(b); });
+  FL.forEach(([k, t]) => { const b = h('button', k === filter ? 'on' : '', t); b.onclick = () => { filter = k; shown = PAGE; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); haptic('sel'); draw(); }; chips.append(b); });
   pane.append(chips);
   const box = h('section', 'card fade'), mx = h('div', 'mx'), tbl = h('table');
   const head = h('tr'); head.append(h('th'));
   stages.forEach(st => { const th = h('th', '', 'Э' + st.id); th.title = st.title; head.append(th); });
   const thead = h('thead'); thead.append(head);
   const tb = h('tbody'); tbl.append(thead, tb); mx.append(tbl); box.append(mx);
+  const moreBtn = h('button', 'act alt'); moreBtn.onclick = () => { shown += PAGE; haptic('sel'); draw(); };
   const note = h('div', 'sub'); note.style.marginTop = '8px';
   const lg = h('div', 'legend');
   [['var(--ok)', 'принят (балл)'], ['var(--rev)', 'на проверке'], ['var(--warn)', 'доработка'], ['var(--bad)', 'просрочен']]
     .forEach(([c, t]) => { const e = h('span', '', t); e.style.setProperty('--c', c); lg.append(e); });
-  box.append(note, lg); pane.append(box);
+  box.append(moreBtn, note, lg); pane.append(box);
   const norm = v => v.toLowerCase().replace(/ё/g, 'е').trim();
+  function tap(p, st, c){
+    if (c.st === 'r' && pendByRid[c.rid]) return openReview(pendByRid[c.rid]);
+    if (c.st === 'a' && C.a && c.rid) return openScore(p, st, c);
+    if (c.st === 'a' || c.st === 'r' || c.st === 'w') return openBot('rpo_' + p.id + '_' + st.id);
+    openBot('rpst_' + p.id);
+  }
   function draw(){
     const q = norm(inp.value);
     const list = people.filter(p => (!q || norm(p.name).includes(q)) && (filter === 'all' || p.cells.some(c => c.st === filter)));
-    tb.textContent = '';
-    list.forEach(p => {
+    const frag = document.createDocumentFragment();
+    list.slice(0, shown).forEach(p => {
       const tr = h('tr'), nm = h('td', 'nm', p.name);
       if (p.off) nm.append(h('i', '', ' · не в группе'));
       nm.onclick = () => openBot('rpst_' + p.id); tr.append(nm);
       stages.forEach((st, i) => {
-        const c = p.cells[i] || {st:'n', score:0}, [col, ic] = CELL[c.st] || CELL.n, td = h('td', 'c', c.st === 'a' ? (c.score ? String(c.score) : '✓') : ic);
+        const c = p.cells[i] || {st: 'n', score: 0, rid: 0}, [col, ic] = CELL[c.st] || CELL.n;
+        const td = h('td', 'c', c.st === 'a' ? (c.score ? String(c.score) : '✓') : ic);
         if (col) td.style.background = col;
-        td.title = 'Этап ' + st.id + ': ' + ((ST[c.st] || ST.n).t);
-        td.onclick = () => openBot(c.st === 'a' || c.st === 'r' || c.st === 'w' ? 'rpo_' + p.id + '_' + st.id : 'rpst_' + p.id);
+        td.title = 'Этап ' + st.id + ': ' + (ST[c.st] || ST.n).t;
+        td.onclick = () => tap(p, st, c);
         tr.append(td);
       });
-      tb.append(tr);
+      frag.append(tr);
     });
+    tb.replaceChildren(frag);
+    moreBtn.hidden = list.length <= shown;
+    moreBtn.textContent = 'Показать ещё ' + Math.min(PAGE, list.length - shown) + ' из ' + (list.length - shown);
     const parts = [];
     if (!list.length) parts.push(q ? 'Никого не нашли по «' + inp.value.trim() + '»' : 'Таких сейчас нет');
+    else if (q || filter !== 'all') parts.push('Найдено: ' + list.length);
     if (C.m) parts.push('Ещё ' + C.m + ' ' + plural(C.m, 'ученик', 'ученика', 'учеников') + ' без отчётов к проверке не влезли — их ищите в боте: /student фамилия');
-    parts.push('Клетка — отчёт по этапу (принять, вернуть, оценить), фамилия — все отчёты ученика');
+    parts.push(C.a ? 'Клетка «на проверке» — проверить, «принят» — оценка, фамилия — все отчёты в чате' : 'Клетка «на проверке» — проверить, фамилия — все отчёты ученика в чате');
     note.textContent = parts.join(' · ');
   }
-  inp.oninput = draw; draw();
+  let tmr = 0;
+  inp.oninput = () => { clearTimeout(tmr); tmr = setTimeout(() => { shown = PAGE; draw(); }, 120); };
+  draw();
 }
 
-renderReports(); renderTests(); renderCheck();
+/* ---------- неотправленное (открыли кнопкой меню, отправить можно отсюда) ---------- */
+function renderPending(){
+  const p = load('pending');
+  if (!p || Date.now() - p.t > 2*D*1000) { if (p) store('pending', null); return; }
+  if (!KB && inTg) return;
+  const b = h('div', 'banner fade'), t = h('div', 't');
+  t.append(h('b', '', '✉️ Не отправлено: '), p.what);
+  const go = h('button', 'act', 'Отправить'), x = h('button', 'x', '✕');
+  go.onclick = () => { store('pending', null); haptic('medium'); KB ? tg.sendData(p.raw) : notify('Демо: отправилось бы боту.'); };
+  x.onclick = () => { store('pending', null); b.remove(); };
+  b.append(t, go, x); $('banner').append(b);
+}
+
+renderReports(); renderTests(); renderCheck(); renderPending();
 
 /* ---------- вкладки ---------- */
 const hasC = !!data.c;
@@ -455,7 +762,12 @@ function show(t){
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { show(b.dataset.t); haptic('sel'); window.scrollTo(0, 0); });
 show(tab);
 
-$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · обновляются сами, когда что-то меняется' : '';
+if (!demo && inTg) {
+  const rb = h('button', 'act ghost', '🔄 Обновить данные');
+  rb.onclick = () => KB ? tg.sendData(JSON.stringify({a: 'upd'})) : openBot('app');
+  $('foot').before(rb);
+}
+$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + (KB ? ' · после каждого действия бот присылает свежие' : ' · обновляются сами, когда что-то меняется') : '';
 if (demo) $('demo').style.display = 'block';
 if (inTg) {
   tg.ready(); tg.expand();
