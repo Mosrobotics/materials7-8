@@ -759,6 +759,12 @@ function renderPending(){
   }
   const p = load('pending');
   if (p) return showPending(p);
+  if (KB && data.t && Date.now() / 1000 - data.t > 3600) {  // кнопку бот обновляет только вместе с сообщением
+    const b = h('div', 'banner fade'), t = h('div', 't'), go = h('button', 'act', 'Обновить');
+    t.append(h('b', '', 'Данные на ' + dmhm(data.t)), ' — могли устареть.');
+    go.onclick = () => { haptic('medium'); tg.sendData(JSON.stringify({a: 'upd'})); };
+    b.append(t, go); $('banner').append(b);
+  }
   if (cloud && KB) { try { cloud.getItem('pending', (err, v) => { try { if (!err && v) showPending(JSON.parse(v)); } catch (e) {} }); } catch (e) {} }
 }
 function showPending(p){
@@ -793,7 +799,7 @@ if (!demo && inTg) {
   rb.onclick = () => KB ? tg.sendData(JSON.stringify({a: 'upd'})) : openBot('app');
   $('foot').before(rb);
 }
-$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + (KB ? ' · после каждого действия бот присылает свежие' : ' · обновляются сами, когда что-то меняется') : '';
+$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · свежие приходят с сообщениями бота' : '';
 if (demo) $('demo').style.display = 'block';
 if (inTg) {
   tg.ready(); tg.expand();
