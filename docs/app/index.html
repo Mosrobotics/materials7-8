@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>CPM Robotics</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:var(--tg-theme-secondary-bg-color,#f2f3f7);
+  --card:var(--tg-theme-section-bg-color,var(--tg-theme-bg-color,#fff));
+  --text:var(--tg-theme-text-color,#0f1419);
+  --hint:var(--tg-theme-hint-color,#8a8f98);
+  --link:var(--tg-theme-link-color,#2481cc);
+  --accent:var(--tg-theme-button-color,#3390ec);
+  --accent-t:var(--tg-theme-button-text-color,#fff);
+  --sep:var(--tg-theme-section-separator-color,rgba(127,127,127,.18));
+  --ok:#2fb55a;--rev:#8b5cf6;--warn:#f0a020;--bad:#e5484d;--none:#9aa1ab;
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){:root:not(.tg){--bg:#101418;--card:#1b2128;--text:#f1f3f5;--hint:#8b95a1;--sep:rgba(255,255,255,.08)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:15px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif;padding:10px 14px calc(24px + env(safe-area-inset-bottom));min-height:100vh}
+.wrap{max-width:560px;margin:0 auto}
+button{font:inherit;color:inherit}
+
+/* tabs */
+.tabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;padding:4px;margin:0 0 12px;border-radius:14px;background:var(--card);box-shadow:0 1px 0 var(--sep)}
+.tabs button{flex:1;border:0;background:none;padding:9px 0;border-radius:10px;font-weight:700;font-size:14.5px;color:var(--hint);transition:background .2s,color .2s}
+.tabs button.on{background:var(--accent);color:var(--accent-t)}
+.pane{display:none}.pane.on{display:block}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px 18px;color:#fff;box-shadow:0 10px 30px -12px rgba(90,80,255,.55)}
+.hero.rep{background:radial-gradient(120% 140% at 0% 0%,#4f8cff 0%,#6a5cff 45%,#9b4dff 100%)}
+.hero.tst{background:radial-gradient(120% 140% at 0% 0%,#18c29c 0%,#13a2c8 50%,#2f6bff 100%);box-shadow:0 10px 30px -12px rgba(19,162,200,.55)}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
+.hero .top{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
+.ring{width:96px;height:96px;flex:none}
+.ring circle{fill:none;stroke-width:9}
+.ring .bgc{stroke:rgba(255,255,255,.22)}
+.ring .fg{stroke:#fff;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+.ring text{fill:#fff;font-weight:800}
+.hello{font-size:13px;opacity:.85}
+.title{font-size:22px;font-weight:800;letter-spacing:-.3px;margin:2px 0 6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.2)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;position:relative;z-index:1}
+.stat{background:rgba(255,255,255,.14);border-radius:12px;padding:9px 10px}
+.stat b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px}
+.stat span{font-size:11.5px;opacity:.85}
+.num{font:800 40px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:2px;margin:4px 0}
+.copy{border:0;border-radius:10px;padding:7px 12px;background:rgba(255,255,255,.22);color:#fff;font-weight:700;font-size:13px}
+
+h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--hint);margin:22px 4px 8px}
+.card{background:var(--card);border-radius:var(--r);padding:14px 16px}
+.now .lbl{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.now .nm{font-size:18px;font-weight:700;margin:4px 0 2px}
+.now .meta{color:var(--hint);font-size:13.5px}
+.timebar{height:8px;border-radius:4px;background:var(--sep);overflow:hidden;margin:12px 0 6px}
+.timebar i{display:block;height:100%;border-radius:4px;width:0;transition:width 1s ease}
+.tl{display:flex;justify-content:space-between;font-size:12px;color:var(--hint)}
+.need{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.need span{font-size:12px;padding:4px 9px;border-radius:8px;background:var(--bg)}
+.empty{text-align:center;padding:24px 16px}
+.empty .em{font-size:42px}
+.empty .sub{margin-top:4px}
+
+/* list (stages + events) */
+.st{position:relative;display:flex;gap:12px;padding:0 0 10px}
+.st .rail{position:relative;width:30px;flex:none;display:flex;justify-content:center}
+.st .rail::before{content:"";position:absolute;top:32px;bottom:-10px;width:2px;background:var(--sep)}
+.st:last-child .rail::before{display:none}
+.dot{position:relative;z-index:1;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;margin-top:10px}
+.body{flex:1;min-width:0;background:var(--card);border-radius:var(--r);padding:11px 14px;cursor:pointer;transition:transform .15s}
+.body:active{transform:scale(.985)}
+.st.cur .body{box-shadow:0 0 0 2px var(--accent)}
+.row1{display:flex;align-items:center;gap:8px}
+.row1 b{flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{flex:none;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:8px}
+.cv{flex:none;color:var(--hint);font-size:20px;line-height:1;transition:transform .25s}
+.open .cv{transform:rotate(90deg)}
+.sub{font-size:12.5px;color:var(--hint);margin-top:2px}
+.score{display:inline-flex;gap:2px;margin-left:4px;vertical-align:-1px}
+.score i{width:6px;height:10px;border-radius:2px;background:var(--sep)}
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.more>div{overflow:hidden}
+.open .more{grid-template-rows:1fr}
+.more p{margin:10px 0 0;font-size:13.5px}
+.more .k{color:var(--hint)}
+.act{display:block;width:100%;margin-top:12px;border:0;border-radius:12px;padding:11px;font-weight:700;font-size:14.5px;background:var(--accent);color:var(--accent-t)}
+.act.alt{background:var(--bg);color:var(--link)}
+.ev .body{display:block}
+.bar{height:8px;border-radius:4px;background:var(--sep);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:4px}
+
+.foot{text-align:center;color:var(--hint);font-size:12px;margin-top:18px}
+.demo{display:none;margin:0 0 10px;text-align:center;font-size:12px;color:var(--hint)}
+.fade{opacity:0;transform:translateY(8px);animation:in .5s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes in{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none;opacity:1;transform:none}.ring .fg,.timebar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo" id="demo">Демо-данные: откройте приложение из бота</div>
+  <nav class="tabs" id="tabs">
+    <button data-t="r" class="on">📚 Отчёты</button>
+    <button data-t="k">🧪 Тесты</button>
+  </nav>
+  <main class="pane on" id="pane-r"></main>
+  <main class="pane" id="pane-k"></main>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+(function(){
+const tg = window.Telegram && Telegram.WebApp;
+const inTg = !!(tg && tg.platform && tg.platform !== 'unknown');
+const $ = id => document.getElementById(id);
+const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const haptic = (k) => { try { inTg && (k === 'sel' ? tg.HapticFeedback.selectionChanged() : tg.HapticFeedback.impactOccurred(k)); } catch (e) {} };
+
+/* ---------- data ---------- */
+function decode(s){
+  s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '=';
+  const bin = atob(s), b = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+  return JSON.parse(new TextDecoder().decode(b));
+}
+let data = null;
+try { const q = new URLSearchParams(location.search).get('d'); if (q) data = decode(q); } catch (e) {}
+if (data && !data.v && data.s) data = {v:2, b:data.b, t:data.t, r:{g:data.g, s:data.s}};   // старая ссылка «Мои отчёты»
+const now = Date.now()/1000, D = 86400;
+let demo = false;
+if (!data && !inTg) {
+  demo = true;
+  data = {v:2, b:'', t:now,
+    r:{g:'ВсОШ', s:[
+      [1,'Сборка шасси','a',9,now-14*D,now-16*D,'Робот собран, моторы подключены',['text','disk_link']],
+      [2,'Управление движением','w',0,now+3*D,now-2*D,'Робот едет по командам',['text','disk_link','code_link']],
+      [3,'Датчики линии','n',0,now+17*D,0,'Робот едет по линии',['text','disk_link','code_link']],
+      [4,'ПИД-регулятор','n',0,now+31*D,0,'Плавное движение по линии',['text','code_link']]]},
+    k:{n:'0417', e:[[12,'Олимпиада — школьный этап','01.11.2026',34,40,1,now+25*D],[9,'Входной тест','15.10.2026',18,30,0,0]]}};
+}
+data = data || {v:2};
+const BOT = data.b || '';
+
+function openBot(arg){
+  if (!BOT) { inTg ? tg.showAlert('Откройте чат с ботом.') : null; return; }
+  const url = 'https://t.me/' + BOT + '?start=' + arg;
+  haptic('medium');
+  if (inTg) { tg.openTelegramLink(url); tg.close(); } else location.href = url;
+}
+
+/* ---------- helpers ---------- */
+const pad = v => (v < 10 ? '0' : '') + v;
+const msk = ts => new Date((ts + 3*3600)*1000);
+const dm = ts => { const t = msk(ts); return pad(t.getUTCDate()) + '.' + pad(t.getUTCMonth()+1); };
+const dmhm = ts => { const t = msk(ts); return dm(ts) + ' ' + pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()); };
+function plural(n, a, b, c){ n = Math.abs(n) % 100; const m = n % 10; return n > 10 && n < 20 ? c : m > 1 && m < 5 ? b : m === 1 ? a : c; }
+function left(ts){
+  const s = ts - now;
+  if (s <= 0) return {v:'0', l:'срок прошёл', txt:'срок прошёл'};
+  const d = Math.floor(s/D);
+  if (d >= 1) return {v:String(d), l:plural(d,'день','дня','дней') + ' до срока', txt:'осталось ' + d + ' ' + plural(d,'день','дня','дней')};
+  const hh = Math.max(1, Math.ceil(s/3600));
+  return {v:hh + ' ч', l:'до срока', txt:'осталось ' + hh + ' ' + plural(hh,'час','часа','часов')};
+}
+const fmt = x => x == null ? '—' : (Math.round(x*10)/10).toString().replace('.', ',');
+function empty(pane, em, title, sub, btnText, arg){
+  const c = h('section', 'card empty fade');
+  c.append(h('div', 'em', em), h('b', '', title));
+  if (sub) c.append(h('div', 'sub', sub));
+  if (btnText) { const b = h('button', 'act', btnText); b.onclick = () => openBot(arg); c.append(b); }
+  pane.append(c);
+}
+function hero(cls, ringFrac, ringText, hello, title, chip, stats){
+  const s = h('section', 'hero fade ' + cls), top = h('div', 'top');
+  if (ringText != null) {
+    top.innerHTML = '<svg class="ring" viewBox="0 0 100 100"><circle class="bgc" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" transform="rotate(-90 50 50)" stroke-dasharray="263.9" stroke-dashoffset="263.9"/><text x="50" y="57" text-anchor="middle" font-size="22"></text></svg>';
+    top.querySelector('text').textContent = ringText;
+    const fg = top.querySelector('.fg');
+    setTimeout(() => { fg.style.strokeDashoffset = String(263.9 * (1 - ringFrac)); }, 150);
+  }
+  const t = h('div'); t.append(h('div', 'hello', hello), h('div', 'title', title));
+  if (chip) t.append(h('span', 'chip', chip));
+  top.append(t); s.append(top);
+  if (stats) { const g = h('div', 'stats'); stats.forEach(([v, l]) => { const e = h('div', 'stat'); e.append(h('b', '', v), h('span', '', l)); g.append(e); }); s.append(g); }
+  return s;
+}
+const user = inTg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+const hello = user && user.first_name ? 'Привет, ' + user.first_name + '!' : 'Привет!';
+
+/* ---------- отчёты ---------- */
+const ST = {a:{c:'var(--ok)',t:'принят',e:'✓'}, r:{c:'var(--rev)',t:'на проверке',e:'…'}, w:{c:'var(--warn)',t:'на доработке',e:'↻'},
+            n:{c:'var(--none)',t:'не сдан',e:''}, o:{c:'var(--bad)',t:'просрочен',e:'!'}};
+const NEED = {text:'📝 Что сделано', photo:'📁 Фото и видео — ссылкой', disk_link:'📁 Фото и видео — ссылкой на диск', code_link:'💻 Ссылка на код'};
+
+function renderReports(){
+  const pane = $('pane-r'), R = data.r;
+  if (!R) return empty(pane, '📚', 'Загрузите свои данные', 'Бот обновит приложение — потом откройте его ещё раз.', '🔄 Загрузить мои данные', 'app');
+  if (R.x === 'reg') return empty(pane, '📝', 'Вы ещё не в отчётах', 'Отправьте боту /reports — он зарегистрирует вас в проекте.');
+  const stages = (R.s || []).map(x => ({id:x[0], title:x[1], st:x[2], score:x[3]|0, dl:x[4]|0, sb:x[5]|0, crit:x[6]||'', need:x[7]||[]}));
+  const acc = stages.filter(s => s.st === 'a'), scored = acc.filter(s => s.score);
+  const avg = scored.length ? scored.reduce((a, s) => a + s.score, 0) / scored.length : 0;
+  const next = stages.find(s => s.st === 'w' || s.st === 'o' || s.st === 'n');
+  const nl = next && next.dl ? left(next.dl) : null;
+  pane.append(hero('rep', stages.length ? acc.length / stages.length : 0, acc.length + '/' + stages.length, hello, 'Мои отчёты', '🤖 ' + (R.g || 'Проект'),
+    [[acc.length + ' из ' + stages.length, 'принято'], [avg ? fmt(avg) : '—', 'средний балл'], [nl ? nl.v : '—', nl ? nl.l : 'без срока']]));
+
+  pane.append(h('h2', 'fade', 'Сейчас'));
+  if (!stages.length) empty(pane, '🗓️', 'Этапы пока не заданы', 'Тренер скоро добавит');
+  else if (!next) {
+    const wait = stages.filter(s => s.st === 'r').length;
+    wait ? empty(pane, '🕓', 'Всё сдано!', 'Ждём проверки тренера: ' + wait + ' ' + plural(wait,'этап','этапа','этапов'))
+         : empty(pane, '🏆', 'Все этапы приняты', 'Отличная работа!');
+  } else {
+    const s = next, i = stages.indexOf(s), prev = i > 0 ? stages[i-1].dl : 0;
+    const start = prev && prev < s.dl ? prev : s.dl - 14*D;
+    const pct = s.dl ? Math.min(100, Math.max(3, (now - start) / (s.dl - start) * 100)) : 0;
+    const color = s.st === 'o' || (s.dl && s.dl < now) ? 'var(--bad)' : pct > 75 ? 'var(--warn)' : 'var(--accent)';
+    const c = h('section', 'card now fade');
+    c.append(h('div', 'lbl', s.st === 'w' ? 'Нужно исправить' : s.st === 'o' ? 'Срок прошёл' : 'Следующий этап'),
+             h('div', 'nm', 'Этап ' + s.id + '. ' + s.title), h('div', 'meta', s.crit));
+    if (s.dl) {
+      const tb = h('div', 'timebar'), bar = h('i'); bar.style.background = color; tb.append(bar); c.append(tb);
+      setTimeout(() => { bar.style.width = pct + '%'; }, 250);
+      const tl = h('div', 'tl'); tl.append(h('span', '', left(s.dl).txt), h('span', '', 'до ' + dmhm(s.dl))); c.append(tl);
+    }
+    if (s.need.length) { const nd = h('div', 'need'); s.need.forEach(k => NEED[k] && nd.append(h('span', '', NEED[k]))); c.append(nd); }
+    const b = h('button', 'act', (s.st === 'w' ? '🔄 Исправить этап ' : '📤 Сдать этап ') + s.id);
+    b.onclick = () => openBot('rpsub_' + s.id); c.append(b);
+    pane.append(c);
+  }
+
+  if (stages.length) pane.append(h('h2', 'fade', 'Все этапы · нажмите, чтобы открыть'));
+  const list = h('section');
+  stages.forEach((s, i) => {
+    const c = ST[s.st] || ST.n, el = h('div', 'st fade' + (s === next ? ' cur' : ''));
+    el.style.animationDelay = (0.1 + i*0.04) + 's';
+    const rail = h('div', 'rail'), dot = h('div', 'dot', c.e || s.id); dot.style.background = c.c; rail.append(dot);
+    const body = h('div', 'body'), r1 = h('div', 'row1');
+    const pill = h('span', 'pill', c.t); pill.style.color = c.c; pill.style.background = 'color-mix(in srgb, ' + c.c + ' 16%, transparent)';
+    r1.append(h('b', '', s.id + '. ' + s.title), pill, h('span', 'cv', '›'));
+    const sub = h('div', 'sub');
+    if (s.st === 'a') {
+      sub.textContent = 'сдан ' + dm(s.sb);
+      if (s.score) {
+        sub.append(' · ' + s.score + '/10');
+        const bars = h('span', 'score');
+        for (let k = 1; k <= 10; k++) { const q = h('i'); if (k <= s.score) q.style.background = 'var(--ok)'; bars.append(q); }
+        sub.append(bars);
+      }
+    } else if (s.st === 'r') sub.textContent = 'сдан ' + dm(s.sb) + ' · ждёт тренера';
+    else sub.textContent = s.dl ? 'до ' + dm(s.dl) + ' · ' + left(s.dl).txt : 'без срока';
+    const more = h('div', 'more'), inner = h('div');
+    const line = (k, v) => { const p = h('p'); p.append(h('span', 'k', k + ': '), v); inner.append(p); };
+    if (s.crit) line('Критерий', s.crit);
+    if (s.dl) line('Срок', dmhm(s.dl) + ' (МСК)');
+    if (s.sb) line('Сдан', dmhm(s.sb));
+    if (s.score) line('Оценка', s.score + ' из 10');
+    if (s.need.length) line('Приложить', s.need.map(k => ({text:'что сделано', photo:'ссылку на диск с фото и видео', disk_link:'ссылку на диск с фото и видео', code_link:'ссылку на код'})[k] || k).join(', '));
+    const canSub = s.st === 'w' || s.st === 'n' || s.st === 'o';
+    const act = h('button', 'act' + (canSub ? '' : ' alt'), s.st === 'w' ? '🔄 Исправить отчёт' : canSub ? '📤 Сдать этот этап' : '📋 Посмотреть отчёт');
+    act.onclick = ev => { ev.stopPropagation(); openBot((canSub ? 'rpsub_' : 'rpview_') + s.id); };
+    inner.append(act); more.append(inner);
+    body.append(r1, sub, more);
+    body.onclick = () => { el.classList.toggle('open'); haptic('sel'); };
+    el.append(rail, body); list.append(el);
+  });
+  pane.append(list);
+}
+
+/* ---------- тесты ---------- */
+const KX = {
+  fio:  ['✍️', 'Укажите Фамилию и Имя', 'По ним бот найдёт вас в списке участников тестов.', '✍️ Указать в боте', 'app'],
+  none: ['🔎', 'Вас нет в списке участников', 'Проверьте Фамилию и Имя в боте (/me) или напишите организатору.'],
+  dup:  ['👥', 'Несколько участников с такими ФИ', 'Номер и результаты подскажет организатор.'],
+  off:  ['🧪', 'Тесты пока не подключены', ''],
+  down: ['📡', 'Сайт тестов был недоступен', 'Попробуйте обновить чуть позже.', '🔄 Обновить', 'app'],
+};
+function renderTests(){
+  const pane = $('pane-k'), K = data.k;
+  if (!K) return empty(pane, '🧪', 'Загрузите свои данные', 'Бот обновит приложение — потом откройте его ещё раз.', '🔄 Загрузить мои данные', 'app');
+  if (!K.n) { const x = KX[K.x] || KX.off; return empty(pane, ...x); }
+  const ev = (K.e || []).map(x => ({id:x[0], name:x[1], date:x[2], total:x[3], max:x[4], scan:!!x[5], until:x[6]|0}));
+  const sc = ev.filter(e => e.total != null && e.max), best = sc.length ? Math.max(...sc.map(e => e.total / e.max)) : 0;
+  const s = hero('tst', null, null, hello, 'Мои тесты', '🔢 номер участника', null);
+  const nb = h('div', 'top'); nb.style.cssText = 'margin-top:14px;justify-content:space-between';
+  const nn = h('div'); nn.append(h('div', 'num', K.n), h('div', 'hello', 'Пишите его в клетках «Номер участника» на каждом листе'));
+  const cp = h('button', 'copy', 'Копировать');
+  cp.onclick = () => { try { navigator.clipboard.writeText(K.n); cp.textContent = 'Скопировано ✓'; haptic('light'); } catch (e) { inTg && tg.showAlert('Номер: ' + K.n); } };
+  nb.append(nn, cp); s.append(nb);
+  const g = h('div', 'stats');
+  [[String(ev.length), plural(ev.length, 'работа', 'работы', 'работ')], [sc.length ? Math.round(best*100) + '%' : '—', 'лучший результат'], [String(ev.filter(e => e.scan && e.until > now).length), 'сканов доступно']]
+    .forEach(([v, l]) => { const e = h('div', 'stat'); e.append(h('b', '', v), h('span', '', l)); g.append(e); });
+  s.append(g); pane.append(s);
+  if (K.x === 'down') pane.append(h('div', 'foot', '⚠️ Сайт тестов был недоступен — список может быть неполным'));
+
+  pane.append(h('h2', 'fade', 'Мои работы'));
+  if (!ev.length) return empty(pane, '⏳', 'Результатов пока нет', 'Они появятся, когда организатор завершит проверку.');
+  ev.forEach((e, i) => {
+    const el = h('div', 'st ev fade'); el.style.animationDelay = (0.1 + i*0.04) + 's';
+    const frac = e.total != null && e.max ? e.total / e.max : null;
+    const col = frac == null ? 'var(--none)' : frac >= .8 ? 'var(--ok)' : frac >= .5 ? 'var(--warn)' : 'var(--bad)';
+    const rail = h('div', 'rail'), dot = h('div', 'dot', frac == null ? '?' : Math.round(frac*100) + ''); dot.style.background = col; dot.style.fontSize = '11px'; rail.append(dot);
+    const body = h('div', 'body'), r1 = h('div', 'row1');
+    const pill = h('span', 'pill', frac == null ? 'баллы' : fmt(e.total) + ' / ' + fmt(e.max)); pill.style.color = col; pill.style.background = 'color-mix(in srgb, ' + col + ' 16%, transparent)';
+    r1.append(h('b', '', e.name), pill);
+    const sub = h('div', 'sub', e.date + ' · ' + (e.scan && e.until > now ? 'скан до ' + dm(e.until) : 'только баллы'));
+    body.append(r1, sub);
+    if (frac != null) { const b = h('div', 'bar'), q = h('i'); q.style.background = col; q.style.width = '0'; b.append(q); body.append(b); setTimeout(() => { q.style.width = Math.max(3, frac*100) + '%'; q.style.transition = 'width 1s ease'; }, 250); }
+    const act = h('button', 'act alt', e.scan && e.until > now ? '📊 Баллы по заданиям и скан' : '📊 Баллы по заданиям');
+    act.onclick = ev2 => { ev2.stopPropagation(); openBot('konr_' + e.id); };
+    body.append(act);
+    el.append(rail, body); pane.append(el);
+  });
+}
+
+renderReports(); renderTests();
+
+/* ---------- вкладки ---------- */
+let tab = 'r';
+try { tab = localStorage.getItem('tab') || 'r'; } catch (e) {}
+if (new URLSearchParams(location.search).get('tab')) tab = new URLSearchParams(location.search).get('tab');
+function show(t){
+  tab = t === 'k' ? 'k' : 'r';
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  $('pane-r').classList.toggle('on', tab === 'r'); $('pane-k').classList.toggle('on', tab === 'k');
+  try { localStorage.setItem('tab', tab); } catch (e) {}
+}
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { show(b.dataset.t); haptic('sel'); window.scrollTo(0, 0); });
+show(tab);
+
+$('foot').textContent = demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · обновляются сами, когда что-то меняется' : '';
+if (demo) $('demo').style.display = 'block';
+if (inTg) {
+  tg.ready(); tg.expand();
+  document.documentElement.classList.add('tg');
+  try { tg.setHeaderColor('secondary_bg_color'); tg.setBackgroundColor('secondary_bg_color'); } catch (e) {}
+}
+})();
+</script>
+</body>
+</html>
