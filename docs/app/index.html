@@ -260,13 +260,25 @@ const MAXT = 1500;
 function notify(t){ inTg ? tg.showAlert(t) : alert(t); }
 function store(k, v){ try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); } catch (e) {} }
 function load(k){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+/* «Не отправлено» — ещё и в CloudStorage Telegram: localStorage у кнопки меню и кнопки под полем ввода бывает разный */
+const cloud = inTg && tg.CloudStorage && tg.isVersionAtLeast && tg.isVersionAtLeast('6.9') ? tg.CloudStorage : null;
+function setPending(v){
+  store('pending', v);
+  if (cloud) { try { v ? cloud.setItem('pending', JSON.stringify(v)) : cloud.removeItem('pending'); } catch (e) {} }
+}
+/* открыто кнопкой меню — отправлять нельзя (Telegram): сразу к кнопке «📱 Приложение» под полем ввода */
+function needKB(){
+  if (!inTg || KB) return false;
+  tg.showPopup({title: 'Откройте кнопкой внизу', message: 'Сдавать и проверять можно только из кнопки «📱 Приложение» под полем ввода. Бот сейчас пришлёт её — нажмите и сделайте то же там.', buttons: [{type: 'ok'}]}, () => openBot('app'));
+  return true;
+}
 function send(action, what, after){
   const raw = JSON.stringify(action);
   if (new TextEncoder().encode(raw).length > 4096) return notify('Слишком длинно для приложения — сократите текст или сдайте в чате.');
   if (!inTg) { closeSheet(); after && after(); return notify('Демо: в Telegram это сразу уйдёт боту — «' + what + '».'); }
   after && after();
-  if (KB) { store('pending', null); haptic('medium'); tg.sendData(raw); return; }   // Telegram закроет приложение
-  store('pending', {raw, what, t: Date.now()});
+  if (KB) { setPending(null); haptic('medium'); tg.sendData(raw); return; }   // Telegram закроет приложение
+  setPending({raw, what, t: Date.now()});
   tg.showPopup({title: 'Почти готово', message: 'Отправлять можно из кнопки «📱 Приложение» под полем ввода. Бот сейчас пришлёт её — нажмите, и «' + what + '» уйдёт одним касанием.', buttons: [{type: 'ok'}]}, () => openBot('app'));
 }
 
@@ -435,6 +447,7 @@ function renderReports(){
 }
 
 function openForm(s){
+  if (needKB()) return;
   const dr = s.draft || {}, saved = load('draft_' + s.id) || {};
   const v = (k, d) => saved[k] != null ? saved[k] : d || '';
   sheet((s.st === 'w' ? 'Исправить этап ' : 'Сдать этап ') + s.id, b => {
@@ -575,6 +588,7 @@ function renderCheck(){
     });
   }
   function openRework(p){
+    if (needKB()) return;
     sheet('На доработку', b => {
       b.append(h('div', 'sht', p.name + ' · этап ' + p.stage), h('div', 'shs', 'Ученик получит комментарий и исправит отчёт'));
       const f = field('Что исправить', {multi: true, req: true, rows: 4, max: 1000, value: (load('rw_' + p.rid) || {}).c, ph: 'Комментарий для ученика'});
@@ -594,6 +608,7 @@ function renderCheck(){
     });
   }
   function openScore(p, st, c){
+    if (needKB()) return;
     sheet('Оценка', b => {
       b.append(h('div', 'sht', p.name + ' · этап ' + st.id), h('div', 'shs', st.title + ' · отчёт принят' + (c.score ? ', сейчас ' + c.score + ' из 10' : ', без оценки')));
       let score = c.score;
@@ -606,6 +621,7 @@ function renderCheck(){
     });
   }
   function openDeadline(st){
+    if (needKB()) return;
     sheet('Срок этапа ' + st.id, b => {
       b.append(h('div', 'sht', st.title), h('div', 'shs', st.dl ? 'Сейчас: до ' + dmhm(st.dl) + ' (МСК)' : 'Сейчас: без срока'));
       const t = msk(st.dl || (Math.floor(now / D) + 7) * D + 20*3600 + 59*60);
@@ -734,14 +750,24 @@ function renderCheck(){
 
 /* ---------- неотправленное (открыли кнопкой меню, отправить можно отсюда) ---------- */
 function renderPending(){
+  if (inTg && !KB && !demo) {  // кнопка меню: постоянная подсказка, где отправлять
+    const b = h('div', 'banner fade'), t = h('div', 't'), go = h('button', 'act', 'Открыть');
+    t.append(h('b', '', 'Сдать или проверить отчёт'), ' — только из кнопки «📱\u00a0Приложение» под полем ввода.');
+    go.onclick = () => openBot('app');
+    b.append(t, go); $('banner').append(b);
+    return;
+  }
   const p = load('pending');
-  if (!p || Date.now() - p.t > 2*D*1000) { if (p) store('pending', null); return; }
-  if (!KB && inTg) return;
+  if (p) return showPending(p);
+  if (cloud && KB) { try { cloud.getItem('pending', (err, v) => { try { if (!err && v) showPending(JSON.parse(v)); } catch (e) {} }); } catch (e) {} }
+}
+function showPending(p){
+  if (!p || !p.raw || Date.now() - p.t > 2*D*1000) { setPending(null); return; }
   const b = h('div', 'banner fade'), t = h('div', 't');
   t.append(h('b', '', '✉️ Не отправлено: '), p.what);
   const go = h('button', 'act', 'Отправить'), x = h('button', 'x', '✕');
-  go.onclick = () => { store('pending', null); haptic('medium'); KB ? tg.sendData(p.raw) : notify('Демо: отправилось бы боту.'); };
-  x.onclick = () => { store('pending', null); b.remove(); };
+  go.onclick = () => { setPending(null); haptic('medium'); KB ? tg.sendData(p.raw) : notify('Демо: отправилось бы боту.'); };
+  x.onclick = () => { setPending(null); b.remove(); };
   b.append(t, go, x); $('banner').append(b);
 }
 
