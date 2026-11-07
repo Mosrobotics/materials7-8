@@ -174,6 +174,48 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
 .fade{opacity:0;transform:translateY(8px);animation:in .5s cubic-bezier(.2,.8,.2,1) forwards}
 @keyframes in{to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.fade{animation:none;opacity:1;transform:none}.ring .fg,.timebar i{transition:none}}
+
+/* ЕТЗ */
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px;position:relative;z-index:1}
+.rg{border:0;background:rgba(255,255,255,.14);border-radius:14px;padding:10px 4px 8px;text-align:center;color:#fff;cursor:pointer;transition:background .2s,transform .12s}
+.rg:active{transform:scale(.96)}.rg.on{background:rgba(255,255,255,.28)}
+.rg .ring{display:block;margin:0 auto}
+.rg .l{font-size:12.5px;font-weight:700;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rg .m{font-size:11px;opacity:.8}
+.rings.dark{margin:12px 0 4px}.rings.dark .rg{background:var(--card);color:var(--text);cursor:default}
+.rings.dark .ring .bgc{stroke:var(--sep)}.rings.dark .ring .fg{stroke:var(--ok)}.rings.dark .ring text{fill:var(--text)}
+.cps{display:flex;gap:6px;overflow-x:auto;margin-top:12px;scrollbar-width:none}.cps::-webkit-scrollbar{display:none}
+.cps span{flex:none;font-size:12px;font-weight:700;padding:4px 9px;border-radius:8px;background:var(--bg)}
+.cps span.cur{background:color-mix(in srgb,var(--accent) 16%,var(--card));color:var(--accent)}
+.seg{position:sticky;top:58px;z-index:4;display:flex;gap:4px;padding:4px;background:var(--card);border-radius:14px;margin:20px 0 0;box-shadow:0 4px 14px -10px rgba(0,0,0,.4);scroll-margin-top:62px}
+.seg button{flex:1;min-width:0;border:0;background:none;border-radius:10px;padding:8px 2px 7px;font-weight:700;font-size:13.5px;color:var(--hint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg button small{display:block;font-weight:600;font-size:11px;margin-top:1px}
+.seg button.on{background:var(--accent);color:var(--accent-t)}
+.grp{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 7px}
+.grp b{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--hint)}
+.grp span{font-size:12.5px;font-weight:700;color:var(--hint)}
+.list{border-radius:var(--r);overflow:hidden;background:var(--card)}
+.it{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--sep);cursor:pointer;transition:background .15s}
+.list .it:first-child{border-top:0}
+.it:active{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.it.inc{box-shadow:inset 3px 0 0 var(--accent)}
+.it .ic{width:32px;height:32px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;letter-spacing:-2px}
+.it .tx{flex:1;min-width:0}
+.it .tx b{display:block;font-size:14.5px;font-weight:600;line-height:1.3}
+.it .tx span{display:block;font-size:12.5px;color:var(--hint);margin-top:1px}
+.it .pt{flex:none;text-align:right;font-weight:800;font-size:15px;min-width:40px}
+.it .pt small{display:block;font-weight:600;font-size:11px;color:var(--hint)}
+.it .bdg{flex:none;display:flex;gap:4px}
+.legend2{margin:12px 4px 0;text-align:center}
+.cart{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;max-width:536px;margin:0 auto;display:flex;align-items:center;gap:10px;
+  background:var(--accent);color:var(--accent-t);border-radius:16px;padding:10px 10px 10px 16px;box-shadow:0 12px 30px -10px rgba(0,0,0,.45);transform:translateY(160%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.cart.on{transform:none}
+.cart .t{flex:1;min-width:0;font-weight:800;font-size:14.5px;cursor:pointer}.cart .t small{display:block;font-weight:600;opacity:.85;font-size:12px}
+.cart button{flex:none;border:0;border-radius:11px;padding:11px 16px;background:var(--accent-t);color:var(--accent);font-weight:800}
+body.withcart{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+.scores{grid-template-columns:repeat(6,1fr)}
+.act.dim{opacity:.55}
+.dl .n{font-size:15px}
 </style>
 </head>
 <body>
@@ -181,7 +223,7 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
   <div class="demo" id="demo">Демо-данные: откройте приложение из бота</div>
   <div id="banner"></div>
   <nav class="tabs" id="tabs">
-    <button data-t="r" class="on">📚 Отчёты</button>
+    <button data-t="r" class="on">🛠 ЕТЗ</button>
     <button data-t="k">🧪 Тесты</button>
     <button data-t="c" hidden>🧑‍🏫 Проверка</button>
   </nav>
@@ -219,29 +261,28 @@ let data = null, zfail = false;
 const QS = new URLSearchParams(location.search);
 try { if (QS.get('d')) data = decode(QS.get('d')); } catch (e) {}
 if (!data && QS.get('z')) { try { data = await decodeZ(QS.get('z')); } catch (e) { zfail = true; } }
-if (data && !data.v && data.s) data = {v:2, b:data.b, t:data.t, r:{g:data.g, s:data.s}};   // старая ссылка «Мои отчёты»
+const DEMO_E = {"c":[["m","Механика",[["Выбор",10.0],["Моделирование",60.0],["Сборка",30.0]]],["e","Электроника",[["Выбор",10.0],["Схемы",30.0],["Разводка платы",30.0],["Монтаж",30.0]]],["p","Программа",[["Git",10.0],["Функции",90.0]]]],"i":[[101,0,0,"Выбор кинематики на плоскости","Какую кинематику выбрали (декартова, H-bot, CoreXY…) и почему",9,"t","",0.3333,0.3333,0.3333],[102,0,0,"Выбор подъёмного механизма","Чем поднимаете рабочий орган и почему",9,"t","",0.3333,0.3333,0.3333],[103,0,0,"Выбор направляющих","Какие направляющие и почему",9,"t","",0.3333,0.3333,0.3333],[104,0,1,"Модель кинематики XY (CAD)","Файл или скриншот модели из CAD",9,"f","",2.0,2.0,2.0],[105,0,1,"Модель подъёмного механизма (CAD)","Файл или скриншот модели из CAD",9,"f","",2.0,2.0,2.0],[106,0,1,"Модель всего устройства (CAD)","Сборка всего устройства в CAD",9,"f","",2.0,2.0,2.0],[107,0,2,"Сборка кинематики XY","Фото или видео собранной кинематики",9,"f","",1.5,1.5,1.0],[108,0,2,"Сборка подъёмного механизма","Фото или видео собранного механизма",9,"f","",1.5,1.5,1.0],[109,0,2,"Поворот шашки на любой угол 0–360°","Видео: удерживаемая шашка поворачивается на заданный угол",11,"f","",0.0,0.0,1.0],[201,1,0,"Выбор устройства высокого уровня (ПК / микрокомпьютер)","Что будет обрабатывать изображение и почему",9,"t","",0.3333,0.3333,0.3333],[202,1,0,"Выбор контроллера","Какой контроллер и почему",9,"t","",0.3333,0.3333,0.3333],[203,1,0,"Выбор питания","Источник питания, напряжения, токи",9,"t","",0.3333,0.3333,0.3333],[204,1,1,"Структурная схема","Файл или скриншот схемы",9,"f","",1.0,1.0,1.0],[205,1,1,"Принципиальная схема","Файл схемы из CAD",9,"f","",2.0,2.0,2.0],[206,1,2,"Разводка печатной платы","Файл платы или проекта из CAD",9,"f","",3.0,3.0,3.0],[207,1,3,"Демонстрация работы печатной платы","Видео: плата собрана и работает",9,"f","",1.8,1.8,1.8],[208,1,3,"Разъёмы А (аналог.), Б (цифр.), В (UART)","Видео: модули работают через разъёмы А, Б и В",9,"f","",1.2,1.2,1.2],[301,2,0,"Git-репозиторий","Ссылка на репозиторий проекта (GitHub, GitLab…) с открытым доступом",9,"r","",1.0,1.0,1.0],[302,2,1,"Связь ПК и контроллера","Коммит с кодом связи; видео — по желанию",9,"fc","f",1.0,0.72,0.72],[303,2,1,"Цвета на изображении и их координаты","Коммит и фото/скриншот: найденные шашки и их координаты",9,"fc","",1.5,1.08,1.08],[304,2,1,"Определение листа на поле по меткам ArUco","Коммит и фото/скриншот: найденный лист операционного поля",9,"fc","",1.0,0.72,0.72],[305,2,1,"Чтение маркеров на шашках (ArUco, AprilTag, QR)","Коммит и фото/скриншот: прочитанные маркеры",10,"fc","",0.0,0.72,0.72],[306,2,1,"Движение рабочего органа и подъёмного механизма","Коммит и видео движения",9,"fc","",1.0,0.72,0.72],[307,2,1,"Начальное положение шашек; захват, перенос, установка в клетку","Коммит и видео: шашка перенесена в заданную клетку",9,"fc","",2.0,1.44,1.44],[308,2,1,"Задача с вводом параметров и выводом с ПК","Ввод номера задачи и клеток, вывод хода решения на ПК. Коммит и видео",9,"fc","",1.5,1.08,1.08],[309,2,1,"Стопка до 5 шашек","Коммит и видео: шашки ставятся друг на друга",9,"fc","",1.0,0.72,0.72],[310,2,1,"Захват верхней шашки из стопки","Коммит и видео",10,"fc","",0.0,0.72,0.72],[311,2,1,"Графическая фигура на наклейке","Коммит и видео: распознана фигура на наклейке",10,"fc","",0.0,1.08,1.08]]};   // справочник для демо (в боте он приходит в ссылке)
 const now = Date.now()/1000, D = 86400;
 let demo = false;
 if (!data && !inTg) {
   demo = true;
-  data = {v:2, b:'', t:now,
-    r:{g:'ВсОШ', s:[
-      [1,'Сборка шасси','a',9,now-14*D,now-16*D,'Робот собран, моторы подключены',['text','disk_link']],
-      [2,'Управление движением','w',0,now+3*D,now-2*D,'Робот едет по командам',['text','disk_link','code_link']],
-      [3,'Датчики линии','n',0,now+17*D,0,'Робот едет по линии',['text','disk_link','code_link']],
-      [4,'ПИД-регулятор','n',0,now+31*D,0,'Плавное движение по линии',['text','code_link']]]},
+  data = {v:3, b:'', t:now, e:DEMO_E,
+    r:{g:'ВсОШ', gr:10, s:'X987wnnrn' + 'X8nnrnnn' + 'Xr' + 'n'.repeat(9), l:['https://disk.yandex.ru/d/demo', ''],
+       cp:[[now-6*D,'ok'],[now+8*D,'next'],[now+22*D,'future']],
+       d:{'105':{c:'Нет скриншота подъёмника в разрезе', f:'https://disk.yandex.ru/d/demo/lift.png', v:1}}},
     k:{n:'0417', e:[[12,'Олимпиада — школьный этап','01.11.2026',34,40,1,now+25*D,
         [['Теория',14,20,[['Задание 1','42',1,4],['Задание 2','3,14',1,4],['Задание 3','',0,0,'12',4],['Задание 4','B',1,6],['Задание 5','17',0,0,'21',2]]],
          ['Практика',20,20,[['Робот проехал трассу','да',1,10],['Время, с','48',1,10],['Комментарий','аккуратная сборка',2,0]]]]],
        [9,'Входной тест','15.10.2026',18,30,0,0]]},
-    c:{g:'ВсОШ', q:3, a:1, s:[[1,'Сборка шасси',now-14*D],[2,'Управление движением',now+3*D],[3,'Датчики линии',now+17*D],[4,'ПИД-регулятор',now+31*D]],
-       u:[[1,'Волкова Д.','a7_1.r_2.n.n'],[2,'Зайцева В.','a10_3.a9_4.n.n'],[3,'Иванов А.','a9_5.r_6.n.n'],[4,'Козлов Р.','a8_7.n.n.n'],
-          [5,'Новиков Л.','o.n.n.n'],[6,'Орлова Е.','a9_8.r_9.n.n'],[7,'Петрова М.','a10_10.a8_11.n.n'],[8,'Смирнов К.','w_12.n.n.n',0]],
-       p:[[6,3,2,1,now-3*D,0,'Робот едет вперёд и назад по командам с пульта, поворачивает на месте. Скорость регулируется кнопками.','Иногда теряется связь с пультом','https://disk.yandex.ru/d/demo','https://github.com/demo/robot',0],
-          [2,1,2,2,now-2*D,0,'Исправила: добавила видео поворотов и описание схемы подключения моторов.','','https://disk.yandex.ru/d/demo2','',0],
-          [9,6,2,1,now-5*3600,1,'Сделали управление через Bluetooth, робот проезжает квадрат.','Моторы греются','https://drive.google.com/demo','',1]]}};
+    c:{g:'ВсОШ', q:3, a:1, cp:[[1,now-6*D],[2,now+8*D],[3,now+22*D]],
+       u:[[1,'Волкова Д.',9,'X98Xrnnnn'+'X9nnnnnn'+'X'+'n'.repeat(10),0],[2,'Зайцева В.',10,'XXX9X8nnn'+'XXXnnnnn'+'X7'+'n'.repeat(9),0],
+          [3,'Иванов А.',10,'X987wnnrn'+'X8nnrnnn'+'Xr'+'n'.repeat(9),0],[4,'Козлов Р.',11,'987'+'n'.repeat(25),1],
+          [5,'Новиков Л.',9,'n'.repeat(28),2],[6,'Орлова Е.',11,'XXXXXXXX9'+'XXX9Xnnn'+'X9X'+'n'.repeat(8),0],[7,'Смирнов К.',10,'w'+'n'.repeat(27),1,0]],
+       p:[[21,3,108,1,now-2*D,'Собрали подъёмник на ходовом винте, видео подъёма и опускания.','https://disk.yandex.ru/d/demo/lift.mp4','',0],
+          [22,3,205,1,now-30*3600,'','https://disk.yandex.ru/d/demo/schema.pdf','',0],
+          [23,3,302,1,now-5*3600,'Связь по UART 115200, протокол — строки G-кода','','https://github.com/demo/robot/commit/3f2a9c1',0]]}};
 }
-data = data || {v:2};
+data = data || {v:3};
 const BOT = data.b || '';
 
 function openBot(arg){
@@ -309,15 +350,6 @@ function field(label, o){
   inp.addEventListener('input', () => { er.textContent = ''; w.classList.remove('bad'); });
   return {w, inp, val: () => inp.value.trim(), err: t => { er.textContent = t || ''; w.classList.toggle('bad', !!t); }};
 }
-function scorePicker(box, current, onPick){
-  const g = h('div', 'scores');
-  for (let n = 1; n <= 10; n++) {
-    const b = h('button', n === current ? 'on' : '', String(n));
-    b.onclick = () => { const on = !b.classList.contains('on'); g.querySelectorAll('button').forEach(x => x.classList.remove('on')); if (on) b.classList.add('on'); haptic('sel'); onPick(on ? n : 0); };
-    g.append(b);
-  }
-  box.append(g);
-}
 function linkBtn(box, items){
   const r = h('div', 'links');
   items.filter(([, u]) => u).forEach(([t, u]) => { const b = h('button', '', t); b.onclick = () => inTg ? tg.openLink(u) : window.open(u, '_blank'); r.append(b); });
@@ -364,122 +396,295 @@ function hero(cls, ringFrac, ringText, hello, title, chip, stats){
 const user = inTg && tg.initDataUnsafe && tg.initDataUnsafe.user;
 const hello = user && user.first_name ? 'Привет, ' + user.first_name + '!' : 'Привет!';
 
-/* ---------- отчёты ---------- */
-const ST = {a:{c:'var(--ok)',t:'принят',e:'✓'}, r:{c:'var(--rev)',t:'на проверке',e:'…'}, w:{c:'var(--warn)',t:'на доработке',e:'↻'},
-            n:{c:'var(--none)',t:'не сдан',e:''}, o:{c:'var(--bad)',t:'просрочен',e:'!'}};
-const NEED = {text:'📝 Что сделано', photo:'📁 Фото и видео — ссылкой', disk_link:'📁 Фото и видео — ссылкой на диск', code_link:'💻 Ссылка на код'};
-
-function renderReports(){
-  const pane = $('pane-r'), R = data.r;
-  if (!R) return empty(pane, '📚', 'Загрузите свои данные', 'Бот обновит приложение — потом откройте его ещё раз.', '🔄 Загрузить мои данные', 'app');
-  if (R.x === 'reg') return empty(pane, '📝', 'Вы ещё не в отчётах', 'Отправьте боту /reports — он зарегистрирует вас в проекте.');
-  const stages = (R.s || []).map(x => ({id:x[0], title:x[1], st:x[2], score:x[3]|0, dl:x[4]|0, sb:x[5]|0, crit:x[6]||'', need:x[7]||[], draft:x[8]||null}));
-  const acc = stages.filter(s => s.st === 'a'), scored = acc.filter(s => s.score);
-  const avg = scored.length ? scored.reduce((a, s) => a + s.score, 0) / scored.length : 0;
-  const next = stages.find(s => s.st === 'w' || s.st === 'o' || s.st === 'n');
-  const nl = next && next.dl ? left(next.dl) : null;
-  pane.append(hero('rep', stages.length ? acc.length / stages.length : 0, acc.length + '/' + stages.length, hello, 'Мои отчёты', '🤖 ' + (R.g || 'Проект'),
-    [[acc.length + ' из ' + stages.length, 'принято'], [avg ? fmt(avg) : '—', 'средний балл'], [nl ? nl.v : '—', nl ? nl.l : 'без срока']]));
-
-  pane.append(h('h2', 'fade', 'Сейчас'));
-  if (!stages.length) empty(pane, '🗓️', 'Этапы пока не заданы', 'Тренер скоро добавит');
-  else if (!next) {
-    const wait = stages.filter(s => s.st === 'r').length;
-    wait ? empty(pane, '🕓', 'Всё сдано!', 'Ждём проверки тренера: ' + wait + ' ' + plural(wait,'этап','этапа','этапов'))
-         : empty(pane, '🏆', 'Все этапы приняты', 'Отличная работа!');
-  } else {
-    const s = next, i = stages.indexOf(s), prev = i > 0 ? stages[i-1].dl : 0;
-    const start = prev && prev < s.dl ? prev : s.dl - 14*D;
-    const pct = s.dl ? Math.min(100, Math.max(3, (now - start) / (s.dl - start) * 100)) : 0;
-    const color = s.st === 'o' || (s.dl && s.dl < now) ? 'var(--bad)' : pct > 75 ? 'var(--warn)' : 'var(--accent)';
-    const c = h('section', 'card now fade');
-    c.append(h('div', 'lbl', s.st === 'w' ? 'Нужно исправить' : s.st === 'o' ? 'Срок прошёл' : 'Следующий этап'),
-             h('div', 'nm', 'Этап ' + s.id + '. ' + s.title), h('div', 'meta', s.crit));
-    if (s.dl) {
-      const tb = h('div', 'timebar'), bar = h('i'); bar.style.background = color; tb.append(bar); c.append(tb);
-      setTimeout(() => { bar.style.width = pct + '%'; }, 250);
-      const tl = h('div', 'tl'); tl.append(h('span', '', left(s.dl).txt), h('span', '', 'до ' + dmhm(s.dl))); c.append(tl);
-    }
-    if (s.need.length) { const nd = h('div', 'need'); s.need.forEach(k => NEED[k] && nd.append(h('span', '', NEED[k]))); c.append(nd); }
-    if (s.draft && s.draft.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Тренер: '), s.draft.c); c.append(cm); }
-    const b = h('button', 'act', (s.st === 'w' ? '🔄 Исправить этап ' : '📤 Сдать этап ') + s.id);
-    b.onclick = () => openForm(s); c.append(b);
-    pane.append(c);
-  }
-
-  if (stages.length) pane.append(h('h2', 'fade', 'Все этапы · нажмите, чтобы открыть'));
-  const list = h('section');
-  stages.forEach((s, i) => {
-    const c = ST[s.st] || ST.n, el = h('div', 'st fade' + (s === next ? ' cur' : ''));
-    el.style.animationDelay = (0.1 + i*0.04) + 's';
-    const rail = h('div', 'rail'), dot = h('div', 'dot', c.e || s.id); dot.style.background = c.c; rail.append(dot);
-    const body = h('div', 'body'), r1 = h('div', 'row1');
-    const pill = h('span', 'pill', c.t); pill.style.color = c.c; pill.style.background = 'color-mix(in srgb, ' + c.c + ' 16%, transparent)';
-    r1.append(h('b', '', s.id + '. ' + s.title), pill, h('span', 'cv', '›'));
-    const sub = h('div', 'sub');
-    if (s.st === 'a') {
-      sub.textContent = 'сдан ' + dm(s.sb);
-      if (s.score) {
-        sub.append(' · ' + s.score + '/10');
-        const bars = h('span', 'score');
-        for (let k = 1; k <= 10; k++) { const q = h('i'); if (k <= s.score) q.style.background = 'var(--ok)'; bars.append(q); }
-        sub.append(bars);
-      }
-    } else if (s.st === 'r') sub.textContent = 'сдан ' + dm(s.sb) + ' · ждёт тренера';
-    else sub.textContent = s.dl ? 'до ' + dm(s.dl) + ' · ' + left(s.dl).txt : 'без срока';
-    const more = h('div', 'more'), inner = h('div');
-    const line = (k, v) => { const p = h('p'); p.append(h('span', 'k', k + ': '), v); inner.append(p); };
-    if (s.crit) line('Критерий', s.crit);
-    if (s.dl) line('Срок', dmhm(s.dl) + ' (МСК)');
-    if (s.sb) line('Сдан', dmhm(s.sb));
-    if (s.score) line('Оценка', s.score + ' из 10');
-    if (s.need.length) line('Приложить', s.need.map(k => ({text:'что сделано', photo:'ссылку на диск с фото и видео', disk_link:'ссылку на диск с фото и видео', code_link:'ссылку на код'})[k] || k).join(', '));
-    const canSub = s.st === 'w' || s.st === 'n' || s.st === 'o';
-    const act = h('button', 'act' + (canSub ? '' : ' alt'), s.st === 'w' ? '🔄 Исправить отчёт' : canSub ? '📤 Сдать этот этап' : '📋 Посмотреть отчёт');
-    if (s.draft && s.draft.c) line('Тренер', s.draft.c);
-    act.onclick = ev => { ev.stopPropagation(); canSub ? openForm(s) : openBot('rpview_' + s.id); };
-    inner.append(act); more.append(inner);
-    body.append(r1, sub, more);
-    body.onclick = () => { el.classList.toggle('open'); haptic('sel'); };
-    el.append(rail, body); list.append(el);
-  });
-  pane.append(list);
+/* ---------- ЕТЗ: справочник пунктов (общий для ученика и тренера) ---------- */
+const CATI = ['⚙️', '🔌', '💻'];
+const E = (function(e){
+  if (!e || !e.i) return null;
+  return {cats: (e.c || []).map(([k, t, g], i) => ({k, t, i, em: CATI[i] || '•', groups: (g || []).map(([gt, sh]) => ({t: gt, sh}))})),
+          items: e.i.map((x, n) => ({n, id: x[0], ci: x[1], gi: x[2], t: x[3], hint: x[4] || '', gr: x[5], need: x[6] || '', opt: x[7] || '', pts: [x[8] || 0, x[9] || 0, x[10] || 0]}))};
+})(data.e);
+const ITEM = E ? Object.fromEntries(E.items.map(it => [it.id, it])) : {};
+const ptsOf = (it, gr) => it.pts[Math.min(2, Math.max(0, (gr || 9) - 9))] || 0;
+const fp = v => String(Math.round((v || 0) * 100) / 100).replace('.', ',');
+function stOf(ch){ ch = ch || 'n'; return ch === 'n' || ch === 'r' || ch === 'w' ? {k: ch, sc: null} : {k: 'a', sc: ch === 'X' ? 10 : +ch || 0}; }
+const SK = {a: {c: 'var(--ok)', t: 'принят', e: '✓'}, r: {c: 'var(--rev)', t: 'на проверке', e: '…'},
+            w: {c: 'var(--warn)', t: 'на доработке', e: '↻'}, n: {c: 'var(--none)', t: 'не сдан', e: ''}};
+function catPoints(line, gr){
+  const out = E.cats.map(() => 0);
+  E.items.forEach((it, i) => { if (it.gr > gr) return; const s = stOf(line[i]); if (s.k === 'a') out[it.ci] += ptsOf(it, gr) * s.sc / 10; });
+  return out.map(v => Math.min(10, v));
+}
+const NEEDI = {t: '📝', f: '📁', c: '🔗', r: '🔗'};
+const NEEDT = {t: 'текст', f: 'файл', c: 'коммит', r: 'репозиторий'};
+const needIcons = it => it.need.split('').map(n => NEEDI[n]).join('');
+const pill = (text, color) => { const p = h('span', 'pill', text); p.style.color = color; p.style.background = 'color-mix(in srgb, ' + color + ' 16%, transparent)'; return p; };
+function ringSvg(frac, text, size){
+  const w = h('div'); w.innerHTML = '<svg class="ring" viewBox="0 0 100 100" style="width:' + size + 'px;height:' + size + 'px"><circle class="bgc" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" transform="rotate(-90 50 50)" stroke-dasharray="263.9" stroke-dashoffset="263.9"/><text x="50" y="59" text-anchor="middle" font-size="25"></text></svg>';
+  w.querySelector('text').textContent = text;
+  const fg = w.querySelector('.fg'); setTimeout(() => { fg.style.strokeDashoffset = String(263.9 * (1 - Math.min(1, frac))); }, 150);
+  return w.firstChild;
 }
 
-function openForm(s){
-  if (needKB()) return;
-  const dr = s.draft || {}, saved = load('draft_' + s.id) || {};
-  const v = (k, d) => saved[k] != null ? saved[k] : d || '';
-  sheet((s.st === 'w' ? 'Исправить этап ' : 'Сдать этап ') + s.id, b => {
-    b.append(h('div', 'sht', s.title));
-    if (s.crit) b.append(h('div', 'shs', 'Критерий: ' + s.crit));
-    if (s.dl) b.append(h('div', 'shs', 'Срок: ' + dmhm(s.dl) + ' (МСК) · ' + left(s.dl).txt + (s.dl < now && s.st !== 'w' ? ' — отметится «с опозданием»' : '')));
-    if (dr.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Тренер: '), dr.c); b.append(cm); }
-    const need = s.need || [];
-    const f1 = field('Что сделано', {multi: true, req: true, rows: 5, max: MAXT, value: v('done', dr.d), ph: 'Опишите, что получилось на этом этапе'});
-    const f2 = field('Проблемы', {multi: true, rows: 2, max: MAXT, value: v('prob', dr.p), ph: 'Что не получилось — если есть'});
-    const f3 = field('Ссылка на диск с фото и видео', {type: 'url', req: need.includes('disk_link'), value: v('disk', dr.k), ph: 'https://disk.yandex.ru/…',
-      hint: 'Загрузите фото и видео на Яндекс Диск или Google Drive и откройте доступ по ссылке'});
-    const f4 = field('Ссылка на код', {type: 'url', req: need.includes('code_link'), value: v('code', dr.g), ph: 'https://github.com/…'});
-    const all = [f1, f2, f3, f4];
-    all.forEach(f => { b.append(f.w); f.inp.addEventListener('input', () => store('draft_' + s.id, {done: f1.inp.value, prob: f2.inp.value, disk: f3.inp.value, code: f4.inp.value})); });
-    if (saved.done != null) b.append(h('div', 'shs', '✏️ Черновик сохранён на этом устройстве'));
-    const go = h('button', 'act', '📨 Отправить на проверку'), alt = h('button', 'act ghost', 'Сдать по шагам в чате');
-    alt.onclick = () => openBot('rpsub_' + s.id); b.append(go, alt);
+/* ---------- проверка ссылок (как в боте: reports/logic.py; окончательно проверяет бот) ---------- */
+const YA = /(^|\.)(disk\.yandex\.(ru|com|kz|by)|disk\.360\.yandex\.ru|yadi\.sk)$/i;
+const DISKS = /(^|\.)(drive\.google\.com|cloud\.mail\.ru)$/i;
+const GITS = /(^|\.)(github\.com|gitlab\.com|gitflic\.ru|bitbucket\.org|codeberg\.org)$/i;
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, '').toLowerCase(); } catch (e) { return ''; } };
+const pathOf = u => { try { return decodeURI(new URL(u).pathname).replace(/\/+$/, ''); } catch (e) { return ''; } };
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function chkFolder(u){
+  if (!URL_RE.test(u)) return 'Ссылка должна начинаться с https://';
+  const hh = hostOf(u);
+  if (!YA.test(hh) && !DISKS.test(hh)) return 'Нужна папка на Яндекс Диске, Google Drive или в Облаке Mail.ru';
+  if (YA.test(hh) && !/^\/(d|i)\/[^/]+/.test(pathOf(u))) return 'Это не публичная ссылка: откройте доступ к папке по ссылке и скопируйте её (https://disk.yandex.ru/d/…)';
+  return '';
+}
+function chkFile(u, folder){
+  if (!URL_RE.test(u)) return 'Ссылка должна начинаться с https://';
+  if (!folder) return 'Сначала укажите папку на диске — «Мои ссылки»';
+  if (YA.test(hostOf(folder)) && !(YA.test(hostOf(u)) && pathOf(u).startsWith(pathOf(folder) + '/')))
+    return 'Файл должен быть из вашей папки: откройте папку, нажмите на файл и скопируйте адрес';
+  return '';
+}
+function chkRepo(u){
+  if (!URL_RE.test(u)) return 'Ссылка должна начинаться с https://';
+  if (!GITS.test(hostOf(u))) return 'Нужен репозиторий на GitHub, GitLab, GitFlic, Bitbucket или Codeberg';
+  if (pathOf(u).split('/').filter(Boolean).length < 2) return 'Нужна ссылка на сам репозиторий: https://github.com/<владелец>/<репозиторий>';
+  return '';
+}
+function chkCommit(u, repo){
+  if (!URL_RE.test(u)) return 'Ссылка должна начинаться с https://';
+  if (!repo) return 'Сначала укажите git-репозиторий — «Мои ссылки»';
+  const base = pathOf(repo).replace(/\.git$/, '').toLowerCase();
+  if (hostOf(u) !== hostOf(repo) || !pathOf(u).toLowerCase().startsWith(base + '/')) return 'Коммит должен быть из вашего репозитория ' + repo;
+  if (!new RegExp('^' + reEsc(base) + '(/-)?/commits?/[0-9a-f]{7,40}$').test(pathOf(u).toLowerCase())) return 'Нужна ссылка на коммит: ' + repo + '/commit/…';
+  return '';
+}
+const cleanUrl = u => u.split('#')[0].split('?')[0].replace(/\/+$/, '');
+
+/* ---------- ученик: вкладка «ЕТЗ» ---------- */
+const R = data.r || null;
+let cart = load('cart') || {};            // пункты к отправке: id → {t, f, k}
+let pl = load('links');                    // ссылки «один раз», ещё не отправленные: {d, g}
+let curCat = +(load('cat') || 0) || 0;
+const links = () => ({d: (pl && pl.d) || (R && R.l && R.l[0]) || '', g: (pl && pl.g) || (R && R.l && R.l[1]) || ''});
+if (R && R.s && E) {   // в корзине — только то, что ещё можно сдать
+  Object.keys(cart).forEach(id => { const it = ITEM[id]; const s = it ? stOf(R.s[it.n]).k : 'x'; if (!it || it.gr > (R.gr || 9) || (s !== 'n' && s !== 'w')) delete cart[id]; });
+}
+const cartEl = h('div', 'cart'); document.body.append(cartEl);
+
+function renderReports(){
+  const pane = $('pane-r'); pane.textContent = '';
+  if (!R) return empty(pane, '📚', 'Загрузите свои данные', 'Бот обновит приложение — потом откройте его ещё раз.', '🔄 Загрузить мои данные', 'app');
+  if (R.x === 'reg') return empty(pane, '📝', 'Вы ещё не зарегистрированы', 'Отправьте боту /reports — он спросит класс, и здесь появятся ваши пункты ЕТЗ.');
+  if (!E || !E.items.length) return empty(pane, '🗓️', 'Пункты ЕТЗ пока не заданы', 'Тренер скоро добавит');
+  const gr = R.gr || 9, line = R.s || '';
+  const mine = E.items.filter(it => it.gr <= gr).map(it => Object.assign({}, it, {s: stOf(line[it.n])}));
+  const P = catPoints(line, gr);
+  if (curCat >= E.cats.length) curCat = 0;
+
+  /* шапка: три кольца */
+  const hs = h('section', 'hero rep fade'), top = h('div');
+  top.style.cssText = 'position:relative;z-index:1';
+  top.append(h('div', 'hello', hello), h('div', 'title', 'ЕТЗ 2026–27'), h('span', 'chip', '🎓 ' + gr + ' класс · ' + (R.g || 'ВсОШ')));
+  hs.append(top);
+  const rg = h('div', 'rings');
+  E.cats.forEach((c, i) => {
+    const b = h('button', 'rg' + (i === curCat ? ' on' : ''));
+    b.append(ringSvg(P[i] / 10, fp(P[i]), 64), h('div', 'l', c.em + ' ' + c.t), h('div', 'm', 'из 10'));
+    b.onclick = () => { curCat = i; store('cat', i); haptic('sel'); renderReports(); const el = $('cats'); el && el.scrollIntoView({behavior: 'smooth', block: 'start'}); };
+    rg.append(b);
+  });
+  hs.append(rg);
+  const sent = mine.filter(it => it.s.k !== 'n').length, wait = mine.filter(it => it.s.k === 'r').length, fix = mine.filter(it => it.s.k === 'w').length;
+  const g = h('div', 'stats');
+  [[sent + ' из ' + mine.length, 'пунктов сдано'], [String(wait), 'на проверке'], [String(fix), 'на доработке']]
+    .forEach(([v, l]) => { const e = h('div', 'stat'); e.append(h('b', '', v), h('span', '', l)); g.append(e); });
+  hs.append(g); pane.append(hs);
+
+  /* контрольная точка */
+  const cps = (R.cp || []).map(([ts, st]) => ({ts, st}));
+  if (cps.length) {
+    const nx = cps.find(c => c.st === 'next' || c.st === 'done'), debt = cps.filter(c => c.st === 'debt').length;
+    const c = h('section', 'card now fade');
+    c.style.marginTop = '12px';
+    c.append(h('div', 'lbl', 'Контрольная точка'));
+    if (nx) {
+      c.append(h('div', 'nm', 'до ' + dmhm(nx.ts)));
+      c.append(h('div', 'meta', nx.st === 'done' ? '✅ Новый пункт к ней уже сдан' : '⏳ Сдайте хотя бы 1 новый пункт любой категории · ' + left(nx.ts).txt));
+      const prev = cps.filter(x => x.ts < nx.ts).pop(), start = prev ? prev.ts : nx.ts - 14*D;
+      const pct = Math.min(100, Math.max(3, (now - start) / (nx.ts - start) * 100));
+      const tb = h('div', 'timebar'), bar = h('i'); bar.style.background = nx.st === 'done' ? 'var(--ok)' : pct > 75 ? 'var(--warn)' : 'var(--accent)'; tb.append(bar); c.append(tb);
+      setTimeout(() => { bar.style.width = pct + '%'; }, 250);
+    } else c.append(h('div', 'nm', 'Все точки пройдены'));
+    if (debt) { const cm = h('div', 'cmt'); cm.append(h('b', '', '⚠️ Долг: ' + debt + '. '), 'Сдайте новые пункты — каждый закроет одну пропущенную точку.'); c.append(cm); }
+    const row = h('div', 'cps');
+    const CPI = {ok: '✅', late: '☑️', debt: '⚠️', done: '✅', next: '⏳', future: '·'};
+    cps.forEach(x => row.append(h('span', x.st === 'next' || x.st === 'done' ? 'cur' : '', CPI[x.st] + ' ' + dm(x.ts))));
+    c.append(row); pane.append(c);
+  }
+
+  /* мои ссылки */
+  pane.append(h('h2', 'fade', 'Мои ссылки · один раз'));
+  const L = links(), lc = h('section', 'card fade');
+  [['📁', 'Папка на диске', L.d, 'нужна для файлов, фото и видео', pl && pl.d], ['🔗', 'Git-репозиторий', L.g, 'нужен для коммитов', pl && pl.g]].forEach(([ic, t, v, miss, pend]) => {
+    const r = h('div', 'dl'), n = h('div', 'n', ic); n.style.background = v ? 'color-mix(in srgb,var(--ok) 18%,transparent)' : 'color-mix(in srgb,var(--warn) 22%,transparent)';
+    const tx = h('div', 't'); tx.append(h('b', '', t), h('span', '', v ? v.replace(/^https?:\/\//, '') + (pend ? ' · сохранится при отправке' : '') : '⚠️ не указана — ' + miss));
+    r.append(n, tx); lc.append(r);
+  });
+  const lb = h('button', 'act alt', L.d && L.g ? '✏️ Изменить ссылки' : '➕ Указать ссылки'); lb.onclick = openLinks; lc.append(lb);
+  pane.append(lc);
+
+  /* категории → группы → пункты */
+  const seg = h('div', 'seg'); seg.id = 'cats';
+  E.cats.forEach((c, i) => {
+    const b = h('button', i === curCat ? 'on' : ''); b.append(c.em + ' ' + c.t, h('small', '', fp(P[i]) + ' из 10'));
+    b.onclick = () => { curCat = i; store('cat', i); haptic('sel'); renderReports(); $('cats').scrollIntoView({block: 'start'}); };
+    seg.append(b);
+  });
+  pane.append(seg);
+  const cat = E.cats[curCat];
+  cat.groups.forEach((grp, gi) => {
+    const its = mine.filter(it => it.ci === curCat && it.gi === gi);
+    if (!its.length) return;
+    const head = h('div', 'grp'); head.append(h('b', '', grp.t), h('span', '', fp(its.reduce((a, it) => a + ptsOf(it, gr), 0)) + ' б.'));
+    pane.append(head);
+    const list = h('section', 'list fade');
+    its.forEach(it => list.append(itemRow(it, gr)));
+    pane.append(list);
+  });
+  pane.append(h('div', 'sub legend2', '📝 текст · 📁 файл из вашей папки · 🔗 коммит или репозиторий · баллы = баллы пункта × оценка / 10'));
+  drawCart();
+}
+
+function itemRow(it, gr){
+  const k = SK[it.s.k], inCart = !!cart[it.id], pts = ptsOf(it, gr);
+  const r = h('div', 'it' + (inCart ? ' inc' : '')), ic = h('div', 'ic', k.e || needIcons(it).slice(0, 2)); ic.style.background = it.s.k === 'n' ? 'var(--bg)' : k.c;
+  if (it.s.k === 'n') ic.style.fontSize = '14px';
+  const tx = h('div', 'tx'); tx.append(h('b', '', it.t));
+  const sub = h('span', '', inCart ? '📤 в отправке' : it.s.k === 'n' ? needIcons(it) + ' ' + it.need.split('').map(n => NEEDT[n]).join(' + ') : k.t + (it.s.k === 'a' ? ' · оценка ' + it.s.sc : ''));
+  if (inCart) sub.style.color = 'var(--accent)'; else if (it.s.k !== 'n') sub.style.color = k.c;
+  tx.append(sub);
+  const pt = h('div', 'pt');
+  if (it.s.k === 'a') { pt.append(fp(pts * it.s.sc / 10)); pt.append(h('small', '', 'из ' + fp(pts))); pt.style.color = 'var(--ok)'; }
+  else { pt.append(fp(pts)); pt.append(h('small', '', 'б.')); }
+  r.append(ic, tx, pt);
+  r.onclick = () => openItem(it, gr);
+  return r;
+}
+
+function openItem(it, gr){
+  const cat = E.cats[it.ci], grp = cat.groups[it.gi] || {t: ''}, pts = ptsOf(it, gr), d = (R.d || {})[it.id] || {};
+  const editable = it.s.k === 'n' || it.s.k === 'w';
+  if (editable && needKB()) return;
+  sheet(it.t, b => {
+    b.append(h('div', 'shs', cat.em + ' ' + cat.t + ' · ' + grp.t + ' · ' + fp(pts) + ' б.'));
+    if (it.hint) b.append(h('div', 'rtext', it.hint));
+    const k = SK[it.s.k], st = h('div', 'shs'); st.style.marginTop = '8px';
+    st.append(pill(k.t, k.c));
+    if (it.s.k === 'a') st.append('  оценка ' + it.s.sc + '/10 → ' + fp(pts * it.s.sc / 10) + ' из ' + fp(pts) + ' б.');
+    b.append(st);
+    if (d.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Проверяющий: '), d.c); b.append(cm); }
+    if (!editable) {
+      b.append(h('div', 'shs', it.s.k === 'r' ? 'Ждёт проверки — когда проверят, бот напишет.' : 'Пункт принят — сдавать снова не нужно.'));
+      const v = h('button', 'act alt', '📋 Посмотреть, что сдано'); v.onclick = () => openBot('rpview_' + it.id); b.append(v);
+      return;
+    }
+    const saved = cart[it.id] || load('dr_' + it.id) || {t: d.t || '', f: d.f || '', k: d.k || ''};
+    const L = links(), fs = {};
+    const opt = n => it.opt.includes(n);
+    if (it.need.includes('t')) fs.t = field('Текст: что выбрали и почему', {multi: true, req: true, rows: 5, max: MAXT, value: saved.t, ph: 'Например: выбрали CoreXY — каретка легче, моторы стоят неподвижно…'});
+    else fs.t = field('Комментарий для проверяющего', {multi: true, rows: 2, max: MAXT, value: saved.t, ph: 'По желанию'});
+    if (it.need.includes('f')) fs.f = field('Ссылка на файл в вашей папке', {type: 'url', req: !opt('f'), value: saved.f, ph: (L.d || 'https://disk.yandex.ru/d/…') + '/…',
+      hint: L.d ? 'Откройте свою папку, нажмите на файл и скопируйте адрес' + (opt('f') ? ' · по желанию' : '') : '⚠️ Сначала укажите папку — «Мои ссылки»'});
+    if (it.need.includes('c')) fs.k = field('Ссылка на коммит', {type: 'url', req: !opt('c'), value: saved.k, ph: (L.g || 'https://github.com/…') + '/commit/…',
+      hint: L.g ? 'GitHub: Commits → нужный коммит → адрес страницы' : '⚠️ Сначала укажите репозиторий — «Мои ссылки»'});
+    if (it.need.includes('r')) fs.k = field('Ссылка на репозиторий', {type: 'url', req: true, value: saved.k || L.g, ph: 'https://github.com/ivanov/robot', hint: 'Репозиторий должен быть открытым'});
+    const save = () => store('dr_' + it.id, {t: fs.t.inp.value, f: fs.f ? fs.f.inp.value : '', k: fs.k ? fs.k.inp.value : ''});
+    Object.values(fs).forEach(f => { b.append(f.w); f.inp.addEventListener('input', save); });
+    if ((it.need.includes('f') && !L.d) || (it.need.includes('c') && !L.g)) { const lk = h('button', 'act alt', '🔗 Указать мои ссылки'); lk.onclick = openLinks; b.append(lk); }
+    const go = h('button', 'act', cart[it.id] ? '✓ Обновить в отправке' : '＋ Добавить к отправке');
+    b.append(go);
+    if (cart[it.id]) { const rm = h('button', 'act ghost', 'Убрать из отправки'); rm.onclick = () => { delete cart[it.id]; store('cart', cart); closeSheet(); haptic('light'); renderReports(); }; b.append(rm); }
+    const alt = h('button', 'act ghost', 'Сдать по шагам в чате'); alt.onclick = () => openBot('rpsub_' + it.id); b.append(alt);
     go.onclick = () => {
       let ok = true;
-      const chk = (f, good, msg) => { if (!good) { f.err(msg); ok = false; } };
-      chk(f1, f1.val(), 'Напишите, что сделано');
-      chk(f1, f1.inp.value.length <= MAXT, 'Слишком длинно — до ' + MAXT + ' символов (длиннее — сдайте в чате)');
-      chk(f2, f2.inp.value.length <= MAXT, 'Слишком длинно — до ' + MAXT + ' символов');
-      [[f3, 'disk_link', 'на диск'], [f4, 'code_link', 'на код']].forEach(([f, k, t]) => {
-        if (f.val()) chk(f, URL_RE.test(f.val()), 'Ссылка должна начинаться с https://');
-        else chk(f, !need.includes(k), 'Нужна ссылка ' + t);
-      });
-      if (!ok) { haptic('heavy'); const bad = sh.querySelector('.fld.bad'); bad && bad.scrollIntoView({block: 'center', behavior: 'smooth'}); return; }
-      send({a: 'sub', s: s.id, done: f1.val(), prob: f2.val(), disk: f3.val(), code: f4.val()}, 'отчёт по этапу ' + s.id,
-           () => { if (KB || !inTg) store('draft_' + s.id, null); });
+      const bad = (f, msg) => { if (msg) { f.err(msg); ok = false; } };
+      const L2 = links();
+      if (it.need.includes('t')) bad(fs.t, !fs.t.val() ? 'Напишите текст' : '');
+      bad(fs.t, fs.t.inp.value.length > MAXT ? 'Слишком длинно — до ' + MAXT + ' символов (длиннее — в чате)' : '');
+      if (fs.f) bad(fs.f, fs.f.val() ? chkFile(fs.f.val(), cleanUrl(L2.d)) : opt('f') ? '' : 'Нужна ссылка на файл');
+      if (fs.k && it.need.includes('c')) bad(fs.k, fs.k.val() ? chkCommit(fs.k.val(), cleanUrl(L2.g)) : opt('c') ? '' : 'Нужна ссылка на коммит');
+      if (fs.k && it.need.includes('r')) bad(fs.k, fs.k.val() ? chkRepo(fs.k.val()) : 'Нужна ссылка на репозиторий');
+      if (!ok) { haptic('heavy'); const e = sh.querySelector('.fld.bad'); e && e.scrollIntoView({block: 'center', behavior: 'smooth'}); return; }
+      cart[it.id] = {t: fs.t.val(), f: fs.f ? fs.f.val() : '', k: fs.k ? fs.k.val() : ''};
+      store('cart', cart); closeSheet(); haptic('medium'); renderReports();
     };
+  });
+}
+
+function openLinks(){
+  if (needKB()) return;
+  const L = links(), n = Object.keys(cart).length;
+  sheet('Мои ссылки', b => {
+    b.append(h('div', 'shs', 'Указываются один раз. Дальше вы присылаете ссылки на файлы из этой папки и на коммиты из этого репозитория.'));
+    const fd = field('Папка на диске', {type: 'url', value: L.d, ph: 'https://disk.yandex.ru/d/…', hint: 'Яндекс Диск → папка → «Поделиться» → доступ по ссылке → скопировать'});
+    const fg = field('Git-репозиторий', {type: 'url', value: L.g, ph: 'https://github.com/ivanov/robot', hint: 'Открытый репозиторий проекта'});
+    b.append(fd.w, fg.w);
+    const go = h('button', 'act', n ? '💾 Сохранить — уйдут вместе с пунктами' : '💾 Сохранить');
+    go.onclick = () => {
+      let ok = true;
+      if (fd.val()) { const e = chkFolder(fd.val()); if (e) { fd.err(e); ok = false; } }
+      if (fg.val()) { const e = chkRepo(fg.val()); if (e) { fg.err(e); ok = false; } }
+      if (!fd.val() && !fg.val()) { fd.err('Укажите хотя бы одну ссылку'); ok = false; }
+      if (!ok) return haptic('heavy');
+      const nl = {d: fd.val() ? cleanUrl(fd.val()) : '', g: fg.val() ? cleanUrl(fg.val()).replace(/\.git$/, '') : ''};
+      if (n) { pl = nl; store('links', pl); closeSheet(); haptic('medium'); renderReports(); return; }
+      send({a: 'links', d: nl.d, g: nl.g}, 'мои ссылки', () => { pl = null; store('links', null); });
+    };
+    b.append(go);
+  });
+}
+
+function drawCart(){
+  const ids = Object.keys(cart), gr = (R && R.gr) || 9;
+  cartEl.textContent = '';
+  document.body.classList.toggle('withcart', ids.length > 0 && $('pane-r').classList.contains('on'));
+  cartEl.classList.toggle('on', ids.length > 0 && $('pane-r').classList.contains('on'));
+  if (!ids.length) return;
+  const sum = ids.reduce((a, id) => a + (ITEM[id] ? ptsOf(ITEM[id], gr) : 0), 0);
+  const t = h('div', 't'); t.append('📤 К отправке: ' + ids.length + ' ' + plural(ids.length, 'пункт', 'пункта', 'пунктов'), h('small', '', 'до ' + fp(sum) + ' б. · нажмите, чтобы посмотреть'));
+  t.onclick = openCart;
+  const go = h('button', '', 'Отправить'); go.onclick = sendCart;
+  cartEl.append(t, go);
+}
+function openCart(){
+  const gr = (R && R.gr) || 9;
+  sheet('К отправке', b => {
+    Object.keys(cart).forEach(id => {
+      const it = ITEM[id]; if (!it) return;
+      const r = h('div', 'dl'), n = h('div', 'n', E.cats[it.ci].em); n.style.background = 'var(--card)';
+      const tx = h('div', 't'); tx.append(h('b', '', it.t), h('span', '', fp(ptsOf(it, gr)) + ' б. · ' + E.cats[it.ci].t));
+      const rm = h('button', 'mini', 'Убрать'); rm.onclick = () => { delete cart[id]; store('cart', cart); haptic('light'); renderReports(); Object.keys(cart).length ? openCart() : closeSheet(); };
+      tx.onclick = () => openItem(Object.assign({}, it, {s: stOf(R.s[it.n])}), gr);
+      r.append(n, tx, rm); b.append(r);
+    });
+    if (pl) b.append(h('div', 'shs', '🔗 Вместе с пунктами сохранятся ваши новые ссылки'));
+    const go = h('button', 'act', '📨 Отправить на проверку'); go.onclick = sendCart; b.append(go);
+  });
+}
+function sendCart(){
+  if (needKB()) return;
+  const ids = Object.keys(cart); if (!ids.length) return;
+  const L = links();
+  const needF = ids.some(id => ITEM[id] && cart[id].f), needC = ids.some(id => ITEM[id] && ITEM[id].need.includes('c') && cart[id].k);
+  if ((needF && !L.d) || (needC && !L.g)) return notify('Сначала укажите ' + (needF && !L.d ? 'папку на диске' : 'git-репозиторий') + ' — «Мои ссылки».');
+  const action = {a: 'sub', it: ids.map(id => ({i: +id, t: cart[id].t, f: cart[id].f, k: cart[id].k}))};
+  if (pl) action.l = {d: pl.d, g: pl.g};
+  if (new TextEncoder().encode(JSON.stringify(action)).length > 4096)
+    return notify('За раз столько не поместится (лимит Telegram). Уберите часть пунктов, отправьте, а потом — остальные.');
+  send(action, ids.length + ' ' + plural(ids.length, 'пункт', 'пункта', 'пунктов') + ' на проверку', () => {
+    if (KB || !inTg) { ids.forEach(id => store('dr_' + id, null)); cart = {}; store('cart', null); pl = null; store('links', null); renderReports(); }
   });
 }
 
@@ -551,98 +756,143 @@ function renderTests(){
 }
 
 /* ---------- проверка (только тренерам) ---------- */
-const CELL = {a:['var(--ok)', ''], r:['var(--rev)', '🕓'], w:['var(--warn)', '↻'], o:['var(--bad)', '!'], n:['', '']};
 const PAGE = 40;   // учеников за раз — длинный список дорисовывается кнопкой, чтобы не тормозило
-const REWORK_HINTS = ['Нет фото или видео', 'Ссылка на диск не открывается', 'Опишите подробнее, что сделано', 'Нет ссылки на код', 'Робот не выполняет критерий'];
+const REWORK_HINTS = ['Ссылка не открывается — откройте доступ', 'Файл не из вашей папки', 'Нет видео работы', 'Не тот коммит', 'Опишите подробнее', 'Не выполнено то, что требует пункт'];
+function scorePicker(box, onPick){
+  const g = h('div', 'scores');
+  for (let n = 0; n <= 10; n++) {
+    const b = h('button', '', String(n));
+    b.onclick = () => { g.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); haptic('sel'); onPick(n); };
+    g.append(b);
+  }
+  box.append(g);
+}
 function renderCheck(){
   const pane = $('pane-c'), C = data.c;
   if (!C) return;
-  const stages = (C.s || []).map(x => ({id:x[0], title:x[1], dl:x[2]|0}));
-  const stageTitle = id => (stages.find(s => s.id === id) || {title: 'Этап ' + id}).title;
-  const people = (C.u || []).map(x => ({id:x[0], name:x[1], off:x[3] === 0,
-    cells:String(x[2]).split('.').map(t => { const [head, rid] = t.split('_'); return {st:head[0] || 'n', score:+head.slice(1) || 0, rid:+rid || 0}; })}));
+  pane.textContent = '';
+  if (!E) return empty(pane, '🗓️', 'Пункты ЕТЗ не загружены', 'Проверьте reports_etz.yaml и /reload_stages');
+  const people = (C.u || []).map(x => ({id: x[0], name: x[1], gr: x[2] || 9, line: String(x[3] || ''), debt: x[4] | 0, off: x[5] === 0}));
+  people.forEach(p => { p.P = catPoints(p.line, p.gr); p.wait = (p.line.match(/r/g) || []).length; p.fix = (p.line.match(/w/g) || []).length; });
   const byId = Object.fromEntries(people.map(p => [p.id, p]));
-  const pend = (C.p || []).map(x => ({rid:x[0], sid:x[1], stage:x[2], ver:x[3], sb:x[4], late:!!x[5], done:x[6], prob:x[7], disk:x[8], code:x[9], cut:!!x[10]}))
-    .map(p => Object.assign(p, {name: (byId[p.sid] || {name: 'Ученик'}).name}));
-  const pendByRid = Object.fromEntries(pend.map(p => [p.rid, p]));
-  const count = st => people.reduce((a, p) => a + p.cells.filter(c => c.st === st).length, 0);
-  const total = people.length + (C.m || 0);
+  const pend = (C.p || []).map(x => ({rid: x[0], sid: x[1], iid: x[2], ver: x[3], sb: x[4], text: x[5], file: x[6], code: x[7], cut: !!x[8]}))
+    .map(p => Object.assign(p, {who: byId[p.sid] || {id: p.sid, name: 'Ученик', gr: 9}}));
+  const total = people.length + (C.m || 0), debtors = people.filter(p => p.debt && !p.off).length;
+  const iname = id => (ITEM[id] || {t: 'Пункт ' + id}).t;
 
-  /* --- решения по отчёту --- */
+  /* --- решение по пункту --- */
   function openReview(p){
-    sheet('Отчёт на проверке', b => {
-      b.append(h('div', 'sht', p.name + ' · этап ' + p.stage), h('div', 'shs', stageTitle(p.stage) + ' · версия ' + p.ver + ' · сдан ' + dmhm(p.sb)));
-      if (p.late) b.lastChild.append(' · ', h('span', 'late', 'с опозданием'));
-      const tx = h('div', 'rtext'); tx.append(h('div', 'k', 'Что сделано'), h('p', '', p.done || '—'));
-      if (p.prob) tx.append(h('div', 'k', 'Проблемы'), h('p', '', p.prob));
-      b.append(tx);
-      linkBtn(b, [['📁 Диск', p.disk], ['💻 Код', p.code]]);
-      if (p.cut) { const full = h('button', 'act ghost', 'Текст обрезан — полностью в чате ›'); full.onclick = () => openBot('rpo_' + p.sid + '_' + p.stage); b.append(full); }
-      let score = 0;
-      if (C.a) { b.append(h('div', 'lbl2', 'Оценка — можно сразу (по желанию)')); scorePicker(b, 0, v => { score = v; acc.textContent = v ? '✅ Принять · ' + v : '✅ Принять'; }); }
-      const acc = h('button', 'act ok', '✅ Принять'), rw = h('button', 'act warn', '🔄 На доработку');
-      acc.onclick = () => send(score ? {a: 'acc', r: p.rid, v: score} : {a: 'acc', r: p.rid}, 'принять: ' + p.name + ', этап ' + p.stage);
+    const it = ITEM[p.iid], pts = it ? ptsOf(it, p.who.gr) : 0;
+    sheet('Проверка', b => {
+      b.append(h('div', 'sht', p.who.name + ' · ' + p.who.gr + ' кл.'));
+      if (it) b.append(h('div', 'shs', E.cats[it.ci].em + ' ' + E.cats[it.ci].t + ' · ' + it.t + ' · ' + fp(pts) + ' б.'));
+      b.append(h('div', 'shs', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : '')));
+      if (it && it.hint) b.append(h('div', 'shs', '🎯 ' + it.hint));
+      if (p.text || (it && it.need.includes('t'))) { const tx = h('div', 'rtext'); tx.append(h('div', 'k', it && it.need.includes('t') ? 'Текст' : 'Комментарий'), h('p', '', p.text || '—')); b.append(tx); }
+      linkBtn(b, [['📁 Файл', p.file], [it && it.need.includes('r') ? '🔗 Репозиторий' : '🔗 Коммит', p.code]]);
+      if (p.cut) { const full = h('button', 'act ghost', 'Текст обрезан — полностью в чате ›'); full.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid); b.append(full); }
+      b.append(h('div', 'lbl2', 'Оценка 0–10 — обязательна при приёме'));
+      let score = null;
+      const hint = h('div', 'shs', 'Баллы ученика = ' + fp(pts) + ' × оценка / 10');
+      scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; acc.textContent = '✅ Принять · ' + v; acc.classList.remove('dim'); });
+      b.append(hint);
+      const acc = h('button', 'act ok dim', '✅ Принять — выберите оценку'), rw = h('button', 'act warn', '🔄 На доработку');
+      acc.onclick = () => {
+        if (score == null) { haptic('heavy'); hint.textContent = '👆 Сначала выберите оценку'; hint.style.color = 'var(--bad)'; return; }
+        if (needKB()) return;
+        send({a: 'acc', r: p.rid, v: score}, 'принять с оценкой ' + score + ': ' + p.who.name + ', «' + iname(p.iid) + '»');
+      };
       rw.onclick = () => openRework(p);
       const r2 = h('div', 'row2'); r2.append(acc, rw); b.append(r2);
-      const card = h('button', 'act ghost', 'Открыть в чате'); card.onclick = () => openBot('rpo_' + p.sid + '_' + p.stage); b.append(card);
+      const card = h('button', 'act ghost', 'Открыть в чате'); card.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid); b.append(card);
     });
   }
   function openRework(p){
     if (needKB()) return;
     sheet('На доработку', b => {
-      b.append(h('div', 'sht', p.name + ' · этап ' + p.stage), h('div', 'shs', 'Ученик получит комментарий и исправит отчёт'));
+      b.append(h('div', 'sht', p.who.name + ' · ' + iname(p.iid)), h('div', 'shs', 'Ученик получит комментарий и пришлёт новую версию. До неё — 0 баллов.'));
       const f = field('Что исправить', {multi: true, req: true, rows: 4, max: 1000, value: (load('rw_' + p.rid) || {}).c, ph: 'Комментарий для ученика'});
       f.inp.addEventListener('input', () => store('rw_' + p.rid, {c: f.inp.value}));
       b.append(f.w);
       const q = h('div', 'qchips');
       REWORK_HINTS.forEach(t => { const c = h('button', '', '+ ' + t); c.onclick = e => { e.preventDefault(); f.inp.value = (f.inp.value.trim() ? f.inp.value.trim() + '. ' : '') + t; f.inp.dispatchEvent(new Event('input')); haptic('sel'); }; q.append(c); });
       b.append(q);
-      const go = h('button', 'act warn', '🔄 Вернуть на доработку'), back = h('button', 'act ghost', '← К отчёту');
+      const go = h('button', 'act warn', '🔄 Вернуть на доработку'), back = h('button', 'act ghost', '← К пункту');
       go.onclick = () => {
         if (!f.val()) { f.err('Напишите, что исправить'); return haptic('heavy'); }
         if (f.val().length > 1000) { f.err('Слишком длинно — до 1000 символов'); return haptic('heavy'); }
-        send({a: 'rw', r: p.rid, c: f.val()}, 'на доработку: ' + p.name + ', этап ' + p.stage, () => store('rw_' + p.rid, null));
+        send({a: 'rw', r: p.rid, c: f.val()}, 'на доработку: ' + p.who.name + ', «' + iname(p.iid) + '»', () => store('rw_' + p.rid, null));
       };
       back.onclick = () => openReview(p);
       b.append(go, back);
     });
   }
-  function openScore(p, st, c){
+  function openScore(p, it, sc){
     if (needKB()) return;
-    sheet('Оценка', b => {
-      b.append(h('div', 'sht', p.name + ' · этап ' + st.id), h('div', 'shs', st.title + ' · отчёт принят' + (c.score ? ', сейчас ' + c.score + ' из 10' : ', без оценки')));
-      let score = c.score;
-      scorePicker(b, c.score, v => { score = v; go.textContent = v ? '⭐ Поставить ' + v : '⭐ Выберите оценку'; });
-      const go = h('button', 'act', c.score ? '⭐ Поставить ' + c.score : '⭐ Выберите оценку');
-      go.onclick = () => score ? send({a: 'sc', r: c.rid, v: score}, 'оценка ' + score + ': ' + p.name) : haptic('heavy');
+    const pts = ptsOf(it, p.gr);
+    sheet('Изменить оценку', b => {
+      b.append(h('div', 'sht', p.name + ' · ' + it.t), h('div', 'shs', 'Принят, сейчас ' + sc + '/10 → ' + fp(pts * sc / 10) + ' из ' + fp(pts) + ' б.'));
+      let score = null;
+      const hint = h('div', 'shs', 'Выберите новую оценку');
+      scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; go.textContent = '⭐ Поставить ' + v; });
+      b.append(hint);
+      const go = h('button', 'act', '⭐ Выберите оценку');
+      go.onclick = () => score == null ? haptic('heavy') : send({a: 'sc', s: p.id, i: it.id, v: score}, 'оценка ' + score + ': ' + p.name + ', «' + it.t + '»');
       b.append(go);
-      if (c.score) { const rm = h('button', 'act ghost', 'Убрать оценку'); rm.onclick = () => send({a: 'sc', r: c.rid, v: 0}, 'убрать оценку: ' + p.name); b.append(rm); }
-      const card = h('button', 'act ghost', 'Отчёт в чате'); card.onclick = () => openBot('rpo_' + p.id + '_' + st.id); b.append(card);
+      const card = h('button', 'act ghost', 'Открыть в чате'); card.onclick = () => openBot('rpo_' + p.id + '_' + it.id); b.append(card);
     });
   }
-  function openDeadline(st){
+  function openStudent(p){
+    sheet(p.name, b => {
+      b.append(h('div', 'shs', p.gr + ' класс' + (p.off ? ' · не в группе' : '') + (p.debt ? ' · ⚠️ долг: ' + p.debt : '')));
+      const rg = h('div', 'rings dark');
+      E.cats.forEach((c, i) => { const x = h('div', 'rg'); x.append(ringSvg(p.P[i] / 10, fp(p.P[i]), 56), h('div', 'l', c.em + ' ' + c.t)); rg.append(x); });
+      b.append(rg);
+      E.cats.forEach((c, ci) => {
+        const its = E.items.filter(it => it.ci === ci && it.gr <= p.gr);
+        b.append(h('div', 'lbl2', c.em + ' ' + c.t + ' · ' + fp(p.P[ci]) + ' из 10'));
+        const list = h('div', 'list');
+        its.forEach(it => {
+          const s = stOf(p.line[it.n]), k = SK[s.k], pts = ptsOf(it, p.gr);
+          const r = h('div', 'it'), ic = h('div', 'ic', k.e); ic.style.background = s.k === 'n' ? 'var(--bg)' : k.c;
+          const tx = h('div', 'tx'); tx.append(h('b', '', it.t), h('span', '', k.t + (s.k === 'a' ? ' · ' + s.sc + '/10' : '')));
+          const pt = h('div', 'pt', s.k === 'a' ? fp(pts * s.sc / 10) : fp(pts)); pt.append(h('small', '', s.k === 'a' ? 'из ' + fp(pts) : 'б.'));
+          r.append(ic, tx, pt);
+          r.onclick = () => {
+            const pp = s.k === 'r' && pend.find(x => x.sid === p.id && x.iid === it.id);
+            if (pp) return openReview(pp);
+            if (s.k === 'a' && C.a) return openScore(p, it, s.sc);
+            if (s.k !== 'n') return openBot('rpo_' + p.id + '_' + it.id);
+            haptic('light');
+          };
+          list.append(r);
+        });
+        b.append(list);
+      });
+      const all = h('button', 'act alt', '👤 Все пункты в чате'); all.onclick = () => openBot('rpst_' + p.id); b.append(all);
+    });
+  }
+  function openCp(id, ts){
     if (needKB()) return;
-    sheet('Срок этапа ' + st.id, b => {
-      b.append(h('div', 'sht', st.title), h('div', 'shs', st.dl ? 'Сейчас: до ' + dmhm(st.dl) + ' (МСК)' : 'Сейчас: без срока'));
-      const t = msk(st.dl || (Math.floor(now / D) + 7) * D + 20*3600 + 59*60);
-      const f = field('Новый срок (время московское)', {type: 'datetime-local', value: t.getUTCFullYear() + '-' + pad(t.getUTCMonth() + 1) + '-' + pad(t.getUTCDate()) + 'T' + pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes())});
+    sheet(id ? 'Контрольная точка' : 'Новая контрольная точка', b => {
+      b.append(h('div', 'shs', 'К каждой точке ученик сдаёт хотя бы 1 новый пункт, иначе — долг. Время московское, до 23:59.'));
+      const t = msk(ts || (Math.floor(now / D) + 14) * D);
+      const f = field('Дата', {type: 'date', value: t.getUTCFullYear() + '-' + pad(t.getUTCMonth() + 1) + '-' + pad(t.getUTCDate())});
       b.append(f.w);
-      const go = h('button', 'act', '⏰ Сохранить срок');
+      const go = h('button', 'act', '⏰ Сохранить');
       go.onclick = () => {
-        const m = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(f.inp.value);
-        if (!m) { f.err('Выберите дату и время'); return haptic('heavy'); }
-        send({a: 'dl', s: st.id, d: m[3] + '.' + m[2] + '.' + m[1] + ' ' + m[4] + ':' + m[5]}, 'срок этапа ' + st.id + ': ' + m[3] + '.' + m[2] + ' ' + m[4] + ':' + m[5]);
+        const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(f.inp.value);
+        if (!m) { f.err('Выберите дату'); return haptic('heavy'); }
+        send({a: 'cp', k: id || 0, d: m[3] + '.' + m[2] + '.' + m[1]}, 'контрольная точка ' + m[3] + '.' + m[2]);
       };
-      const none = h('button', 'act ghost', 'Сделать без срока'), file = h('button', 'act ghost', 'Вернуть срок из файла этапов');
-      none.onclick = () => send({a: 'dl', s: st.id, d: 'none'}, 'этап ' + st.id + ' без срока');
-      file.onclick = () => send({a: 'dl', s: st.id, d: 'file'}, 'срок этапа ' + st.id + ' как в файле');
-      b.append(go, none, file);
+      b.append(go);
+      if (id) { const del = h('button', 'act ghost', '🗑 Удалить точку'); del.onclick = () => send({a: 'cp', k: id, d: 'none'}, 'удалить точку ' + dm(ts)); b.append(del); }
     });
   }
 
   /* --- шапка --- */
-  const s = hero('chk', null, null, '🤖 ' + (C.g || 'Проект'), 'Проверка отчётов', null,
-    [[String(total), plural(total, 'ученик', 'ученика', 'учеников')], [String(C.q || 0), 'ждут проверки'], [String(count('w') + count('o')), 'доработка и долги']]);
+  const s = hero('chk', null, null, '🤖 ' + (C.g || 'ВсОШ'), 'Проверка ЕТЗ', null,
+    [[String(total), plural(total, 'ученик', 'ученика', 'учеников')], [String(C.q || 0), 'ждут проверки'], [String(debtors), 'с долгом']]);
   const go = h('button', 'act lt', pend.length ? '🔎 Проверить следующий (' + (C.q || pend.length) + ')' : C.q ? '🔎 Проверить в чате (' + C.q + ')' : '✅ Всё проверено');
   go.onclick = () => pend.length ? openReview(pend[0]) : C.q ? openBot('rpnext') : haptic('light');
   s.append(go); pane.append(s);
@@ -651,16 +901,17 @@ function renderCheck(){
   if (pend.length) {
     pane.append(h('h2', 'fade', 'Ждут проверки · ' + (C.q || pend.length)));
     const list = h('section', 'fade');
-    const SHOW = 5;
+    const SHOW = 6;
     const item = p => {
-      const it = h('div', 'pi'), r1 = h('div', 'r1');
-      const pill = h('span', 'pill', 'этап ' + p.stage); pill.style.color = 'var(--rev)'; pill.style.background = 'color-mix(in srgb, var(--rev) 16%, transparent)';
-      r1.append(h('b', '', p.name), pill, h('span', 'cv', '›'));
-      const sub = h('div', 'sub', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : ''));
-      if (p.late) sub.append(' · ', h('span', 'late', 'с опозданием'));
-      it.append(r1, sub, h('div', 'ex', p.done));
-      it.onclick = () => openReview(p);
-      return it;
+      const it = ITEM[p.iid], el = h('div', 'pi'), r1 = h('div', 'r1');
+      r1.append(h('b', '', p.who.name), pill((it ? E.cats[it.ci].em + ' ' : '') + (it ? fp(ptsOf(it, p.who.gr)) + ' б.' : ''), 'var(--rev)'), h('span', 'cv', '›'));
+      const sub = h('div', 'sub', iname(p.iid));
+      sub.style.color = 'var(--text)'; sub.style.fontWeight = '600';
+      const sub2 = h('div', 'sub', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : '') + ' · ' + p.who.gr + ' кл.');
+      el.append(r1, sub, sub2);
+      if (p.text) el.append(h('div', 'ex', p.text));
+      el.onclick = () => openReview(p);
+      return el;
     };
     pend.slice(0, SHOW).forEach(p => list.append(item(p)));
     if (pend.length > SHOW) { const more = h('button', 'act alt', 'Показать ещё ' + (pend.length - SHOW)); more.onclick = () => { pend.slice(SHOW).forEach(p => list.insertBefore(item(p), more)); more.remove(); haptic('sel'); }; list.append(more); }
@@ -668,79 +919,68 @@ function renderCheck(){
     pane.append(list);
   }
 
-  /* --- сроки этапов --- */
-  if (stages.length) {
-    pane.append(h('h2', 'fade', 'Сроки этапов'));
+  /* --- контрольные точки --- */
+  const cps = (C.cp || []).map(([id, ts]) => ({id, ts}));
+  if (cps.length || C.a) {
+    pane.append(h('h2', 'fade', 'Контрольные точки'));
     const card = h('section', 'card fade');
-    const active = people.filter(p => !p.off).length;
-    stages.forEach((st, i) => {
-      const row = h('div', 'dl');
-      const past = st.dl && st.dl < now, soon = st.dl && !past && st.dl - now < 3*D;
-      const n = h('div', 'n', String(st.id)); n.style.background = !st.dl ? 'var(--none)' : past ? 'var(--hint)' : soon ? 'var(--warn)' : 'var(--accent)';
-      const done = people.filter(p => !p.off && p.cells[i] && p.cells[i].st !== 'n' && p.cells[i].st !== 'o').length;
-      const t = h('div', 't'); t.append(h('b', '', st.title));
-      t.append(h('span', '', (st.dl ? 'до ' + dmhm(st.dl) + ' · ' + (past ? 'срок прошёл' : left(st.dl).txt) : 'без срока') + ' · сдали ' + done + ' из ' + active));
+    cps.forEach((cp, i) => {
+      const row = h('div', 'dl'), past = cp.ts < now, soon = !past && cp.ts - now < 3*D;
+      const n = h('div', 'n', String(i + 1)); n.style.background = past ? 'var(--hint)' : soon ? 'var(--warn)' : 'var(--accent)';
+      const t = h('div', 't'); t.append(h('b', '', 'до ' + dmhm(cp.ts)), h('span', '', past ? 'прошла' : left(cp.ts).txt));
       row.append(n, t);
-      if (C.a) { const b = h('button', 'mini', 'Изменить'); b.onclick = () => openDeadline(st); row.append(b); }
+      if (C.a) { const b = h('button', 'mini', 'Изменить'); b.onclick = () => openCp(cp.id, cp.ts); row.append(b); }
       card.append(row);
     });
+    if (!cps.length) card.append(h('div', 'sub', 'Точек пока нет'));
+    card.append(h('div', 'sub', debtors ? '⚠️ С долгом: ' + debtors + ' ' + plural(debtors, 'ученик', 'ученика', 'учеников') + ' — фильтр «Долг» ниже' : 'Долгов нет'));
+    if (C.a) { const add = h('button', 'act alt', '＋ Добавить точку'); add.onclick = () => openCp(0, 0); card.append(add); }
     pane.append(card);
   }
 
-  /* --- сводка ученики × этапы --- */
-  pane.append(h('h2', 'fade', 'Ученики · нажмите на клетку'));
+  /* --- ученики --- */
+  pane.append(h('h2', 'fade', 'Ученики · баллы М / Э / П'));
   if (!people.length) return empty(pane, '🧑‍🎓', 'Учеников пока нет', 'Они появятся, когда зарегистрируются в /reports.');
   const sb = h('label', 'search fade'), inp = h('input'); inp.type = 'search'; inp.placeholder = 'Поиск по фамилии'; inp.autocomplete = 'off';
   sb.append(h('span', '', '🔍'), inp); pane.append(sb);
-  const FL = [['all', 'Все'], ['r', '🕓 Ждут проверки'], ['w', '↻ Доработка'], ['o', '! Просрочено']];
+  const FL = [['all', 'Все'], ['r', '🕓 Ждут проверки'], ['w', '↻ Доработка'], ['d', '⚠️ Долг'], ['9', '9 кл'], ['10', '10 кл'], ['11', '11 кл']];
   let filter = 'all', shown = PAGE;
   const chips = h('div', 'chips fade');
   FL.forEach(([k, t]) => { const b = h('button', k === filter ? 'on' : '', t); b.onclick = () => { filter = k; shown = PAGE; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); haptic('sel'); draw(); }; chips.append(b); });
   pane.append(chips);
-  const box = h('section', 'card fade'), mx = h('div', 'mx'), tbl = h('table');
-  const head = h('tr'); head.append(h('th'));
-  stages.forEach(st => { const th = h('th', '', 'Э' + st.id); th.title = st.title; head.append(th); });
-  const thead = h('thead'); thead.append(head);
-  const tb = h('tbody'); tbl.append(thead, tb); mx.append(tbl); box.append(mx);
-  const moreBtn = h('button', 'act alt'); moreBtn.onclick = () => { shown += PAGE; haptic('sel'); draw(); };
-  const note = h('div', 'sub'); note.style.marginTop = '8px';
-  const lg = h('div', 'legend');
-  [['var(--ok)', 'принят (балл)'], ['var(--rev)', 'на проверке'], ['var(--warn)', 'доработка'], ['var(--bad)', 'просрочен']]
-    .forEach(([c, t]) => { const e = h('span', '', t); e.style.setProperty('--c', c); lg.append(e); });
-  box.append(moreBtn, note, lg); pane.append(box);
+  const box = h('section', 'list fade'), moreBtn = h('button', 'act alt'), note = h('div', 'sub');
+  note.style.margin = '8px 4px 0';
+  moreBtn.onclick = () => { shown += PAGE; haptic('sel'); draw(); };
+  pane.append(box, moreBtn, note);
   const norm = v => v.toLowerCase().replace(/ё/g, 'е').trim();
-  function tap(p, st, c){
-    if (c.st === 'r' && pendByRid[c.rid]) return openReview(pendByRid[c.rid]);
-    if (c.st === 'a' && C.a && c.rid) return openScore(p, st, c);
-    if (c.st === 'a' || c.st === 'r' || c.st === 'w') return openBot('rpo_' + p.id + '_' + st.id);
-    openBot('rpst_' + p.id);
+  const pass = p => filter === 'all' || (filter === 'r' && p.wait) || (filter === 'w' && p.fix) || (filter === 'd' && p.debt) || String(p.gr) === filter;
+  function row(p){
+    const r = h('div', 'it'), tx = h('div', 'tx');
+    tx.append(h('b', '', p.name + (p.off ? ' · не в группе' : '')));
+    const sub = h('span', '', p.gr + ' кл. · ' + E.cats.map((c, i) => c.t[0] + ' ' + fp(p.P[i])).join(' · '));
+    tx.append(sub);
+    const badges = h('div', 'bdg');
+    if (p.wait) badges.append(pill('🕓 ' + p.wait, 'var(--rev)'));
+    if (p.fix) badges.append(pill('↻ ' + p.fix, 'var(--warn)'));
+    if (p.debt) badges.append(pill('⚠️ ' + p.debt, 'var(--bad)'));
+    const sum = h('div', 'pt', fp(p.P.reduce((a, v) => a + v, 0))); sum.append(h('small', '', 'из 30'));
+    r.append(tx, badges, sum);
+    r.onclick = () => openStudent(p);
+    return r;
   }
   function draw(){
     const q = norm(inp.value);
-    const list = people.filter(p => (!q || norm(p.name).includes(q)) && (filter === 'all' || p.cells.some(c => c.st === filter)));
+    const list = people.filter(p => (!q || norm(p.name).includes(q)) && pass(p));
     const frag = document.createDocumentFragment();
-    list.slice(0, shown).forEach(p => {
-      const tr = h('tr'), nm = h('td', 'nm', p.name);
-      if (p.off) nm.append(h('i', '', ' · не в группе'));
-      nm.onclick = () => openBot('rpst_' + p.id); tr.append(nm);
-      stages.forEach((st, i) => {
-        const c = p.cells[i] || {st: 'n', score: 0, rid: 0}, [col, ic] = CELL[c.st] || CELL.n;
-        const td = h('td', 'c', c.st === 'a' ? (c.score ? String(c.score) : '✓') : ic);
-        if (col) td.style.background = col;
-        td.title = 'Этап ' + st.id + ': ' + (ST[c.st] || ST.n).t;
-        td.onclick = () => tap(p, st, c);
-        tr.append(td);
-      });
-      frag.append(tr);
-    });
-    tb.replaceChildren(frag);
+    list.slice(0, shown).forEach(p => frag.append(row(p)));
+    box.replaceChildren(frag);
     moreBtn.hidden = list.length <= shown;
     moreBtn.textContent = 'Показать ещё ' + Math.min(PAGE, list.length - shown) + ' из ' + (list.length - shown);
     const parts = [];
     if (!list.length) parts.push(q ? 'Никого не нашли по «' + inp.value.trim() + '»' : 'Таких сейчас нет');
     else if (q || filter !== 'all') parts.push('Найдено: ' + list.length);
-    if (C.m) parts.push('Ещё ' + C.m + ' ' + plural(C.m, 'ученик', 'ученика', 'учеников') + ' без отчётов к проверке не влезли — их ищите в боте: /student фамилия');
-    parts.push(C.a ? 'Клетка «на проверке» — проверить, «принят» — оценка, фамилия — все отчёты в чате' : 'Клетка «на проверке» — проверить, фамилия — все отчёты ученика в чате');
+    if (C.m) parts.push('Ещё ' + C.m + ' ' + plural(C.m, 'ученик', 'ученика', 'учеников') + ' не влезли — их ищите в боте: /student фамилия');
+    parts.push('Нажмите на ученика — все его пункты' + (C.a ? '; у принятого можно изменить оценку' : ''));
     note.textContent = parts.join(' · ');
   }
   let tmr = 0;
@@ -752,7 +992,7 @@ function renderCheck(){
 function renderPending(){
   if (inTg && !KB && !demo) {  // кнопка меню: постоянная подсказка, где отправлять
     const b = h('div', 'banner fade'), t = h('div', 't'), go = h('button', 'act', 'Открыть');
-    t.append(h('b', '', 'Сдать или проверить отчёт'), ' — только из кнопки «📱\u00a0Приложение» под полем ввода.');
+    t.append(h('b', '', 'Сдать или проверить пункты'), ' — только из кнопки «📱\u00a0Приложение» под полем ввода.');
     go.onclick = () => openBot('app');
     b.append(t, go); $('banner').append(b);
     return;
@@ -789,6 +1029,7 @@ function show(t){
   tab = t === 'k' ? 'k' : t === 'c' && hasC ? 'c' : 'r';
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   ['r', 'k', 'c'].forEach(x => $('pane-' + x).classList.toggle('on', tab === x));
+  drawCart();
   try { localStorage.setItem('tab', tab); } catch (e) {}
 }
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { show(b.dataset.t); haptic('sel'); window.scrollTo(0, 0); });
