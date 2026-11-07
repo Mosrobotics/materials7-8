@@ -193,13 +193,15 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
 .seg button.on{background:var(--accent);color:var(--accent-t)}
 .grp{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 7px}
 .grp b{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--hint)}
-.grp span{font-size:12.5px;font-weight:700;color:var(--hint)}
+.grp span{font-size:12.5px;font-weight:700;color:var(--hint);white-space:nowrap;flex:none;margin-left:10px}
 .list{border-radius:var(--r);overflow:hidden;background:var(--card)}
 .it{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--sep);cursor:pointer;transition:background .15s}
 .list .it:first-child{border-top:0}
 .it:active{background:color-mix(in srgb,var(--text) 5%,transparent)}
 .it.inc{box-shadow:inset 3px 0 0 var(--accent)}
-.it .ic{width:32px;height:32px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;letter-spacing:-2px}
+.it .ic{width:38px;height:38px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--bg);position:relative}
+.it .ic .bd{position:absolute;right:-5px;bottom:-5px;min-width:17px;height:17px;padding:0 3px;border-radius:9px;color:#fff;font-size:10.5px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px var(--card)}
+.cico{display:inline-flex;vertical-align:-.14em}.cico svg{width:1.25em;height:1.25em}
 .it .tx{flex:1;min-width:0}
 .it .tx b{display:block;font-size:14.5px;font-weight:600;line-height:1.3}
 .it .tx span{display:block;font-size:12.5px;color:var(--hint);margin-top:1px}
@@ -261,7 +263,7 @@ let data = null, zfail = false;
 const QS = new URLSearchParams(location.search);
 try { if (QS.get('d')) data = decode(QS.get('d')); } catch (e) {}
 if (!data && QS.get('z')) { try { data = await decodeZ(QS.get('z')); } catch (e) { zfail = true; } }
-const DEMO_E = {"c":[["m","Механика",[["Выбор",10.0],["Моделирование",60.0],["Сборка",30.0]]],["e","Электроника",[["Выбор",10.0],["Схемы",30.0],["Разводка платы",30.0],["Монтаж",30.0]]],["p","Программа",[["Git",10.0],["Функции",90.0]]]],"i":[[101,0,0,"Выбор кинематики на плоскости","Какую кинематику выбрали (декартова, H-bot, CoreXY…) и почему",9,"t","",0.3333,0.3333,0.3333],[102,0,0,"Выбор подъёмного механизма","Чем поднимаете рабочий орган и почему",9,"t","",0.3333,0.3333,0.3333],[103,0,0,"Выбор направляющих","Какие направляющие и почему",9,"t","",0.3333,0.3333,0.3333],[104,0,1,"Модель кинематики XY (CAD)","Файл или скриншот модели из CAD",9,"f","",2.0,2.0,2.0],[105,0,1,"Модель подъёмного механизма (CAD)","Файл или скриншот модели из CAD",9,"f","",2.0,2.0,2.0],[106,0,1,"Модель всего устройства (CAD)","Сборка всего устройства в CAD",9,"f","",2.0,2.0,2.0],[107,0,2,"Сборка кинематики XY","Фото или видео собранной кинематики",9,"f","",1.5,1.5,1.0],[108,0,2,"Сборка подъёмного механизма","Фото или видео собранного механизма",9,"f","",1.5,1.5,1.0],[109,0,2,"Поворот шашки на любой угол 0–360°","Видео: удерживаемая шашка поворачивается на заданный угол",11,"f","",0.0,0.0,1.0],[201,1,0,"Выбор устройства высокого уровня (ПК / микрокомпьютер)","Что будет обрабатывать изображение и почему",9,"t","",0.3333,0.3333,0.3333],[202,1,0,"Выбор контроллера","Какой контроллер и почему",9,"t","",0.3333,0.3333,0.3333],[203,1,0,"Выбор питания","Источник питания, напряжения, токи",9,"t","",0.3333,0.3333,0.3333],[204,1,1,"Структурная схема","Файл или скриншот схемы",9,"f","",1.0,1.0,1.0],[205,1,1,"Принципиальная схема","Файл схемы из CAD",9,"f","",2.0,2.0,2.0],[206,1,2,"Разводка печатной платы","Файл платы или проекта из CAD",9,"f","",3.0,3.0,3.0],[207,1,3,"Демонстрация работы печатной платы","Видео: плата собрана и работает",9,"f","",1.8,1.8,1.8],[208,1,3,"Разъёмы А (аналог.), Б (цифр.), В (UART)","Видео: модули работают через разъёмы А, Б и В",9,"f","",1.2,1.2,1.2],[301,2,0,"Git-репозиторий","Ссылка на репозиторий проекта (GitHub, GitLab…) с открытым доступом",9,"r","",1.0,1.0,1.0],[302,2,1,"Связь ПК и контроллера","Коммит с кодом связи; видео — по желанию",9,"fc","f",1.0,0.72,0.72],[303,2,1,"Цвета на изображении и их координаты","Коммит и фото/скриншот: найденные шашки и их координаты",9,"fc","",1.5,1.08,1.08],[304,2,1,"Определение листа на поле по меткам ArUco","Коммит и фото/скриншот: найденный лист операционного поля",9,"fc","",1.0,0.72,0.72],[305,2,1,"Чтение маркеров на шашках (ArUco, AprilTag, QR)","Коммит и фото/скриншот: прочитанные маркеры",10,"fc","",0.0,0.72,0.72],[306,2,1,"Движение рабочего органа и подъёмного механизма","Коммит и видео движения",9,"fc","",1.0,0.72,0.72],[307,2,1,"Начальное положение шашек; захват, перенос, установка в клетку","Коммит и видео: шашка перенесена в заданную клетку",9,"fc","",2.0,1.44,1.44],[308,2,1,"Задача с вводом параметров и выводом с ПК","Ввод номера задачи и клеток, вывод хода решения на ПК. Коммит и видео",9,"fc","",1.5,1.08,1.08],[309,2,1,"Стопка до 5 шашек","Коммит и видео: шашки ставятся друг на друга",9,"fc","",1.0,0.72,0.72],[310,2,1,"Захват верхней шашки из стопки","Коммит и видео",10,"fc","",0.0,0.72,0.72],[311,2,1,"Графическая фигура на наклейке","Коммит и видео: распознана фигура на наклейке",10,"fc","",0.0,1.08,1.08]]};   // справочник для демо (в боте он приходит в ссылке)
+const DEMO_E = {"c":[["m","Механика",[["Выбор",10.0],["Моделирование",60.0],["Сборка",30.0]],"фото/файл"],["e","Электроника",[["Выбор",10.0],["Печатная плата",90.0]],"файл"],["p","Программа",[["Git",10.0],["Низкий уровень · микроконтроллер",15.0],["Верхний уровень · логика и перемещение шашек",40.0],["Камера · компьютерное зрение",35.0]],"файл"]],"i":[[101,0,0,"Выбор кинематики на плоскости","Какую кинематику выбрали (декартова, H-bot, CoreXY…) и почему",9,"t","",0.3333,0.3333,0.3333,"🧭"],[102,0,0,"Выбор подъёмного механизма","Чем поднимаете рабочий орган и почему",9,"t","",0.3333,0.3333,0.3333,"🏗️"],[103,0,0,"Выбор направляющих","Какие направляющие и почему",9,"t","",0.3333,0.3333,0.3333,"🛤️"],[104,0,1,"Модель кинематики XY (CAD)","Фото (скриншот) или файл модели из CAD",9,"f","",2.0,2.0,2.0,"🧩"],[105,0,1,"Модель подъёмного механизма (CAD)","Фото (скриншот) или файл модели из CAD",9,"f","",2.0,2.0,2.0,"🪜"],[106,0,1,"Модель всего устройства (CAD)","Фото (скриншот) или файл сборки всего устройства в CAD",9,"f","",2.0,2.0,2.0,"🤖"],[107,0,2,"Сборка кинематики XY","Фото или видео собранной кинематики",9,"f","",1.5,1.5,1.0,"🔧"],[108,0,2,"Сборка подъёмного механизма","Фото или видео собранного механизма",9,"f","",1.5,1.5,1.0,"🔩"],[109,0,2,"Поворот шашки на любой угол 0–360°","Видео: удерживаемая шашка поворачивается на заданный угол",11,"f","",0.0,0.0,1.0,"🔄"],[201,1,0,"Выбор устройства высокого уровня (ПК / микрокомпьютер)","Что будет обрабатывать изображение и почему",9,"t","",0.3333,0.3333,0.3333,"🖥️"],[202,1,0,"Выбор контроллера","Какой контроллер и почему",9,"t","",0.3333,0.3333,0.3333,"🎛️"],[203,1,0,"Выбор питания","Источник питания, напряжения, токи",9,"t","",0.3333,0.3333,0.3333,"🔋"],[204,1,1,"Структурная схема","Файл или скриншот схемы",9,"f","",1.0,1.0,1.0,"🗺️"],[205,1,1,"Принципиальная схема","Файл схемы из CAD",9,"f","",2.0,2.0,2.0,"✏️"],[206,1,1,"Разводка печатной платы","Файл платы или проекта из CAD",9,"f","",3.0,3.0,3.0,"🔀"],[207,1,1,"Монтаж платы","Видео: плата собрана и работает",9,"f","",2.0,2.0,2.0,"🪛"],[208,1,1,"Соблюдены требования к плате","Видео: разъёмы А (аналог.), Б (цифр.), В (UART) работают",9,"f","",1.0,1.0,1.0,"📋"],[301,2,0,"Git-репозиторий","Ссылка на репозиторий проекта (GitHub, GitLab…) с открытым доступом",9,"r","",1.0,1.0,1.0,"🌿"],[302,2,1,"Связь ПК и контроллера","Коммит с кодом связи; видео — по желанию",9,"fc","f",0.75,0.75,0.75,"📡"],[306,2,1,"Движение рабочего органа и подъёмного механизма","Коммит и видео движения",9,"fc","",0.75,0.75,0.75,"🦾"],[307,2,2,"Начальное положение шашек; захват, перенос, установка в клетку","Коммит и видео: шашка перенесена в заданную клетку",9,"fc","",1.7778,1.4545,1.4545,"♟️"],[308,2,2,"Задача с вводом параметров и выводом с ПК","Ввод номера задачи и клеток, вывод хода решения на ПК. Коммит и видео",9,"fc","",1.3333,1.0909,1.0909,"⌨️"],[309,2,2,"Стопка до 5 шашек","Коммит и видео: шашки ставятся друг на друга",9,"fc","",0.8889,0.7273,0.7273,"🥞"],[310,2,2,"Захват верхней шашки из стопки","Коммит и видео",10,"fc","",0.0,0.7273,0.7273,"🔝"],[303,2,3,"Цвета на изображении и их координаты","Коммит и фото/скриншот: найденные шашки и их координаты",9,"fc","",2.1,1.05,1.05,"🎨"],[304,2,3,"Определение листа на поле по меткам ArUco","Коммит и фото/скриншот: найденный лист операционного поля",9,"fc","",1.4,0.7,0.7,"📄"],[305,2,3,"Чтение маркеров на шашках (ArUco, AprilTag, QR)","Коммит и фото/скриншот: прочитанные маркеры",10,"fc","",0.0,0.7,0.7,"🏷️"],[311,2,3,"Графическая фигура на наклейке","Коммит и видео: распознана фигура на наклейке",10,"fc","",0.0,1.05,1.05,"🖼️"]]};   // справочник для демо (в боте он приходит в ссылке)
 const now = Date.now()/1000, D = 86400;
 let demo = false;
 if (!data && !inTg) {
@@ -387,21 +389,24 @@ function hero(cls, ringFrac, ringText, hello, title, chip, stats){
     const fg = top.querySelector('.fg');
     setTimeout(() => { fg.style.strokeDashoffset = String(263.9 * (1 - ringFrac)); }, 150);
   }
-  const t = h('div'); t.append(h('div', 'hello', hello), h('div', 'title', title));
+  const t = h('div'); if (hello) t.append(h('div', 'hello', hello)); t.append(h('div', 'title', title));
   if (chip) t.append(h('span', 'chip', chip));
   top.append(t); s.append(top);
   if (stats) { const g = h('div', 'stats'); stats.forEach(([v, l]) => { const e = h('div', 'stat'); e.append(h('b', '', v), h('span', '', l)); g.append(e); }); s.append(g); }
   return s;
 }
 const user = inTg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-const hello = user && user.first_name ? 'Привет, ' + user.first_name + '!' : 'Привет!';
 
 /* ---------- ЕТЗ: справочник пунктов (общий для ученика и тренера) ---------- */
-const CATI = ['⚙️', '🔌', '💻'];
+const CATI = {m: '⚙️', e: 'chip', p: '💻'};
+const CHIP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.2"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx=".8" fill="currentColor" stroke="none"/><path d="M9.5 2.5v3.5M14.5 2.5v3.5M9.5 18v3.5M14.5 18v3.5M2.5 9.5h3.5M2.5 14.5h3.5M18 9.5h3.5M18 14.5h3.5"/></svg>';
+/* значок категории: у Электроники — нарисованная микросхема (такого эмодзи нет), у остальных — эмодзи */
+function catIco(c){ const e = h('span', 'cico'); if (c.em === 'chip') e.innerHTML = CHIP; else e.textContent = c.em; return e; }
+const withCat = (el, c, rest) => { el.append(catIco(c), ' ' + rest); return el; };
 const E = (function(e){
   if (!e || !e.i) return null;
-  return {cats: (e.c || []).map(([k, t, g], i) => ({k, t, i, em: CATI[i] || '•', groups: (g || []).map(([gt, sh]) => ({t: gt, sh}))})),
-          items: e.i.map((x, n) => ({n, id: x[0], ci: x[1], gi: x[2], t: x[3], hint: x[4] || '', gr: x[5], need: x[6] || '', opt: x[7] || '', pts: [x[8] || 0, x[9] || 0, x[10] || 0]}))};
+  return {cats: (e.c || []).map(([k, t, g, fl], i) => ({k, t, i, em: CATI[k] || '•', fl: fl || 'файл', groups: (g || []).map(([gt, sh]) => ({t: gt, sh}))})),
+          items: e.i.map((x, n) => ({n, id: x[0], ci: x[1], gi: x[2], t: x[3], hint: x[4] || '', gr: x[5], need: x[6] || '', opt: x[7] || '', pts: [x[8] || 0, x[9] || 0, x[10] || 0], em: x[11] || ''}))};
 })(data.e);
 const ITEM = E ? Object.fromEntries(E.items.map(it => [it.id, it])) : {};
 const ptsOf = (it, gr) => it.pts[Math.min(2, Math.max(0, (gr || 9) - 9))] || 0;
@@ -416,7 +421,16 @@ function catPoints(line, gr){
 }
 const NEEDI = {t: '📝', f: '📁', c: '🔗', r: '🔗'};
 const NEEDT = {t: 'текст', f: 'файл', c: 'коммит', r: 'репозиторий'};
-const needIcons = it => it.need.split('').map(n => NEEDI[n]).join('');
+const fileLbl = it => (E.cats[it.ci] || {}).fl || 'файл';
+const needI = (it, n) => n === 'f' && fileLbl(it) !== 'файл' ? '📷' : NEEDI[n];
+const needT = (it, n) => n === 'f' ? fileLbl(it) : NEEDT[n];
+const needIcons = it => it.need.split('').map(n => needI(it, n)).join('');
+/* кружок пункта: его эмодзи; статус — цветной ободок и значок в углу */
+function itemIc(it, s){
+  const k = SK[s.k], ic = h('div', 'ic', it.em || needIcons(it).slice(0, 2));
+  if (s.k !== 'n') { ic.style.boxShadow = 'inset 0 0 0 2px ' + k.c; ic.style.background = 'color-mix(in srgb, ' + k.c + ' 14%, var(--card))'; ic.append(h('span', 'bd', s.k === 'a' ? (s.sc === 10 ? '✓' : String(s.sc)) : k.e)); ic.lastChild.style.background = k.c; }
+  return ic;
+}
 const pill = (text, color) => { const p = h('span', 'pill', text); p.style.color = color; p.style.background = 'color-mix(in srgb, ' + color + ' 16%, transparent)'; return p; };
 function ringSvg(frac, text, size){
   const w = h('div'); w.innerHTML = '<svg class="ring" viewBox="0 0 100 100" style="width:' + size + 'px;height:' + size + 'px"><circle class="bgc" cx="50" cy="50" r="42"/><circle class="fg" cx="50" cy="50" r="42" transform="rotate(-90 50 50)" stroke-dasharray="263.9" stroke-dashoffset="263.9"/><text x="50" y="59" text-anchor="middle" font-size="25"></text></svg>';
@@ -486,12 +500,12 @@ function renderReports(){
   /* шапка: три кольца */
   const hs = h('section', 'hero rep fade'), top = h('div');
   top.style.cssText = 'position:relative;z-index:1';
-  top.append(h('div', 'hello', hello), h('div', 'title', 'ЕТЗ 2026–27'), h('span', 'chip', '🎓 ' + gr + ' класс · ' + (R.g || 'ВсОШ')));
+  top.append(h('div', 'title', 'ЕТЗ 2026–27'), h('span', 'chip', '🎓 ' + gr + ' класс · ' + (R.g || 'ВсОШ')));
   hs.append(top);
   const rg = h('div', 'rings');
   E.cats.forEach((c, i) => {
     const b = h('button', 'rg' + (i === curCat ? ' on' : ''));
-    b.append(ringSvg(P[i] / 10, fp(P[i]), 64), h('div', 'l', c.em + ' ' + c.t), h('div', 'm', 'из 10'));
+    b.append(ringSvg(P[i] / 10, fp(P[i]), 64), withCat(h('div', 'l'), c, c.t), h('div', 'm', 'из 10'));
     b.onclick = () => { curCat = i; store('cat', i); haptic('sel'); renderReports(); const el = $('cats'); el && el.scrollIntoView({behavior: 'smooth', block: 'start'}); };
     rg.append(b);
   });
@@ -538,7 +552,7 @@ function renderReports(){
   /* категории → группы → пункты */
   const seg = h('div', 'seg'); seg.id = 'cats';
   E.cats.forEach((c, i) => {
-    const b = h('button', i === curCat ? 'on' : ''); b.append(c.em + ' ' + c.t, h('small', '', fp(P[i]) + ' из 10'));
+    const b = h('button', i === curCat ? 'on' : ''); withCat(b, c, c.t); b.append(h('small', '', fp(P[i]) + ' из 10'));
     b.onclick = () => { curCat = i; store('cat', i); haptic('sel'); renderReports(); $('cats').scrollIntoView({block: 'start'}); };
     seg.append(b);
   });
@@ -553,16 +567,15 @@ function renderReports(){
     its.forEach(it => list.append(itemRow(it, gr)));
     pane.append(list);
   });
-  pane.append(h('div', 'sub legend2', '📝 текст · 📁 файл из вашей папки · 🔗 коммит или репозиторий · баллы = баллы пункта × оценка / 10'));
+  pane.append(h('div', 'sub legend2', '📝 текст · 📁 файл или 📷 фото из вашей папки · 🔗 коммит или репозиторий · баллы = баллы пункта × оценка / 10'));
   drawCart();
 }
 
 function itemRow(it, gr){
   const k = SK[it.s.k], inCart = !!cart[it.id], pts = ptsOf(it, gr);
-  const r = h('div', 'it' + (inCart ? ' inc' : '')), ic = h('div', 'ic', k.e || needIcons(it).slice(0, 2)); ic.style.background = it.s.k === 'n' ? 'var(--bg)' : k.c;
-  if (it.s.k === 'n') ic.style.fontSize = '14px';
+  const r = h('div', 'it' + (inCart ? ' inc' : '')), ic = itemIc(it, it.s);
   const tx = h('div', 'tx'); tx.append(h('b', '', it.t));
-  const sub = h('span', '', inCart ? '📤 в отправке' : it.s.k === 'n' ? needIcons(it) + ' ' + it.need.split('').map(n => NEEDT[n]).join(' + ') : k.t + (it.s.k === 'a' ? ' · оценка ' + it.s.sc : ''));
+  const sub = h('span', '', inCart ? '📤 в отправке' : it.s.k === 'n' ? needIcons(it) + ' ' + it.need.split('').map(n => needT(it, n)).join(' + ') : k.t + (it.s.k === 'a' ? ' · оценка ' + it.s.sc : ''));
   if (inCart) sub.style.color = 'var(--accent)'; else if (it.s.k !== 'n') sub.style.color = k.c;
   tx.append(sub);
   const pt = h('div', 'pt');
@@ -578,7 +591,7 @@ function openItem(it, gr){
   const editable = it.s.k === 'n' || it.s.k === 'w';
   if (editable && needKB()) return;
   sheet(it.t, b => {
-    b.append(h('div', 'shs', cat.em + ' ' + cat.t + ' · ' + grp.t + ' · ' + fp(pts) + ' б.'));
+    b.append(withCat(h('div', 'shs'), cat, cat.t + ' · ' + grp.t + ' · ' + fp(pts) + ' б.'));
     if (it.hint) b.append(h('div', 'rtext', it.hint));
     const k = SK[it.s.k], st = h('div', 'shs'); st.style.marginTop = '8px';
     st.append(pill(k.t, k.c));
@@ -595,7 +608,7 @@ function openItem(it, gr){
     const opt = n => it.opt.includes(n);
     if (it.need.includes('t')) fs.t = field('Текст: что выбрали и почему', {multi: true, req: true, rows: 5, max: MAXT, value: saved.t, ph: 'Например: выбрали CoreXY — каретка легче, моторы стоят неподвижно…'});
     else fs.t = field('Комментарий для проверяющего', {multi: true, rows: 2, max: MAXT, value: saved.t, ph: 'По желанию'});
-    if (it.need.includes('f')) fs.f = field('Ссылка на файл в вашей папке', {type: 'url', req: !opt('f'), value: saved.f, ph: (L.d || 'https://disk.yandex.ru/d/…') + '/…',
+    if (it.need.includes('f')) fs.f = field('Ссылка на ' + fileLbl(it) + ' в вашей папке', {type: 'url', req: !opt('f'), value: saved.f, ph: (L.d || 'https://disk.yandex.ru/d/…') + '/…',
       hint: L.d ? 'Откройте свою папку, нажмите на файл и скопируйте адрес' + (opt('f') ? ' · по желанию' : '') : '⚠️ Сначала укажите папку — «Мои ссылки»'});
     if (it.need.includes('c')) fs.k = field('Ссылка на коммит', {type: 'url', req: !opt('c'), value: saved.k, ph: (L.g || 'https://github.com/…') + '/commit/…',
       hint: L.g ? 'GitHub: Commits → нужный коммит → адрес страницы' : '⚠️ Сначала укажите репозиторий — «Мои ссылки»'});
@@ -663,7 +676,7 @@ function openCart(){
   sheet('К отправке', b => {
     Object.keys(cart).forEach(id => {
       const it = ITEM[id]; if (!it) return;
-      const r = h('div', 'dl'), n = h('div', 'n', E.cats[it.ci].em); n.style.background = 'var(--card)';
+      const r = h('div', 'dl'), n = h('div', 'n', it.em || ''); n.style.background = 'var(--bg)'; if (!it.em) n.append(catIco(E.cats[it.ci]));
       const tx = h('div', 't'); tx.append(h('b', '', it.t), h('span', '', fp(ptsOf(it, gr)) + ' б. · ' + E.cats[it.ci].t));
       const rm = h('button', 'mini', 'Убрать'); rm.onclick = () => { delete cart[id]; store('cart', cart); haptic('light'); renderReports(); Object.keys(cart).length ? openCart() : closeSheet(); };
       tx.onclick = () => openItem(Object.assign({}, it, {s: stOf(R.s[it.n])}), gr);
@@ -702,7 +715,7 @@ function renderTests(){
   if (!K.n) { const x = KX[K.x] || KX.off; return empty(pane, ...x); }
   const ev = (K.e || []).map(x => ({id:x[0], name:x[1], date:x[2], total:x[3], max:x[4], scan:!!x[5], until:x[6]|0, tests:x[7]||null}));
   const sc = ev.filter(e => e.total != null && e.max), best = sc.length ? Math.max(...sc.map(e => e.total / e.max)) : 0;
-  const s = hero('tst', null, null, hello, 'Мои тесты', '🔢 номер участника', null);
+  const s = hero('tst', null, null, null, 'Мои тесты', '🔢 номер участника', null);
   const nb = h('div', 'top'); nb.style.cssText = 'margin-top:14px;justify-content:space-between';
   const nn = h('div'); nn.append(h('div', 'num', K.n), h('div', 'hello', 'Пишите его в клетках «Номер участника» на каждом листе'));
   const cp = h('button', 'copy', 'Копировать');
@@ -785,7 +798,7 @@ function renderCheck(){
     const it = ITEM[p.iid], pts = it ? ptsOf(it, p.who.gr) : 0;
     sheet('Проверка', b => {
       b.append(h('div', 'sht', p.who.name + ' · ' + p.who.gr + ' кл.'));
-      if (it) b.append(h('div', 'shs', E.cats[it.ci].em + ' ' + E.cats[it.ci].t + ' · ' + it.t + ' · ' + fp(pts) + ' б.'));
+      if (it) b.append(withCat(h('div', 'shs'), E.cats[it.ci], E.cats[it.ci].t + ' · ' + (it.em ? it.em + ' ' : '') + it.t + ' · ' + fp(pts) + ' б.'));
       b.append(h('div', 'shs', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : '')));
       if (it && it.hint) b.append(h('div', 'shs', '🎯 ' + it.hint));
       if (p.text || (it && it.need.includes('t'))) { const tx = h('div', 'rtext'); tx.append(h('div', 'k', it && it.need.includes('t') ? 'Текст' : 'Комментарий'), h('p', '', p.text || '—')); b.append(tx); }
@@ -846,15 +859,15 @@ function renderCheck(){
     sheet(p.name, b => {
       b.append(h('div', 'shs', p.gr + ' класс' + (p.off ? ' · не в группе' : '') + (p.debt ? ' · ⚠️ долг: ' + p.debt : '')));
       const rg = h('div', 'rings dark');
-      E.cats.forEach((c, i) => { const x = h('div', 'rg'); x.append(ringSvg(p.P[i] / 10, fp(p.P[i]), 56), h('div', 'l', c.em + ' ' + c.t)); rg.append(x); });
+      E.cats.forEach((c, i) => { const x = h('div', 'rg'); x.append(ringSvg(p.P[i] / 10, fp(p.P[i]), 56), withCat(h('div', 'l'), c, c.t)); rg.append(x); });
       b.append(rg);
       E.cats.forEach((c, ci) => {
         const its = E.items.filter(it => it.ci === ci && it.gr <= p.gr);
-        b.append(h('div', 'lbl2', c.em + ' ' + c.t + ' · ' + fp(p.P[ci]) + ' из 10'));
+        b.append(withCat(h('div', 'lbl2'), c, c.t + ' · ' + fp(p.P[ci]) + ' из 10'));
         const list = h('div', 'list');
         its.forEach(it => {
           const s = stOf(p.line[it.n]), k = SK[s.k], pts = ptsOf(it, p.gr);
-          const r = h('div', 'it'), ic = h('div', 'ic', k.e); ic.style.background = s.k === 'n' ? 'var(--bg)' : k.c;
+          const r = h('div', 'it'), ic = itemIc(it, s);
           const tx = h('div', 'tx'); tx.append(h('b', '', it.t), h('span', '', k.t + (s.k === 'a' ? ' · ' + s.sc + '/10' : '')));
           const pt = h('div', 'pt', s.k === 'a' ? fp(pts * s.sc / 10) : fp(pts)); pt.append(h('small', '', s.k === 'a' ? 'из ' + fp(pts) : 'б.'));
           r.append(ic, tx, pt);
@@ -904,7 +917,8 @@ function renderCheck(){
     const SHOW = 6;
     const item = p => {
       const it = ITEM[p.iid], el = h('div', 'pi'), r1 = h('div', 'r1');
-      r1.append(h('b', '', p.who.name), pill((it ? E.cats[it.ci].em + ' ' : '') + (it ? fp(ptsOf(it, p.who.gr)) + ' б.' : ''), 'var(--rev)'), h('span', 'cv', '›'));
+      const pp = pill(it ? ' ' + fp(ptsOf(it, p.who.gr)) + ' б.' : '', 'var(--rev)'); if (it) pp.prepend(catIco(E.cats[it.ci]));
+      r1.append(h('b', '', p.who.name), pp, h('span', 'cv', '›'));
       const sub = h('div', 'sub', iname(p.iid));
       sub.style.color = 'var(--text)'; sub.style.fontWeight = '600';
       const sub2 = h('div', 'sub', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : '') + ' · ' + p.who.gr + ' кл.');
