@@ -1058,7 +1058,7 @@ function renderJobs(){
     const bits = [];
     if (!t.open) bits.push('🔒 закрыта');
     else if (t.dl) bits.push(t.dl > now ? '⏰ до ' + dmhm(t.dl) : 'срок прошёл');
-    bits.push(m ? m.n + ' ' + plural(m.n, 'попытка', 'попытки', 'попыток') + ' · в зачёт лучшая' : 'код — файлом .ino в чат');
+    bits.push(m ? m.n + ' ' + plural(m.n, 'попытка', 'попытки', 'попыток') : 'код — файлом .ino в чат');
     body.append(r1, h('div', 'sub', bits.join(' · ')));
     if (m) { const b = h('div', 'bar'), q = h('i'); q.style.background = col; q.style.width = '0'; b.append(q); body.append(b); setTimeout(() => { q.style.width = Math.max(3, frac * 100) + '%'; q.style.transition = 'width 1s ease'; }, 250); }
     const more = h('div', 'more'), inner = h('div');
