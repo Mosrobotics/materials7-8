@@ -29,13 +29,15 @@ button{font:inherit;color:inherit}
 
 /* tabs */
 .tabs{position:sticky;top:0;z-index:5;display:flex;gap:4px;padding:4px;margin:0 0 12px;border-radius:14px;background:var(--card);box-shadow:0 1px 0 var(--sep)}
-.tabs button{flex:1;border:0;background:none;padding:9px 0;border-radius:10px;font-weight:700;font-size:14.5px;color:var(--hint);transition:background .2s,color .2s}
+.tabs button{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:0;background:none;padding:9px 0;border-radius:10px;font-weight:700;font-size:14.5px;color:var(--hint);transition:background .2s,color .2s}
 .tabs button.on{background:var(--accent);color:var(--accent-t)}
+@media (max-width:400px){.tabs button{font-size:13px}}
 .pane{display:none}.pane.on{display:block}
 
 /* hero */
 .hero{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px 18px;color:#fff;box-shadow:0 10px 30px -12px rgba(90,80,255,.55)}
 .hero.rep{background:radial-gradient(120% 140% at 0% 0%,#4f8cff 0%,#6a5cff 45%,#9b4dff 100%)}
+.hero.job{background:radial-gradient(120% 140% at 0% 0%,#f7b733 0%,#fc6767 55%,#c2367a 100%);box-shadow:0 10px 30px -12px rgba(252,103,103,.55)}
 .hero.tst{background:radial-gradient(120% 140% at 0% 0%,#18c29c 0%,#13a2c8 50%,#2f6bff 100%);box-shadow:0 10px 30px -12px rgba(19,162,200,.55)}
 .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
 .hero .top{display:flex;align-items:center;gap:16px;position:relative;z-index:1}
@@ -227,10 +229,12 @@ body.withcart{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
   <nav class="tabs" id="tabs">
     <button data-t="r" class="on">🛠 ЕТЗ</button>
     <button data-t="k">🧪 Тесты</button>
+    <button data-t="j" hidden>🧩 Задачи</button>
     <button data-t="c" hidden>🧑‍🏫 Проверка</button>
   </nav>
   <main class="pane on" id="pane-r"></main>
   <main class="pane" id="pane-k"></main>
+  <main class="pane" id="pane-j"></main>
   <main class="pane" id="pane-c"></main>
   <div class="foot" id="foot"></div>
 </div>
@@ -276,6 +280,10 @@ if (!data && !inTg) {
         [['Теория',14,20,[['Задание 1','42',1,4],['Задание 2','3,14',1,4],['Задание 3','',0,0,'12',4],['Задание 4','B',1,6],['Задание 5','17',0,0,'21',2]]],
          ['Практика',20,20,[['Робот проехал трассу','да',1,10],['Время, с','48',1,10],['Комментарий','аккуратная сборка',2,0]]]]],
        [9,'Входной тест','15.10.2026',18,30,0,0]]},
+    j:{t:[[1,'4 светодиода',10,1,now+9*D,'💡',[['Начальное состояние — все 4 светодиода на 20 %',2],['Яркость по номеру, остальные не меняются',3],['Яркость больше 100 → 100 %',1],['Яркость меньше 0 → 0 %',1],['Неверный номер — все 4 мигают 3 раза',2],['После ошибки — прежнее состояние',1]]],
+          [2,'Бегущий огонь',10,0,0,'🚦',[['Скорость',5],['Направление',5]]]],
+       m:[[1,7.5,3,[2,3,1,0,1,0.5]]],
+       s:{g:['ВсОШ Роботы','Pico 7–8'], u:[['Волкова Д.',0,[[1,10,2]]],['Зайцева В.',1,[[1,7.5,3]]],['Иванов А.',0,[[1,4,1]]],['Козлов Р.',1,[]]]}},
     c:{g:'ВсОШ', q:3, a:1, cp:[[1,now-6*D],[2,now+8*D],[3,now+22*D]],
        u:[[1,'Волкова Д.',9,'X98Xrnnnn'+'X9nnnnnn'+'X'+'n'.repeat(10),0],[2,'Зайцева В.',10,'XXX9X8nnn'+'XXXnnnnn'+'X7'+'n'.repeat(9),0],
           [3,'Иванов А.',10,'X987wnnrn'+'X8nnrnnn'+'Xr'+'n'.repeat(9),0],[4,'Козлов Р.',11,'987'+'n'.repeat(25),1],
@@ -1022,6 +1030,93 @@ function renderCheck(){
   draw();
 }
 
+/* ---------- задачи с автопроверкой (tasks.app_part в боте) ---------- */
+const J = data.j || null;
+let jTask = load('jtask'), jGroup = -2;
+function jobColor(frac){ return frac == null ? 'var(--none)' : frac >= .999 ? 'var(--ok)' : frac >= .5 ? 'var(--warn)' : frac > 0 ? 'var(--bad)' : 'var(--none)'; }
+function renderJobs(){
+  const pane = $('pane-j');
+  pane.textContent = '';
+  if (!J) return;
+  const tasks = (J.t || []).map(x => ({id: x[0], t: x[1], max: x[2], open: !!x[3], dl: x[4] | 0, em: x[5] || '🧩', cr: (x[6] || []).map(([t, p]) => ({t, p}))}));
+  const mine = Object.fromEntries((J.m || []).map(x => [x[0], {best: x[1], n: x[2], cr: x[3] || []}]));
+  const staff = !!J.s;
+  const got = tasks.reduce((a, t) => a + (mine[t.id] ? mine[t.id].best : 0), 0), all = tasks.reduce((a, t) => a + t.max, 0);
+  const full = tasks.filter(t => mine[t.id] && mine[t.id].best >= t.max - 1e-9).length;
+  const tries = Object.values(mine).reduce((a, m) => a + m.n, 0);
+  pane.append(hero('job', all ? got / all : 0, fmt(got), null, 'Задачи', '🤖 автопроверка кода',
+    [[String(tasks.length), plural(tasks.length, 'задача', 'задачи', 'задач')], [String(full), 'решено на максимум'], [String(tries), plural(tries, 'попытка', 'попытки', 'попыток')]]));
+
+  pane.append(h('h2', 'fade', staff ? 'Все задачи' : 'Мои задачи'));
+  if (!tasks.length) empty(pane, '🧩', 'Открытых задач пока нет', 'Тренер откроет задачу — она появится здесь.');
+  tasks.forEach((t, i) => {
+    const m = mine[t.id], frac = m ? m.best / (t.max || 1) : null, col = jobColor(frac);
+    const el = h('div', 'st ev fade'); el.style.animationDelay = (0.1 + i * 0.04) + 's';
+    const rail = h('div', 'rail'), dot = h('div', 'dot', t.em); dot.style.background = m ? col : 'var(--sep)'; dot.style.fontSize = '15px'; rail.append(dot);
+    const body = h('div', 'body'), r1 = h('div', 'row1');
+    r1.append(h('b', '', t.t), pill(m ? fmt(m.best) + ' / ' + fmt(t.max) : 'не сдана', m ? col : 'var(--hint)'), h('span', 'cv', '›'));
+    const bits = [];
+    if (!t.open) bits.push('🔒 закрыта');
+    else if (t.dl) bits.push(t.dl > now ? '⏰ до ' + dmhm(t.dl) : 'срок прошёл');
+    bits.push(m ? m.n + ' ' + plural(m.n, 'попытка', 'попытки', 'попыток') + ' · в зачёт лучшая' : 'код — файлом .ino в чат');
+    body.append(r1, h('div', 'sub', bits.join(' · ')));
+    if (m) { const b = h('div', 'bar'), q = h('i'); q.style.background = col; q.style.width = '0'; b.append(q); body.append(b); setTimeout(() => { q.style.width = Math.max(3, frac * 100) + '%'; q.style.transition = 'width 1s ease'; }, 250); }
+    const more = h('div', 'more'), inner = h('div');
+    inner.append(h('div', 'tn', m ? 'Лучшая попытка по критериям' : 'Критерии'));
+    t.cr.forEach((c, j) => {
+      const v = m ? (m.cr[j] || 0) : null, r = h('div', 'tq'), tx = h('span', 'qt', c.t);
+      r.append(h('span', 'qi', v == null ? '•' : v >= c.p - 1e-9 ? '✅' : v > 0 ? '⚠️' : '❌'), tx, h('span', 'qs', (v == null ? '' : fmt(v) + ' / ') + fmt(c.p)));
+      inner.append(r);
+    });
+    if (t.open || staff) {
+      const a = h('button', 'act', m ? '📤 Условие и сдать ещё раз' : '📄 Условие и сдать код');
+      a.onclick = e => { e.stopPropagation(); openBot('tk_' + t.id); };
+      inner.append(a);
+    }
+    if (m) inner.append(h('div', 'sub', 'Что именно не так — в сообщении бота после проверки.'));
+    more.append(inner); body.append(more);
+    body.onclick = () => { el.classList.toggle('open'); haptic('sel'); };
+    el.append(rail, body); pane.append(el);
+  });
+
+  if (!staff || !tasks.length) return;
+  /* --- тренерам: баллы учеников --- */
+  const S = J.s, groups = S.g || [];
+  const people = (S.u || []).map(x => ({name: x[0], g: x[1], sc: Object.fromEntries((x[2] || []).map(s => [s[0], {best: s[1], n: s[2]}]))}));
+  if (!tasks.some(t => t.id === jTask)) jTask = tasks[0].id;
+  pane.append(h('h2', 'fade', 'Баллы учеников'));
+  const box = h('div', 'fade');
+  pane.append(box);
+  function draw(){
+    box.textContent = '';
+    const task = tasks.find(t => t.id === jTask);
+    if (tasks.length > 1) {
+      const ch = h('div', 'chips');
+      tasks.forEach(t => { const b = h('button', t.id === jTask ? 'on' : '', t.em + ' ' + t.t); b.onclick = () => { jTask = t.id; store('jtask', jTask); haptic('sel'); draw(); }; ch.append(b); });
+      box.append(ch);
+    }
+    if (groups.length > 1) {
+      const ch = h('div', 'chips');
+      [[-2, 'Все группы']].concat(groups.map((g, i) => [i, g])).forEach(([i, g]) => { const b = h('button', i === jGroup ? 'on' : '', g); b.onclick = () => { jGroup = i; haptic('sel'); draw(); }; ch.append(b); });
+      box.append(ch);
+    }
+    const list = people.filter(p => jGroup === -2 || p.g === jGroup);
+    const done = list.filter(p => p.sc[jTask]).sort((a, b) => b.sc[jTask].best - a.sc[jTask].best || a.name.localeCompare(b.name, 'ru'));
+    const wait = list.filter(p => !p.sc[jTask]);
+    const card = h('section', 'card');
+    card.append(h('div', 'sub', 'Сдали ' + done.length + ' из ' + list.length + (S.sm ? ' · ещё ' + S.sm + ' — в чате: /tasks → 📊 Баллы' : '') + ' · Excel — в боте: /tasks → ⚙️'));
+    done.concat(wait).forEach(p => {
+      const s = p.sc[jTask], r = h('div', 'dl'), n = h('div', 'n', s ? fmt(s.best) : '—');
+      n.style.background = s ? jobColor(s.best / (task.max || 1)) : 'var(--sep)';
+      const t = h('div', 't'); t.append(h('b', '', p.name), h('span', '', (groups[p.g] || 'без группы') + (s ? ' · ' + s.n + ' ' + plural(s.n, 'попытка', 'попытки', 'попыток') : ' · не сдавал(а)')));
+      r.append(n, t); card.append(r);
+    });
+    if (!list.length) card.append(h('div', 'sub', 'Учеников пока нет — они появятся, когда напишут в группе или сдадут задачу.'));
+    box.append(card);
+  }
+  draw();
+}
+
 /* ---------- неотправленное (открыли кнопкой меню, отправить можно отсюда) ---------- */
 function renderPending(){
   if (inTg && !KB && !demo) {  // кнопка меню: постоянная подсказка, где отправлять
@@ -1051,18 +1146,19 @@ function showPending(p){
   b.append(t, go, x); $('banner').append(b);
 }
 
-renderReports(); renderTests(); renderCheck(); renderPending();
+renderReports(); renderTests(); renderJobs(); renderCheck(); renderPending();
 
 /* ---------- вкладки ---------- */
-const hasC = !!data.c;
+const hasC = !!data.c, hasJ = !!data.j;
 if (hasC) document.querySelector('#tabs button[data-t="c"]').hidden = false;
-let tab = hasC && data.r && data.r.x === 'reg' ? 'c' : 'r';
+if (hasJ) document.querySelector('#tabs button[data-t="j"]').hidden = false;
+let tab = data.r && data.r.x === 'reg' ? (hasC ? 'c' : hasJ ? 'j' : 'r') : 'r';
 try { tab = localStorage.getItem('tab') || tab; } catch (e) {}
 if (QS.get('tab')) tab = QS.get('tab');
 function show(t){
-  tab = t === 'k' ? 'k' : t === 'c' && hasC ? 'c' : 'r';
+  tab = t === 'k' ? 'k' : t === 'c' && hasC ? 'c' : t === 'j' && hasJ ? 'j' : 'r';
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
-  ['r', 'k', 'c'].forEach(x => $('pane-' + x).classList.toggle('on', tab === x));
+  ['r', 'k', 'j', 'c'].forEach(x => $('pane-' + x).classList.toggle('on', tab === x));
   drawCart();
   try { localStorage.setItem('tab', tab); } catch (e) {}
 }
