@@ -1073,7 +1073,6 @@ function renderJobs(){
       a.onclick = e => { e.stopPropagation(); openBot('tk_' + t.id); };
       inner.append(a);
     }
-    if (m) inner.append(h('div', 'sub', 'Что именно не так — в сообщении бота после проверки.'));
     more.append(inner); body.append(more);
     body.onclick = () => { el.classList.toggle('open'); haptic('sel'); };
     el.append(rail, body); pane.append(el);
