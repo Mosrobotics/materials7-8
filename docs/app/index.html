@@ -1084,10 +1084,16 @@ function renderJobs(){
   const people = (S.u || []).map(x => ({name: x[0], g: x[1], sc: Object.fromEntries((x[2] || []).map(s => [s[0], {best: s[1], n: s[2]}]))}));
   if (!tasks.some(t => t.id === jTask)) jTask = tasks[0].id;
   pane.append(h('h2', 'fade', 'Баллы учеников'));
+  /* поиск по фамилии — как в «Проверке» */
+  const sb = h('label', 'search fade'), inp = h('input'); inp.type = 'search'; inp.placeholder = 'Поиск по фамилии'; inp.autocomplete = 'off';
+  sb.append(h('span', '', '🔍'), inp); pane.append(sb);
+  const norm = v => v.toLowerCase().replace(/ё/g, 'е').trim();
   const box = h('div', 'fade');
   pane.append(box);
+  inp.addEventListener('input', () => draw());
   function draw(){
     box.textContent = '';
+    const q = norm(inp.value);
     const task = tasks.find(t => t.id === jTask);
     if (tasks.length > 1) {
       const ch = h('div', 'chips');
@@ -1099,7 +1105,7 @@ function renderJobs(){
       [[-2, 'Все группы']].concat(groups.map((g, i) => [i, g])).forEach(([i, g]) => { const b = h('button', i === jGroup ? 'on' : '', g); b.onclick = () => { jGroup = i; haptic('sel'); draw(); }; ch.append(b); });
       box.append(ch);
     }
-    const list = people.filter(p => jGroup === -2 || p.g === jGroup);
+    const list = people.filter(p => (jGroup === -2 || p.g === jGroup) && (!q || norm(p.name).includes(q)));
     const done = list.filter(p => p.sc[jTask]).sort((a, b) => b.sc[jTask].best - a.sc[jTask].best || a.name.localeCompare(b.name, 'ru'));
     const wait = list.filter(p => !p.sc[jTask]);
     const card = h('section', 'card');
@@ -1110,7 +1116,7 @@ function renderJobs(){
       const t = h('div', 't'); t.append(h('b', '', p.name), h('span', '', (groups[p.g] || 'без группы') + (s ? ' · ' + s.n + ' ' + plural(s.n, 'попытка', 'попытки', 'попыток') : ' · не сдавал(а)')));
       r.append(n, t); card.append(r);
     });
-    if (!list.length) card.append(h('div', 'sub', 'Учеников пока нет — они появятся, когда напишут в группе или сдадут задачу.'));
+    if (!list.length) card.append(h('div', 'sub', q ? 'Никого не нашлось' : 'Учеников пока нет — они появятся, когда напишут в группе или сдадут задачу.'));
     box.append(card);
   }
   draw();
