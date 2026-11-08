@@ -413,7 +413,10 @@ const ptsOf = (it, gr) => it.pts[Math.min(2, Math.max(0, (gr || 9) - 9))] || 0;
 const fp = v => String(Math.round((v || 0) * 100) / 100).replace('.', ',');
 function stOf(ch){ ch = ch || 'n'; return ch === 'n' || ch === 'r' || ch === 'w' ? {k: ch, sc: null} : {k: 'a', sc: ch === 'X' ? 10 : +ch || 0}; }
 const SK = {a: {c: 'var(--ok)', t: 'принят', e: '✓'}, r: {c: 'var(--rev)', t: 'на проверке', e: '…'},
-            w: {c: 'var(--warn)', t: 'на доработке', e: '↻'}, n: {c: 'var(--none)', t: 'не сдан', e: ''}};
+            w: {c: 'var(--warn)', t: 'на доработке', e: '↻'}, n: {c: 'var(--none)', t: 'не сдан', e: ''},
+            o: {c: 'var(--accent)', t: 'сдан · можно менять до срока', e: '✎'}};
+/* статус пункта у ученика: «r» со сданным до срока ("o" в R.d) — ещё можно менять, тренер его не видит */
+function stMine(it){ const s = stOf(((R && R.s) || '')[it.n]); return s.k === 'r' && ((R.d || {})[it.id] || {}).o ? {k: 'o', sc: null} : s; }
 function catPoints(line, gr){
   const out = E.cats.map(() => 0);
   E.items.forEach((it, i) => { if (it.gr > gr) return; const s = stOf(line[i]); if (s.k === 'a') out[it.ci] += ptsOf(it, gr) * s.sc / 10; });
@@ -483,7 +486,7 @@ let pl = load('links');                    // ссылки «один раз», 
 let curCat = +(load('cat') || 0) || 0;
 const links = () => ({d: (pl && pl.d) || (R && R.l && R.l[0]) || '', g: (pl && pl.g) || (R && R.l && R.l[1]) || ''});
 if (R && R.s && E) {   // в корзине — только то, что ещё можно сдать
-  Object.keys(cart).forEach(id => { const it = ITEM[id]; const s = it ? stOf(R.s[it.n]).k : 'x'; if (!it || it.gr > (R.gr || 9) || (s !== 'n' && s !== 'w')) delete cart[id]; });
+  Object.keys(cart).forEach(id => { const it = ITEM[id]; if (!it || it.gr > (R.gr || 9)) delete cart[id]; });
 }
 const cartEl = h('div', 'cart'); document.body.append(cartEl);
 
@@ -493,8 +496,9 @@ function renderReports(){
   if (R.x === 'reg') return empty(pane, '📝', 'Вы ещё не зарегистрированы', 'Отправьте боту /reports — он спросит класс, и здесь появятся ваши пункты ЕТЗ.');
   if (!E || !E.items.length) return empty(pane, '🗓️', 'Пункты ЕТЗ пока не заданы', 'Тренер скоро добавит');
   const gr = R.gr || 9, line = R.s || '';
-  const mine = E.items.filter(it => it.gr <= gr).map(it => Object.assign({}, it, {s: stOf(line[it.n])}));
-  const P = catPoints(line, gr);
+  const mine = E.items.filter(it => it.gr <= gr).map(it => Object.assign({}, it, {s: stMine(it)}));
+  /* баллы — от бота (по последней принятой версии: доработка, пока её не проверили, баллы не меняет) */
+  const P = Array.isArray(R.p) && R.p.length === E.cats.length ? R.p.map(v => Math.min(10, +v || 0)) : catPoints(line, gr);
   if (curCat >= E.cats.length) curCat = 0;
 
   /* шапка: три кольца */
@@ -510,9 +514,9 @@ function renderReports(){
     rg.append(b);
   });
   hs.append(rg);
-  const sent = mine.filter(it => it.s.k !== 'n').length, wait = mine.filter(it => it.s.k === 'r').length, fix = mine.filter(it => it.s.k === 'w').length;
+  const sent = mine.filter(it => it.s.k !== 'n').length, open = mine.filter(it => it.s.k === 'o').length, wait = mine.filter(it => it.s.k === 'r').length;
   const g = h('div', 'stats');
-  [[sent + ' из ' + mine.length, 'пунктов сдано'], [String(wait), 'на проверке'], [String(fix), 'на доработке']]
+  [[sent + ' из ' + mine.length, 'пунктов сдано'], [String(open), 'можно менять'], [String(wait), 'на проверке']]
     .forEach(([v, l]) => { const e = h('div', 'stat'); e.append(h('b', '', v), h('span', '', l)); g.append(e); });
   hs.append(g); pane.append(hs);
 
@@ -526,6 +530,7 @@ function renderReports(){
     if (nx) {
       c.append(h('div', 'nm', 'до ' + dmhm(nx.ts)));
       c.append(h('div', 'meta', nx.st === 'done' ? '✅ Новый пункт к ней уже сдан' : '⏳ Сдайте хотя бы 1 новый пункт любой категории · ' + left(nx.ts).txt));
+      c.append(h('div', 'meta', '✏️ До срока сданное можно менять — тренер получит последнюю версию'));
       const prev = cps.filter(x => x.ts < nx.ts).pop(), start = prev ? prev.ts : nx.ts - 14*D;
       const pct = Math.min(100, Math.max(3, (now - start) / (nx.ts - start) * 100));
       const tb = h('div', 'timebar'), bar = h('i'); bar.style.background = nx.st === 'done' ? 'var(--ok)' : pct > 75 ? 'var(--warn)' : 'var(--accent)'; tb.append(bar); c.append(tb);
@@ -575,11 +580,13 @@ function itemRow(it, gr){
   const k = SK[it.s.k], inCart = !!cart[it.id], pts = ptsOf(it, gr);
   const r = h('div', 'it' + (inCart ? ' inc' : '')), ic = itemIc(it, it.s);
   const tx = h('div', 'tx'); tx.append(h('b', '', it.t));
-  const sub = h('span', '', inCart ? '📤 в отправке' : it.s.k === 'n' ? needIcons(it) + ' ' + it.need.split('').map(n => needT(it, n)).join(' + ') : k.t + (it.s.k === 'a' ? ' · оценка ' + it.s.sc : ''));
+  const was = ((R.d || {})[it.id] || {}).a;
+  const sub = h('span', '', inCart ? '📤 в отправке' : it.s.k === 'n' ? needIcons(it) + ' ' + it.need.split('').map(n => needT(it, n)).join(' + ') : k.t + (it.s.k === 'a' ? ' · оценка ' + it.s.sc : was != null ? ' · сейчас ' + was + '/10' : ''));
   if (inCart) sub.style.color = 'var(--accent)'; else if (it.s.k !== 'n') sub.style.color = k.c;
   tx.append(sub);
   const pt = h('div', 'pt');
-  if (it.s.k === 'a') { pt.append(fp(pts * it.s.sc / 10)); pt.append(h('small', '', 'из ' + fp(pts))); pt.style.color = 'var(--ok)'; }
+  const sc = it.s.k === 'a' ? it.s.sc : was;
+  if (sc != null) { pt.append(fp(pts * sc / 10)); pt.append(h('small', '', 'из ' + fp(pts))); pt.style.color = 'var(--ok)'; }
   else { pt.append(fp(pts)); pt.append(h('small', '', 'б.')); }
   r.append(ic, tx, pt);
   r.onclick = () => openItem(it, gr);
@@ -588,21 +595,34 @@ function itemRow(it, gr){
 
 function openItem(it, gr){
   const cat = E.cats[it.ci], grp = cat.groups[it.gi] || {t: ''}, pts = ptsOf(it, gr), d = (R.d || {})[it.id] || {};
-  const editable = it.s.k === 'n' || it.s.k === 'w';
-  if (editable && needKB()) return;
+  // не сдан / на доработке — сразу форма; сданный — сначала что с ним, форма — по «Изменить»
+  const fresh = it.s.k === 'n' || it.s.k === 'w';
+  if (fresh && needKB()) return;
   sheet(it.t, b => {
     b.append(withCat(h('div', 'shs'), cat, cat.t + ' · ' + grp.t + ' · ' + fp(pts) + ' б.'));
     if (it.hint) b.append(h('div', 'rtext', it.hint));
     const k = SK[it.s.k], st = h('div', 'shs'); st.style.marginTop = '8px';
     st.append(pill(k.t, k.c));
     if (it.s.k === 'a') st.append('  оценка ' + it.s.sc + '/10 → ' + fp(pts * it.s.sc / 10) + ' из ' + fp(pts) + ' б.');
+    else if (d.a != null) st.append('  сейчас действует оценка ' + d.a + '/10 → ' + fp(pts * d.a / 10) + ' из ' + fp(pts) + ' б.');
     b.append(st);
     if (d.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Проверяющий: '), d.c); b.append(cm); }
-    if (!editable) {
-      b.append(h('div', 'shs', it.s.k === 'r' ? 'Ждёт проверки — когда проверят, бот напишет.' : 'Пункт принят — сдавать снова не нужно.'));
-      const v = h('button', 'act alt', '📋 Посмотреть, что сдано'); v.onclick = () => openBot('rpview_' + it.id); b.append(v);
-      return;
-    }
+    if (fresh) return itemForm(b, it, d);
+    const nd = R.nd ? 'до ' + dmhm(R.nd) : 'до срока ближайшей точки';
+    b.append(h('div', 'shs', it.s.k === 'o' ? 'Сдан. Изменить можно ' + nd + ' — тренер получит последнюю версию.'
+      : it.s.k === 'r' ? 'Ждёт проверки. Можно доработать — новая версия уйдёт тренеру к следующей точке.'
+      : 'Принят. Можно доработать — новая версия уйдёт тренеру к следующей точке, а пока её не проверят, остаётся эта оценка.'));
+    const v = h('button', 'act alt', '📋 Посмотреть, что сдано'); v.onclick = () => openBot('rpview_' + it.id); b.append(v);
+    const ed = h('button', 'act', it.s.k === 'o' ? '✏️ Изменить' : '✏️ Доработать');
+    ed.onclick = () => { if (needKB()) return; ed.remove(); itemForm(b, it, d); };
+    b.append(ed);
+    if (cart[it.id]) { ed.remove(); itemForm(b, it, d); }
+  });
+}
+
+function itemForm(b, it, d){
+  {
+    if (d.tl) b.append(h('div', 'shs', '📝 Прежний текст длинный — посмотрите его в чате («📋 Посмотреть, что сдано») или сдайте по шагам в чате.'));
     const saved = cart[it.id] || load('dr_' + it.id) || {t: d.t || '', f: d.f || '', k: d.k || ''};
     const L = links(), fs = {};
     const opt = n => it.opt.includes(n);
@@ -633,7 +653,7 @@ function openItem(it, gr){
       cart[it.id] = {t: fs.t.val(), f: fs.f ? fs.f.val() : '', k: fs.k ? fs.k.val() : ''};
       store('cart', cart); closeSheet(); haptic('medium'); renderReports();
     };
-  });
+  }
 }
 
 function openLinks(){
@@ -679,7 +699,7 @@ function openCart(){
       const r = h('div', 'dl'), n = h('div', 'n', it.em || ''); n.style.background = 'var(--bg)'; if (!it.em) n.append(catIco(E.cats[it.ci]));
       const tx = h('div', 't'); tx.append(h('b', '', it.t), h('span', '', fp(ptsOf(it, gr)) + ' б. · ' + E.cats[it.ci].t));
       const rm = h('button', 'mini', 'Убрать'); rm.onclick = () => { delete cart[id]; store('cart', cart); haptic('light'); renderReports(); Object.keys(cart).length ? openCart() : closeSheet(); };
-      tx.onclick = () => openItem(Object.assign({}, it, {s: stOf(R.s[it.n])}), gr);
+      tx.onclick = () => openItem(Object.assign({}, it, {s: stMine(it)}), gr);
       r.append(n, tx, rm); b.append(r);
     });
     if (pl) b.append(h('div', 'shs', '🔗 Вместе с пунктами сохранятся ваши новые ссылки'));
