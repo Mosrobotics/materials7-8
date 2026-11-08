@@ -1044,7 +1044,7 @@ function renderJobs(){
   const got = tasks.reduce((a, t) => a + (mine[t.id] ? mine[t.id].best : 0), 0), all = tasks.reduce((a, t) => a + t.max, 0);
   const full = tasks.filter(t => mine[t.id] && mine[t.id].best >= t.max - 1e-9).length;
   const tries = Object.values(mine).reduce((a, m) => a + m.n, 0);
-  pane.append(hero('job', all ? got / all : 0, fmt(got), null, 'Задачи', '🤖 автопроверка кода',
+  pane.append(hero('job', all ? got / all : 0, fmt(got), null, 'Задачи', null,
     [[String(tasks.length), plural(tasks.length, 'задача', 'задачи', 'задач')], [String(full), 'решено на максимум'], [String(tries), plural(tries, 'попытка', 'попытки', 'попыток')]]));
 
   pane.append(h('h2', 'fade', staff ? 'Все задачи' : 'Мои задачи'));
