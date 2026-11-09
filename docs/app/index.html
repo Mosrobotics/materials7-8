@@ -53,6 +53,11 @@ button{font:inherit;color:inherit}
 .stat{background:rgba(255,255,255,.14);border-radius:12px;padding:9px 10px}
 .stat b{display:block;font-size:19px;font-weight:800;letter-spacing:-.3px}
 .stat span{font-size:11.5px;opacity:.85}
+.stat b small{font-size:12px;font-weight:700;opacity:.75;letter-spacing:0}
+.stat .bar{height:4px;border-radius:2px;background:rgba(255,255,255,.25);margin:4px 0 3px;overflow:hidden}
+.stat .bar i{display:block;height:100%;width:0;border-radius:2px;background:#fff;transition:width 1s ease}
+.fcl{position:relative;z-index:1;display:block;width:100%;margin-top:8px;border:0;border-radius:12px;padding:8px 10px;background:rgba(255,255,255,.14);color:#fff;text-align:left;font-size:12.5px;line-height:1.35}
+.fcl b{font-weight:700}
 .num{font:800 40px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:2px;margin:4px 0}
 .copy{border:0;border-radius:10px;padding:7px 12px;background:rgba(255,255,255,.22);color:#fff;font-weight:700;font-size:13px}
 
@@ -523,10 +528,32 @@ function renderReports(){
   });
   hs.append(rg);
   const sent = mine.filter(it => it.s.k !== 'n').length, open = mine.filter(it => it.s.k === 'o').length, wait = mine.filter(it => it.s.k === 'r').length;
+  /* прогноз на олимпиаде — от бота (reports_etz.yaml → forecast); старый бот без "f" — прежний счётчик */
+  const F = R.f && R.f.m > 0 ? R.f : null;
   const g = h('div', 'stats');
-  [[sent + ' из ' + mine.length, 'пунктов сдано'], [String(open), 'можно менять'], [String(wait), 'на проверке']]
-    .forEach(([v, l]) => { const e = h('div', 'stat'); e.append(h('b', '', v), h('span', '', l)); g.append(e); });
-  hs.append(g); pane.append(hs);
+  [[sent + ' из ' + mine.length, 'пунктов сдано'], F ? null : [String(open), 'можно менять'], [String(wait), 'на проверке']]
+    .forEach((x, i) => {
+      const e = h('div', 'stat');
+      if (x) e.append(h('b', '', x[0]), h('span', '', x[1]));
+      else {   /* средняя плитка: прогноз регионального этапа */
+        const b = h('b', '', '≈' + fp(F.r)); b.append(h('small', '', ' / ' + fp(F.m)));
+        const bar = h('div', 'bar'), fill = h('i'); bar.append(fill);
+        setTimeout(() => { fill.style.width = Math.min(100, F.r / F.m * 100) + '%'; }, 150);
+        e.append(b, bar, h('span', '', 'прогноз · регион'));
+      }
+      g.append(e);
+    });
+  hs.append(g);
+  if (F) {
+    const ln = h('button', 'fcl'), nx = ITEM[F.w];
+    ln.append('🎯 Заключительный этап: ', h('b', '', '≈' + fp(F.z) + ' из ' + fp(F.m)));
+    if (nx) {
+      ln.append(document.createElement('br'), (F.k ? '🔧 Чтобы робот заработал: ' : '⬆️ Следующий шаг: '), h('b', '', (nx.em ? nx.em + ' ' : '') + nx.t));
+      ln.onclick = () => { curCat = nx.ci; store('cat', nx.ci); haptic('sel'); renderReports(); const el = $('cats'); el && el.scrollIntoView({behavior: 'smooth', block: 'start'}); };
+    }
+    hs.append(ln);
+  }
+  pane.append(hs);
 
   /* контрольная точка */
   const cps = (R.cp || []).map(([ts, st]) => ({ts, st}));
