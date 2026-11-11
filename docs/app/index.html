@@ -1096,7 +1096,8 @@ function renderJobs(){
   if (!staff || !tasks.length) return;
   /* --- тренерам: баллы учеников --- */
   const S = J.s, groups = S.g || [];
-  const people = (S.u || []).map(x => ({name: x[0], g: x[1], sc: Object.fromEntries((x[2] || []).map(s => [s[0], {best: s[1], n: s[2]}]))}));
+  const people = (S.u || []).map(x => ({name: x[0], g: x[1], id: x[3] || 0, sc: Object.fromEntries((x[2] || []).map(s => [s[0], {best: s[1], n: s[2], ai: s[3] | 0}]))}));
+  const AI_NOTE = ['', ' · 🟡 признаки нейросети', ' · 🔴 похоже на нейросеть'];
   if (!tasks.some(t => t.id === jTask)) jTask = tasks[0].id;
   pane.append(h('h2', 'fade', 'Баллы учеников'));
   /* поиск по фамилии — как в «Проверке» */
@@ -1124,12 +1125,17 @@ function renderJobs(){
     const done = list.filter(p => p.sc[jTask]).sort((a, b) => b.sc[jTask].best - a.sc[jTask].best || a.name.localeCompare(b.name, 'ru'));
     const wait = list.filter(p => !p.sc[jTask]);
     const card = h('section', 'card');
-    card.append(h('div', 'sub', 'Сдали ' + done.length + ' из ' + list.length + (S.sm ? ' · ещё ' + S.sm + ' — в чате: /tasks → 📊 Баллы' : '') + ' · Excel — в боте: /tasks → ⚙️'));
+    card.append(h('div', 'sub', 'Сдали ' + done.length + ' из ' + list.length + (S.sm ? ' · ещё ' + S.sm + ' — в чате: /tasks → 📊 Баллы' : '') + (people.some(p => p.id) ? ' · нажмите на ученика — его код и признаки нейросети в боте' : '') + ' · Excel — в боте: /tasks → ⚙️'));
     done.concat(wait).forEach(p => {
       const s = p.sc[jTask], r = h('div', 'dl'), n = h('div', 'n', s ? fmt(s.best) : '—');
       n.style.background = s ? jobColor(s.best / (task.max || 1)) : 'var(--sep)';
-      const t = h('div', 't'); t.append(h('b', '', p.name), h('span', '', (groups[p.g] || 'без группы') + (s ? ' · ' + s.n + ' ' + plural(s.n, 'попытка', 'попытки', 'попыток') : ' · не сдавал(а)')));
-      r.append(n, t); card.append(r);
+      const t = h('div', 't'); t.append(h('b', '', p.name), h('span', '', (groups[p.g] || 'без группы') + (s ? ' · ' + s.n + ' ' + plural(s.n, 'попытка', 'попытки', 'попыток') + (AI_NOTE[s.ai] || '') : ' · не сдавал(а)')));
+      r.append(n, t);
+      if (s && p.id) {  /* код ученика и признаки нейросети — в боте (tasks/review.py) */
+        r.append(h('span', 'cv', '›')); r.style.cursor = 'pointer';
+        r.onclick = () => openBot('tkv_' + jTask + '_' + p.id);
+      }
+      card.append(r);
     });
     if (!list.length) card.append(h('div', 'sub', q ? 'Никого не нашлось' : 'Учеников пока нет — они появятся, когда напишут в группе или сдадут задачу.'));
     box.append(card);
