@@ -874,6 +874,7 @@ function renderCheck(){
 
   /* --- карточка работы --- */
   function openReview(p){
+    if (p.cut) return notify('Обновите очередь, чтобы открыть полное описание работы.');
     const it = ITEM[p.iid], pts = it ? ptsOf(it, p.who.gr) : 0;
     sheet(iname(p.iid), b => {
       b.append(h('div', 'sht', p.who.name + ' · ' + p.who.gr + ' кл.'));
@@ -887,11 +888,6 @@ function renderCheck(){
         const comment = h('div', 'cmt');
         comment.append(h('b', '', '💬 Проверяющий: '), p.comment);
         b.append(comment);
-      }
-      if (p.cut && !C.f) {
-        const full = h('button', 'act alt', '📄 Загрузить полный текст');
-        full.onclick = () => requestWork(p.sid, p.iid);
-        b.append(full);
       }
       if (p.state.k === 'r') {
         b.append(h('div', 'lbl2', 'Оценка 0–10 — обязательна при приёме'));
@@ -912,7 +908,7 @@ function renderCheck(){
         change.onclick = () => openScore(p.who, it, p.state.sc, p);
         b.append(change);
       }
-      if (!C.f || C.f.photos || p.cut) {
+      if (!C.f || C.f.photos) {
         const chat = h('button', 'act ghost', C.f && C.f.photos ? '📷 Фотографии в чате' : 'Открыть в чате');
         chat.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid);
         b.append(chat);
@@ -1018,7 +1014,7 @@ function renderCheck(){
     [[String(total), plural(total, 'ученик', 'ученика', 'учеников')], [String(C.q || 0), 'ждут проверки'], [String(debtors), 'с долгом']]);
   const go = h('button', 'act lt', pend.length ? '🔎 Проверить следующий (' + (C.q || pend.length) + ')' : C.q ? '🔎 Загрузить следующую работу (' + C.q + ')' : '✅ Всё проверено');
   go.onclick = () => pend.length ? openReview(pend[0]) : C.q ? requestWork() : haptic('light');
-  const refresh = h('button', 'act lt', '🔄 Обновить очередь'); refresh.onclick = refreshQueue;
+  const refresh = h('button', 'act lt', C.pa ? 'К началу очереди' : '🔄 Обновить очередь'); refresh.onclick = refreshQueue;
   s.append(go, refresh); pane.append(s);
 
   /* --- ждут проверки --- */
@@ -1040,7 +1036,13 @@ function renderCheck(){
     };
     pend.slice(0, SHOW).forEach(p => list.append(item(p)));
     if (pend.length > SHOW) { const more = h('button', 'act alt', 'Показать ещё ' + (pend.length - SHOW)); more.onclick = () => { pend.slice(SHOW).forEach(p => list.insertBefore(item(p), more)); more.remove(); haptic('sel'); }; list.append(more); }
-    if (C.pm) list.append(h('div', 'sub', 'Ещё ' + C.pm + ' в очереди. Откройте работу из карточки ученика или обновите список после проверки.'));
+    if (C.next && KB) {
+      const next = h('button', 'act alt', 'Следующая страница · ещё ' + C.pm);
+      next.onclick = () => { haptic('medium'); tg.sendData(JSON.stringify({a: 'queue', r: C.next})); };
+      list.append(next);
+    } else if (C.pm) {
+      list.append(h('div', 'sub', 'Ещё ' + C.pm + ' в очереди. Откройте работу из карточки ученика или обновите список после проверки.'));
+    }
     pane.append(list);
   }
 
