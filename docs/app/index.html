@@ -267,8 +267,10 @@ async function decodeZ(s){   // ?z= — то же, сжатое zlib (длинн
 }
 let data = null, zfail = false;
 const QS = new URLSearchParams(location.search);
+const fragment = new URLSearchParams(location.hash.slice(1));
+const compressed = fragment.get('z') || QS.get('z');
 try { if (QS.get('d')) data = decode(QS.get('d')); } catch (e) {}
-if (!data && QS.get('z')) { try { data = await decodeZ(QS.get('z')); } catch (e) { zfail = true; } }
+if (!data && compressed) { try { data = await decodeZ(compressed); } catch (e) { zfail = true; } }
 const DEMO_E = {"c":[["m","Механика",[["Выбор",10.0],["Моделирование",60.0],["Сборка",30.0]],"фото/файл"],["e","Электроника",[["Выбор",10.0],["Печатная плата",90.0]],"файл"],["p","Программа",[["Git",10.0],["Низкий уровень · микроконтроллер",15.0],["Верхний уровень · логика и перемещение шашек",40.0],["Камера · компьютерное зрение",35.0]],"файл"]],"i":[[101,0,0,"Выбор кинематики на плоскости","Какую кинематику выбрали (декартова, H-bot, CoreXY…) и почему",9,"t","",0.3333,0.3333,0.3333,"🧭"],[102,0,0,"Выбор подъёмного механизма","Чем поднимаете рабочий орган и почему",9,"t","",0.3333,0.3333,0.3333,"🏗️"],[103,0,0,"Выбор направляющих","Какие направляющие и почему",9,"t","",0.3333,0.3333,0.3333,"🛤️"],[104,0,1,"Модель кинематики XY (CAD)","Фото (скриншот) или файл модели из CAD",9,"f","",2.0,2.0,2.0,"🧩"],[105,0,1,"Модель подъёмного механизма (CAD)","Фото (скриншот) или файл модели из CAD",9,"f","",2.0,2.0,2.0,"🪜"],[106,0,1,"Модель всего устройства (CAD)","Фото (скриншот) или файл сборки всего устройства в CAD",9,"f","",2.0,2.0,2.0,"🤖"],[107,0,2,"Сборка кинематики XY","Фото или видео собранной кинематики",9,"f","",1.5,1.5,1.0,"🔧"],[108,0,2,"Сборка подъёмного механизма","Фото или видео собранного механизма",9,"f","",1.5,1.5,1.0,"🔩"],[109,0,2,"Поворот шашки на любой угол 0–360°","Видео: удерживаемая шашка поворачивается на заданный угол",11,"f","",0.0,0.0,1.0,"🔄"],[201,1,0,"Выбор устройства высокого уровня (ПК / микрокомпьютер)","Что будет обрабатывать изображение и почему",9,"t","",0.3333,0.3333,0.3333,"🖥️"],[202,1,0,"Выбор контроллера","Какой контроллер и почему",9,"t","",0.3333,0.3333,0.3333,"🎛️"],[203,1,0,"Выбор питания","Источник питания, напряжения, токи",9,"t","",0.3333,0.3333,0.3333,"🔋"],[204,1,1,"Структурная схема","Файл или скриншот схемы",9,"f","",1.0,1.0,1.0,"🗺️"],[205,1,1,"Принципиальная схема","Файл схемы из CAD",9,"f","",2.0,2.0,2.0,"✏️"],[206,1,1,"Разводка печатной платы","Файл платы или проекта из CAD",9,"f","",3.0,3.0,3.0,"🔀"],[207,1,1,"Монтаж платы","Видео: плата собрана и работает",9,"f","",2.0,2.0,2.0,"🪛"],[208,1,1,"Соблюдены требования к плате","Видео: разъёмы А (аналог.), Б (цифр.), В (UART) работают",9,"f","",1.0,1.0,1.0,"📋"],[301,2,0,"Git-репозиторий","Ссылка на репозиторий проекта (GitHub, GitLab…) с открытым доступом",9,"r","",1.0,1.0,1.0,"🌿"],[302,2,1,"Связь ПК и контроллера","Коммит с кодом связи; видео — по желанию",9,"fc","f",0.75,0.75,0.75,"📡"],[306,2,1,"Движение рабочего органа и подъёмного механизма","Коммит и видео движения",9,"fc","",0.75,0.75,0.75,"🦾"],[307,2,2,"Начальное положение шашек; захват, перенос, установка в клетку","Коммит и видео: шашка перенесена в заданную клетку",9,"fc","",1.7778,1.4545,1.4545,"♟️"],[308,2,2,"Задача с вводом параметров и выводом с ПК","Ввод номера задачи и клеток, вывод хода решения на ПК. Коммит и видео",9,"fc","",1.3333,1.0909,1.0909,"⌨️"],[309,2,2,"Стопка до 5 шашек","Коммит и видео: шашки ставятся друг на друга",9,"fc","",0.8889,0.7273,0.7273,"🥞"],[310,2,2,"Захват верхней шашки из стопки","Коммит и видео",10,"fc","",0.0,0.7273,0.7273,"🔝"],[303,2,3,"Цвета на изображении и их координаты","Коммит и фото/скриншот: найденные шашки и их координаты",9,"fc","",2.1,1.05,1.05,"🎨"],[304,2,3,"Определение листа на поле по меткам ArUco","Коммит и фото/скриншот: найденный лист операционного поля",9,"fc","",1.4,0.7,0.7,"📄"],[305,2,3,"Чтение маркеров на шашках (ArUco, AprilTag, QR)","Коммит и фото/скриншот: прочитанные маркеры",10,"fc","",0.0,0.7,0.7,"🏷️"],[311,2,3,"Графическая фигура на наклейке","Коммит и видео: распознана фигура на наклейке",10,"fc","",0.0,1.05,1.05,"🖼️"]]};   // справочник для демо (в боте он приходит в ссылке)
 const now = Date.now()/1000, D = 86400;
 let demo = false;
@@ -364,8 +366,26 @@ function field(label, o){
 }
 function linkBtn(box, items){
   const r = h('div', 'links');
-  items.filter(([, u]) => u).forEach(([t, u]) => { const b = h('button', '', t); b.onclick = () => inTg ? tg.openLink(u) : window.open(u, '_blank'); r.append(b); });
-  if (r.childNodes.length) box.append(r);
+  for (const [label, value] of items) {
+    if (!value) continue;
+    let url;
+    try { url = new URL(value); } catch (e) { continue; }
+    if (!['https:', 'http:'].includes(url.protocol)) continue;
+    const b = h('button', '', label + ' · ' + url.hostname);
+    b.title = url.href;
+    b.onclick = () => inTg ? tg.openLink(url.href) : window.open(url.href, '_blank', 'noopener');
+    r.append(b);
+  }
+  if (r.children.length) box.append(r);
+}
+
+function workContents(box, item, text, file, code){
+  if (text) {
+    const block = h('div', 'rtext');
+    block.append(h('div', 'k', 'Описание работы'), h('p', '', text));
+    box.append(block);
+  }
+  linkBtn(box, [['📁 Файл', file], [item && item.need.includes('r') ? '🔗 Репозиторий' : '🔗 Коммит', code]]);
 }
 const URL_RE = /^https?:\/\/\S+\.\S+$/i;
 
@@ -635,7 +655,12 @@ function openItem(it, gr){
     b.append(h('div', 'shs', it.s.k === 'o' ? 'Сдан. Изменить можно ' + nd + ' — тренер получит последнюю версию.'
       : it.s.k === 'r' ? 'Ждёт проверки. Можно доработать — новая версия сразу заменит непроверенную.'
       : 'Принят. Можно доработать — новая версия сразу уйдёт тренеру на проверку, а пока её не проверят, остаётся эта оценка.'));
-    const v = h('button', 'act alt', '📋 Посмотреть, что сдано'); v.onclick = () => openBot('rpview_' + it.id); b.append(v);
+    workContents(b, it, d.t, d.f, d.k);
+    if (d.tl || !d.v) {
+      const view = h('button', 'act alt', d.tl ? '📋 Длинное описание в чате' : '📋 Посмотреть, что сдано');
+      view.onclick = () => openBot('rpview_' + it.id);
+      b.append(view);
+    }
     const ed = h('button', 'act', it.s.k === 'o' ? '✏️ Изменить' : '✏️ Доработать');
     ed.onclick = () => { if (needKB()) return; ed.remove(); itemForm(b, it, d); };
     b.append(ed);
@@ -831,42 +856,82 @@ function renderCheck(){
   const people = (C.u || []).map(x => ({id: x[0], name: x[1], gr: x[2] || 9, line: String(x[3] || ''), debt: x[4] | 0, off: x[5] === 0}));
   people.forEach(p => { p.P = catPoints(p.line, p.gr); p.wait = (p.line.match(/r/g) || []).length; p.fix = (p.line.match(/w/g) || []).length; });
   const byId = Object.fromEntries(people.map(p => [p.id, p]));
-  const pend = (C.p || []).map(x => ({rid: x[0], sid: x[1], iid: x[2], ver: x[3], sb: x[4], text: x[5], file: x[6], code: x[7], cut: !!x[8]}))
-    .map(p => Object.assign(p, {who: byId[p.sid] || {id: p.sid, name: 'Ученик', gr: 9}}));
+  const decodeWork = (x, who) => ({rid: x[0], sid: x[1], iid: x[2], ver: x[3], sb: x[4],
+    text: x[5], file: x[6], code: x[7], cut: !!x[8], state: stOf(x[9] || 'r'), comment: x[10],
+    who: who || byId[x[1]] || {id: x[1], name: 'Ученик', gr: 9}});
+  const pend = (C.p || []).map(x => decodeWork(x));
+  const works = new Map([...pend, ...(C.h || []).map(x => decodeWork(x))].map(p => [p.sid + ':' + p.iid, p]));
   const total = people.length + (C.m || 0), debtors = people.filter(p => p.debt && !p.off).length;
   const iname = id => (ITEM[id] || {t: 'Пункт ' + id}).t;
+  const refreshQueue = () => KB ? tg.sendData(JSON.stringify({a: 'upd'})) : openBot('app');
+  const requestWork = (sid, iid) => {
+    if (KB && (C.h || C.f)) {
+      haptic('medium');
+      tg.sendData(JSON.stringify(sid ? {a: 'rep', s: sid, i: iid} : {a: 'rep'}));
+    } else if (sid) openBot('rpo_' + sid + '_' + iid);
+    else openBot('rpnext');
+  };
 
-  /* --- решение по пункту --- */
+  /* --- карточка работы --- */
   function openReview(p){
     const it = ITEM[p.iid], pts = it ? ptsOf(it, p.who.gr) : 0;
-    sheet('Проверка', b => {
+    sheet(iname(p.iid), b => {
       b.append(h('div', 'sht', p.who.name + ' · ' + p.who.gr + ' кл.'));
-      if (it) b.append(withCat(h('div', 'shs'), E.cats[it.ci], E.cats[it.ci].t + ' · ' + (it.em ? it.em + ' ' : '') + it.t + ' · ' + fp(pts) + ' б.'));
-      b.append(h('div', 'shs', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : '')));
+      if (it) b.append(withCat(h('div', 'shs'), E.cats[it.ci], E.cats[it.ci].t + ' · ' + fp(pts) + ' б.'));
+      const status = SK[p.state.k];
+      b.append(pill(status.t + (p.state.k === 'a' ? ' · ' + p.state.sc + '/10' : ''), status.c));
+      b.append(h('div', 'shs', 'Сдано ' + dmhm(p.sb) + (p.ver > 1 ? ' · версия ' + p.ver : '')));
       if (it && it.hint) b.append(h('div', 'shs', '🎯 ' + it.hint));
-      if (p.text || (it && it.need.includes('t'))) { const tx = h('div', 'rtext'); tx.append(h('div', 'k', it && it.need.includes('t') ? 'Текст' : 'Комментарий'), h('p', '', p.text || '—')); b.append(tx); }
-      linkBtn(b, [['📁 Файл', p.file], [it && it.need.includes('r') ? '🔗 Репозиторий' : '🔗 Коммит', p.code]]);
-      if (p.cut) { const full = h('button', 'act ghost', 'Текст обрезан — полностью в чате ›'); full.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid); b.append(full); }
-      b.append(h('div', 'lbl2', 'Оценка 0–10 — обязательна при приёме'));
-      let score = null;
-      const hint = h('div', 'shs', 'Баллы ученика = ' + fp(pts) + ' × оценка / 10');
-      scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; acc.textContent = '✅ Принять · ' + v; acc.classList.remove('dim'); });
-      b.append(hint);
-      const acc = h('button', 'act ok dim', '✅ Принять — выберите оценку'), rw = h('button', 'act warn', '🔄 На доработку');
-      acc.onclick = () => {
-        if (score == null) { haptic('heavy'); hint.textContent = '👆 Сначала выберите оценку'; hint.style.color = 'var(--bad)'; return; }
-        if (needKB()) return;
-        send({a: 'acc', r: p.rid, v: score}, 'принять с оценкой ' + score + ': ' + p.who.name + ', «' + iname(p.iid) + '»');
-      };
-      rw.onclick = () => openRework(p);
-      const r2 = h('div', 'row2'); r2.append(acc, rw); b.append(r2);
-      const card = h('button', 'act ghost', 'Открыть в чате'); card.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid); b.append(card);
+      workContents(b, it, p.text, p.file, p.code);
+      if (p.comment) {
+        const comment = h('div', 'cmt');
+        comment.append(h('b', '', '💬 Проверяющий: '), p.comment);
+        b.append(comment);
+      }
+      if (p.cut && !C.f) {
+        const full = h('button', 'act alt', '📄 Загрузить полный текст');
+        full.onclick = () => requestWork(p.sid, p.iid);
+        b.append(full);
+      }
+      if (p.state.k === 'r') {
+        b.append(h('div', 'lbl2', 'Оценка 0–10 — обязательна при приёме'));
+        let score = null;
+        const hint = h('div', 'shs', 'Баллы ученика = ' + fp(pts) + ' × оценка / 10');
+        const acc = h('button', 'act ok dim', '✅ Принять — выберите оценку'), rw = h('button', 'act warn', '🔄 На доработку');
+        scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; acc.textContent = '✅ Принять · ' + v; acc.classList.remove('dim'); });
+        b.append(hint);
+        acc.onclick = () => {
+          if (score == null) { haptic('heavy'); hint.textContent = '👆 Сначала выберите оценку'; hint.style.color = 'var(--bad)'; return; }
+          if (needKB()) return;
+          send({a: 'acc', r: p.rid, v: score}, 'принять с оценкой ' + score + ': ' + p.who.name + ', «' + iname(p.iid) + '»');
+        };
+        rw.onclick = () => openRework(p);
+        const actions = h('div', 'row2'); actions.append(acc, rw); b.append(actions);
+      } else if (p.state.k === 'a' && C.a && it) {
+        const change = h('button', 'act alt', '⭐ Изменить оценку');
+        change.onclick = () => openScore(p.who, it, p.state.sc, p);
+        b.append(change);
+      }
+      if (!C.f || C.f.photos || p.cut) {
+        const chat = h('button', 'act ghost', C.f && C.f.photos ? '📷 Фотографии в чате' : 'Открыть в чате');
+        chat.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid);
+        b.append(chat);
+      }
     });
+  }
+  if (C.f) {
+    const [id, name, gr] = C.f.u;
+    const work = decodeWork(C.f.p, {id, name, gr});
+    const reopen = h('button', 'act', iname(work.iid)); reopen.onclick = () => openReview(work);
+    const queue = h('button', 'act alt', '🔄 Загрузить очередь'); queue.onclick = refreshQueue;
+    pane.append(reopen, queue);
+    openReview(work);
+    return;
   }
   function openRework(p){
     if (needKB()) return;
     sheet('На доработку', b => {
-      b.append(h('div', 'sht', p.who.name + ' · ' + iname(p.iid)), h('div', 'shs', 'Ученик получит комментарий и пришлёт новую версию. До неё — 0 баллов.'));
+      b.append(h('div', 'sht', p.who.name + ' · ' + iname(p.iid)), h('div', 'shs', 'Ученик получит комментарий и сможет сдать новую версию.'));
       const f = field('Что исправить', {multi: true, req: true, rows: 4, max: 1000, value: (load('rw_' + p.rid) || {}).c, ph: 'Комментарий для ученика'});
       f.inp.addEventListener('input', () => store('rw_' + p.rid, {c: f.inp.value}));
       b.append(f.w);
@@ -883,7 +948,7 @@ function renderCheck(){
       b.append(go, back);
     });
   }
-  function openScore(p, it, sc){
+  function openScore(p, it, sc, work){
     if (needKB()) return;
     const pts = ptsOf(it, p.gr);
     sheet('Изменить оценку', b => {
@@ -895,7 +960,7 @@ function renderCheck(){
       const go = h('button', 'act', '⭐ Выберите оценку');
       go.onclick = () => score == null ? haptic('heavy') : send({a: 'sc', s: p.id, i: it.id, v: score}, 'оценка ' + score + ': ' + p.name + ', «' + it.t + '»');
       b.append(go);
-      const card = h('button', 'act ghost', 'Открыть в чате'); card.onclick = () => openBot('rpo_' + p.id + '_' + it.id); b.append(card);
+      const back = h('button', 'act ghost', '← К работе'); back.onclick = () => openReview(work); b.append(back);
     });
   }
   function openStudent(p){
@@ -915,17 +980,19 @@ function renderCheck(){
           const pt = h('div', 'pt', s.k === 'a' ? fp(pts * s.sc / 10) : fp(pts)); pt.append(h('small', '', s.k === 'a' ? 'из ' + fp(pts) : 'б.'));
           r.append(ic, tx, pt);
           r.onclick = () => {
-            const pp = s.k === 'r' && pend.find(x => x.sid === p.id && x.iid === it.id);
-            if (pp) return openReview(pp);
-            if (s.k === 'a' && C.a) return openScore(p, it, s.sc);
-            if (s.k !== 'n') return openBot('rpo_' + p.id + '_' + it.id);
-            haptic('light');
+            const work = works.get(p.id + ':' + it.id);
+            if (work) return openReview(work);
+            if (s.k !== 'n') return requestWork(p.id, it.id);
+            sheet(it.t, detail => {
+              detail.append(h('div', 'shs', 'Работа ещё не сдана'));
+              if (it.hint) detail.append(h('div', 'rtext', it.hint));
+            });
           };
           list.append(r);
         });
         b.append(list);
       });
-      const all = h('button', 'act alt', '👤 Все пункты в чате'); all.onclick = () => openBot('rpst_' + p.id); b.append(all);
+
     });
   }
   function openCp(id, ts){
@@ -949,9 +1016,10 @@ function renderCheck(){
   /* --- шапка --- */
   const s = hero('chk', null, null, '🤖 ' + (C.g || 'ВсОШ'), 'Проверка ЕТЗ', null,
     [[String(total), plural(total, 'ученик', 'ученика', 'учеников')], [String(C.q || 0), 'ждут проверки'], [String(debtors), 'с долгом']]);
-  const go = h('button', 'act lt', pend.length ? '🔎 Проверить следующий (' + (C.q || pend.length) + ')' : C.q ? '🔎 Проверить в чате (' + C.q + ')' : '✅ Всё проверено');
-  go.onclick = () => pend.length ? openReview(pend[0]) : C.q ? openBot('rpnext') : haptic('light');
-  s.append(go); pane.append(s);
+  const go = h('button', 'act lt', pend.length ? '🔎 Проверить следующий (' + (C.q || pend.length) + ')' : C.q ? '🔎 Загрузить следующую работу (' + C.q + ')' : '✅ Всё проверено');
+  go.onclick = () => pend.length ? openReview(pend[0]) : C.q ? requestWork() : haptic('light');
+  const refresh = h('button', 'act lt', '🔄 Обновить очередь'); refresh.onclick = refreshQueue;
+  s.append(go, refresh); pane.append(s);
 
   /* --- ждут проверки --- */
   if (pend.length) {
@@ -972,7 +1040,7 @@ function renderCheck(){
     };
     pend.slice(0, SHOW).forEach(p => list.append(item(p)));
     if (pend.length > SHOW) { const more = h('button', 'act alt', 'Показать ещё ' + (pend.length - SHOW)); more.onclick = () => { pend.slice(SHOW).forEach(p => list.insertBefore(item(p), more)); more.remove(); haptic('sel'); }; list.append(more); }
-    if (C.pm) list.append(h('div', 'sub', '…и ещё ' + C.pm + ' — появятся здесь, когда проверите эти (или «Проверить в чате»: /check)'));
+    if (C.pm) list.append(h('div', 'sub', 'Ещё ' + C.pm + ' в очереди. Откройте работу из карточки ученика или обновите список после проверки.'));
     pane.append(list);
   }
 
@@ -1154,7 +1222,7 @@ function renderPending(){
   }
   const p = load('pending');
   if (p) return showPending(p);
-  if (KB && data.t && Date.now() / 1000 - data.t > 3600) {  // кнопку бот обновляет только вместе с сообщением
+  if (KB && !(data.c && data.c.f) && data.t && Date.now() / 1000 - data.t > 3600) {  // кнопку бот обновляет только вместе с сообщением
     const b = h('div', 'banner fade'), t = h('div', 't'), go = h('button', 'act', 'Обновить');
     t.append(h('b', '', 'Данные на ' + dmhm(data.t)), ' — могли устареть.');
     go.onclick = () => { haptic('medium'); tg.sendData(JSON.stringify({a: 'upd'})); };
@@ -1176,6 +1244,7 @@ renderReports(); renderTests(); renderJobs(); renderCheck(); renderPending();
 
 /* ---------- вкладки ---------- */
 const hasC = !!data.c, hasJ = !!data.j;
+if (hasC && data.c.f) document.querySelector('#tabs').hidden = true;
 if (hasC) document.querySelector('#tabs button[data-t="c"]').hidden = false;
 if (hasJ) document.querySelector('#tabs button[data-t="j"]').hidden = false;
 let tab = data.r && data.r.x === 'reg' ? (hasC ? 'c' : hasJ ? 'j' : 'r') : 'r';
