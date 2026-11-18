@@ -157,6 +157,8 @@ h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;c
 .scores button.on{background:var(--ok);color:#fff}
 .rtext{background:var(--card);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;white-space:pre-wrap;word-break:break-word}
 .rtext .k{font-size:12px;font-weight:600;color:var(--hint);margin-top:8px}.rtext .k:first-child{margin-top:0}.rtext p{margin:2px 0 0}
+.review-photo{display:block;width:100%;max-height:65vh;object-fit:contain;margin-top:8px;border-radius:12px;background:var(--card)}
+.review-message{margin:10px 0;color:var(--text)}
 .links{display:flex;gap:8px;margin-top:10px}
 .links button{flex:1;min-width:0;border:0;border-radius:11px;padding:10px;background:var(--card);color:var(--link);font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -267,14 +269,45 @@ async function decodeZ(s){   // ?z= — то же, сжатое zlib (длинн
 }
 let data = null, zfail = false;
 const QS = new URLSearchParams(location.search);
+const liveReview = QS.get('review') === '1';
+let reviewError = '';
+async function reviewRequest(path = '', {action, photo = false} = {}){
+  if (!tg?.initData) throw new Error('Откройте «Проверка ЕТЗ» из личного чата с ботом.');
+  const timeout = new AbortController();
+  const timer = setTimeout(() => timeout.abort(), 20000);
+  try {
+    const headers = {'X-Telegram-Init-Data': tg.initData};
+    if (action) headers['Content-Type'] = 'application/json';
+    const res = await fetch('/api/review' + path, {headers, signal: timeout.signal, cache: 'no-store',
+      method: action ? 'POST' : 'GET', body: action ? JSON.stringify(action) : undefined});
+    if (photo && res.ok) return await res.blob();
+    const result = await res.json().catch(() => ({}));
+    if (res.ok && (result.c || result.work)) return result;
+    const err = new Error(result.error || 'Сервер проверки недоступен. Попробуйте ещё раз.');
+    err.summary = res.status === 409 ? result : null;
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+function reviewErrorText(err){
+  return err instanceof TypeError || err.name === 'AbortError'
+    ? 'Связь прервалась. Обновите очередь, чтобы увидеть текущий статус.'
+    : err.message;
+}
 const fragment = new URLSearchParams(location.hash.slice(1));
 const compressed = fragment.get('z') || QS.get('z');
-try { if (QS.get('d')) data = decode(QS.get('d')); } catch (e) {}
-if (!data && compressed) { try { data = await decodeZ(compressed); } catch (e) { zfail = true; } }
+if (liveReview) {
+  if (inTg) tg.ready();
+  try { data = await reviewRequest(); } catch (e) { reviewError = reviewErrorText(e); }
+} else {
+  try { if (QS.get('d')) data = decode(QS.get('d')); } catch (e) {}
+  if (!data && compressed) { try { data = await decodeZ(compressed); } catch (e) { zfail = true; } }
+}
 const DEMO_E = {"c":[["m","Механика",[["Выбор",10.0],["Моделирование",60.0],["Сборка",30.0]],"фото/файл"],["e","Электроника",[["Выбор",10.0],["Печатная плата",90.0]],"файл"],["p","Программа",[["Git",10.0],["Низкий уровень · микроконтроллер",15.0],["Верхний уровень · логика и перемещение шашек",40.0],["Камера · компьютерное зрение",35.0]],"файл"]],"i":[[101,0,0,"Выбор кинематики на плоскости","Какую кинематику выбрали (декартова, H-bot, CoreXY…) и почему",9,"t","",0.3333,0.3333,0.3333,"🧭"],[102,0,0,"Выбор подъёмного механизма","Чем поднимаете рабочий орган и почему",9,"t","",0.3333,0.3333,0.3333,"🏗️"],[103,0,0,"Выбор направляющих","Какие направляющие и почему",9,"t","",0.3333,0.3333,0.3333,"🛤️"],[104,0,1,"Модель кинематики XY (CAD)","Фото (скриншот) или файл модели из CAD",9,"f","",2.0,2.0,2.0,"🧩"],[105,0,1,"Модель подъёмного механизма (CAD)","Фото (скриншот) или файл модели из CAD",9,"f","",2.0,2.0,2.0,"🪜"],[106,0,1,"Модель всего устройства (CAD)","Фото (скриншот) или файл сборки всего устройства в CAD",9,"f","",2.0,2.0,2.0,"🤖"],[107,0,2,"Сборка кинематики XY","Фото или видео собранной кинематики",9,"f","",1.5,1.5,1.0,"🔧"],[108,0,2,"Сборка подъёмного механизма","Фото или видео собранного механизма",9,"f","",1.5,1.5,1.0,"🔩"],[109,0,2,"Поворот шашки на любой угол 0–360°","Видео: удерживаемая шашка поворачивается на заданный угол",11,"f","",0.0,0.0,1.0,"🔄"],[201,1,0,"Выбор устройства высокого уровня (ПК / микрокомпьютер)","Что будет обрабатывать изображение и почему",9,"t","",0.3333,0.3333,0.3333,"🖥️"],[202,1,0,"Выбор контроллера","Какой контроллер и почему",9,"t","",0.3333,0.3333,0.3333,"🎛️"],[203,1,0,"Выбор питания","Источник питания, напряжения, токи",9,"t","",0.3333,0.3333,0.3333,"🔋"],[204,1,1,"Структурная схема","Файл или скриншот схемы",9,"f","",1.0,1.0,1.0,"🗺️"],[205,1,1,"Принципиальная схема","Файл схемы из CAD",9,"f","",2.0,2.0,2.0,"✏️"],[206,1,1,"Разводка печатной платы","Файл платы или проекта из CAD",9,"f","",3.0,3.0,3.0,"🔀"],[207,1,1,"Монтаж платы","Видео: плата собрана и работает",9,"f","",2.0,2.0,2.0,"🪛"],[208,1,1,"Соблюдены требования к плате","Видео: разъёмы А (аналог.), Б (цифр.), В (UART) работают",9,"f","",1.0,1.0,1.0,"📋"],[301,2,0,"Git-репозиторий","Ссылка на репозиторий проекта (GitHub, GitLab…) с открытым доступом",9,"r","",1.0,1.0,1.0,"🌿"],[302,2,1,"Связь ПК и контроллера","Коммит с кодом связи; видео — по желанию",9,"fc","f",0.75,0.75,0.75,"📡"],[306,2,1,"Движение рабочего органа и подъёмного механизма","Коммит и видео движения",9,"fc","",0.75,0.75,0.75,"🦾"],[307,2,2,"Начальное положение шашек; захват, перенос, установка в клетку","Коммит и видео: шашка перенесена в заданную клетку",9,"fc","",1.7778,1.4545,1.4545,"♟️"],[308,2,2,"Задача с вводом параметров и выводом с ПК","Ввод номера задачи и клеток, вывод хода решения на ПК. Коммит и видео",9,"fc","",1.3333,1.0909,1.0909,"⌨️"],[309,2,2,"Стопка до 5 шашек","Коммит и видео: шашки ставятся друг на друга",9,"fc","",0.8889,0.7273,0.7273,"🥞"],[310,2,2,"Захват верхней шашки из стопки","Коммит и видео",10,"fc","",0.0,0.7273,0.7273,"🔝"],[303,2,3,"Цвета на изображении и их координаты","Коммит и фото/скриншот: найденные шашки и их координаты",9,"fc","",2.1,1.05,1.05,"🎨"],[304,2,3,"Определение листа на поле по меткам ArUco","Коммит и фото/скриншот: найденный лист операционного поля",9,"fc","",1.4,0.7,0.7,"📄"],[305,2,3,"Чтение маркеров на шашках (ArUco, AprilTag, QR)","Коммит и фото/скриншот: прочитанные маркеры",10,"fc","",0.0,0.7,0.7,"🏷️"],[311,2,3,"Графическая фигура на наклейке","Коммит и видео: распознана фигура на наклейке",10,"fc","",0.0,1.05,1.05,"🖼️"]]};   // справочник для демо (в боте он приходит в ссылке)
 const now = Date.now()/1000, D = 86400;
 let demo = false;
-if (!data && !inTg) {
+if (!data && !inTg && !liveReview) {
   demo = true;
   data = {v:3, b:'', t:now, e:DEMO_E,
     r:{g:'ВсОШ', gr:10, s:'X987wnnrn' + 'X8nnrnnn' + 'Xr' + 'n'.repeat(9), l:['https://disk.yandex.ru/d/demo', ''],
@@ -323,7 +356,7 @@ function setPending(v){
 }
 /* открыто кнопкой меню — отправлять нельзя (Telegram): сразу к кнопке «📱 Приложение» под полем ввода */
 function needKB(){
-  if (!inTg || KB) return false;
+  if (liveReview || !inTg || KB) return false;
   tg.showPopup({title: 'Откройте кнопкой внизу', message: 'Сдавать и проверять можно только из кнопки «📱 Приложение» под полем ввода. Бот сейчас пришлёт её — нажмите и сделайте то же там.', buttons: [{type: 'ok'}]}, () => openBot('app'));
   return true;
 }
@@ -339,16 +372,29 @@ function send(action, what, after){
 
 /* ---------- панель снизу ---------- */
 const ov = $('ov'), sh = $('sh');
-function closeSheet(){
-  ov.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = '';
-  if (inTg) { try { tg.BackButton.offClick(closeSheet); tg.BackButton.hide(); } catch (e) {} }
+let sheetVersion = 0, sheetBack = null;
+const sheetImages = new Set();
+function resetSheet(){
+  sheetVersion += 1;
+  sheetImages.forEach(url => URL.revokeObjectURL(url));
+  sheetImages.clear();
 }
-function sheet(title, build){
+function backSheet(){ sheetBack?.(); }
+function closeSheet(){
+  resetSheet();
+  sheetBack = null;
+  ov.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = '';
+  if (inTg) { try { tg.BackButton.offClick(backSheet); tg.BackButton.hide(); } catch (e) {} }
+}
+function sheet(title, build, back = closeSheet){
+  resetSheet();
+  sheetBack = back;
   sh.textContent = '';
   const hd = h('div', 'shh'), x = h('button', 'x', '✕'); x.onclick = closeSheet; hd.append(h('b', '', title), x); sh.append(hd);
   build(sh);
   sh.scrollTop = 0; ov.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; haptic('light');
-  if (inTg) { try { tg.BackButton.onClick(closeSheet); tg.BackButton.show(); } catch (e) {} }
+  if (inTg) { try { tg.BackButton.offClick(backSheet); tg.BackButton.onClick(backSheet); tg.BackButton.show(); } catch (e) {} }
+  return sheetVersion;
 }
 ov.onclick = closeSheet;
 function field(label, o){
@@ -433,12 +479,17 @@ const CHIP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 /* значок категории: у Электроники — нарисованная микросхема (такого эмодзи нет), у остальных — эмодзи */
 function catIco(c){ const e = h('span', 'cico'); if (c.em === 'chip') e.innerHTML = CHIP; else e.textContent = c.em; return e; }
 const withCat = (el, c, rest) => { el.append(catIco(c), ' ' + rest); return el; };
-const E = (function(e){
+function readCatalog(e){
   if (!e || !e.i) return null;
   return {cats: (e.c || []).map(([k, t, g, fl], i) => ({k, t, i, em: CATI[k] || '•', fl: fl || 'файл', groups: (g || []).map(([gt, sh]) => ({t: gt, sh}))})),
           items: e.i.map((x, n) => ({n, id: x[0], ci: x[1], gi: x[2], t: x[3], hint: x[4] || '', gr: x[5], need: x[6] || '', opt: x[7] || '', pts: [x[8] || 0, x[9] || 0, x[10] || 0], em: x[11] || ''}))};
-})(data.e);
-const ITEM = E ? Object.fromEntries(E.items.map(it => [it.id, it])) : {};
+}
+let E, ITEM;
+function updateCatalog(){
+  E = readCatalog(data.e);
+  ITEM = E ? Object.fromEntries(E.items.map(it => [it.id, it])) : {};
+}
+updateCatalog();
 const ptsOf = (it, gr) => it.pts[Math.min(2, Math.max(0, (gr || 9) - 9))] || 0;
 const fp = v => String(Math.round((v || 0) * 100) / 100).replace('.', ',');
 function stOf(ch){ ch = ch || 'n'; return ch === 'n' || ch === 'r' || ch === 'w' ? {k: ch, sc: null} : {k: 'a', sc: ch === 'X' ? 10 : +ch || 0}; }
@@ -839,6 +890,31 @@ function renderTests(){
 /* ---------- проверка (только тренерам) ---------- */
 const PAGE = 40;   // учеников за раз — длинный список дорисовывается кнопкой, чтобы не тормозило
 const REWORK_HINTS = ['Ссылка не открывается — откройте доступ', 'Файл не из вашей папки', 'Нет видео работы', 'Не тот коммит', 'Опишите подробнее', 'Не выполнено то, что требует пункт'];
+const checkList = {query: '', filter: 'all', shown: PAGE};
+let reviewBusy = false;
+function setReviewData(result){
+  data = result;
+  reviewError = '';
+  updateCatalog();
+}
+function openPhoto(button, work, number){
+  const version = sheetVersion;
+  button.disabled = true;
+  button.textContent = 'Загрузка фото…';
+  reviewRequest('/reports/' + work.rid + '/photos/' + number, {photo: true}).then(blob => {
+    if (version !== sheetVersion) return;
+    const url = URL.createObjectURL(blob), img = h('img', 'review-photo');
+    sheetImages.add(url);
+    img.alt = 'Фото ' + (number + 1) + ' к работе';
+    img.src = url;
+    button.replaceWith(img);
+  }).catch(err => {
+    if (version !== sheetVersion) return;
+    button.disabled = false;
+    button.textContent = 'Повторить загрузку фото ' + (number + 1);
+    notify(reviewErrorText(err));
+  });
+}
 function scorePicker(box, onPick){
   const g = h('div', 'scores');
   for (let n = 0; n <= 10; n++) {
@@ -848,13 +924,32 @@ function scorePicker(box, onPick){
   }
   box.append(g);
 }
-function renderCheck(){
+function renderCheck(selection){
   const pane = $('pane-c'), C = data.c;
-  if (!C) return;
   pane.textContent = '';
+  if (data.review) {
+    const go = h('button', 'act', '📋 Открыть проверку ЕТЗ');
+    go.onclick = () => openBot('review');
+    pane.append(go);
+    return;
+  }
+  if (!C) {
+    if (liveReview) {
+      empty(pane, '📋', 'Проверка ЕТЗ', reviewError);
+      const retry = h('button', 'act', 'Повторить загрузку');
+      retry.onclick = () => location.reload();
+      pane.append(retry);
+    }
+    return;
+  }
   if (!E) return empty(pane, '🗓️', 'Пункты ЕТЗ не загружены', 'Проверьте reports_etz.yaml и /reload_stages');
   const people = (C.u || []).map(x => ({id: x[0], name: x[1], gr: x[2] || 9, line: String(x[3] || ''), debt: x[4] | 0, off: x[5] === 0}));
-  people.forEach(p => { p.P = catPoints(p.line, p.gr); p.wait = (p.line.match(/r/g) || []).length; p.fix = (p.line.match(/w/g) || []).length; });
+  people.forEach(p => {
+    const scores = C.scores?.[p.id];
+    p.P = scores ? E.cats.map(c => scores[c.k] || 0) : catPoints(p.line, p.gr);
+    p.wait = (p.line.match(/r/g) || []).length;
+    p.fix = (p.line.match(/w/g) || []).length;
+  });
   const byId = Object.fromEntries(people.map(p => [p.id, p]));
   const decodeWork = (x, who) => ({rid: x[0], sid: x[1], iid: x[2], ver: x[3], sb: x[4],
     text: x[5], file: x[6], code: x[7], cut: !!x[8], state: stOf(x[9] || 'r'), comment: x[10],
@@ -863,7 +958,41 @@ function renderCheck(){
   const works = new Map([...pend, ...(C.h || []).map(x => decodeWork(x))].map(p => [p.sid + ':' + p.iid, p]));
   const total = people.length + (C.m || 0), debtors = people.filter(p => p.debt && !p.off).length;
   const iname = id => (ITEM[id] || {t: 'Пункт ' + id}).t;
-  const refreshQueue = () => KB ? tg.sendData(JSON.stringify({a: 'upd'})) : openBot('app');
+  async function refreshQueue(){
+    if (!liveReview) return KB ? tg.sendData(JSON.stringify({a: 'upd'})) : openBot('app');
+    if (reviewBusy) return;
+    reviewBusy = true;
+    try { setReviewData(await reviewRequest()); renderCheck(); }
+    catch (err) { notify(reviewErrorText(err)); }
+    finally { reviewBusy = false; }
+  }
+  async function submitCheck(action, what, after, work){
+    if (!liveReview) return send(action, what, after);
+    if (reviewBusy) return;
+    reviewBusy = true;
+    const version = sheetVersion;
+    const enabled = [...sh.querySelectorAll('button:enabled, input:enabled, textarea:enabled')];
+    enabled.forEach(el => { el.disabled = true; });
+    try {
+      const result = await reviewRequest('/actions', {action});
+      if (after) after();
+      showReviewResult(result, what);
+    } catch (err) {
+      if (err.summary?.c) showReviewResult(err.summary, err.message);
+      else if (version === sheetVersion) notify(reviewErrorText(err));
+    } finally {
+      enabled.forEach(el => { el.disabled = false; });
+      reviewBusy = false;
+    }
+    function showReviewResult(result, message){
+      setReviewData(result);
+      if (version !== sheetVersion) return renderCheck();
+      if (work) return renderCheck({id: work.sid, message, scroll: work.returnScroll});
+      closeSheet();
+      renderCheck();
+      notify(message);
+    }
+  }
   const requestWork = (sid, iid) => {
     if (KB && (C.h || C.f)) {
       haptic('medium');
@@ -872,10 +1001,36 @@ function renderCheck(){
     else openBot('rpnext');
   };
 
+  async function openLiveWork(who, iid, scroll = 0){
+    const back = () => openStudent(who, '', scroll);
+    const version = sheet(iname(iid), b => b.append(h('div', 'shs', 'Загружаем работу…')), back);
+    try {
+      const result = await reviewRequest('/students/' + who.id + '/items/' + iid);
+      if (version !== sheetVersion) return;
+      const work = decodeWork(result.work, who);
+      openReview(Object.assign(work, {problems: result.problems, photos: result.photos, returnScroll: scroll}));
+    } catch (err) {
+      if (version !== sheetVersion) return;
+      sheet(iname(iid), b => {
+        b.append(h('div', 'shs', reviewErrorText(err)));
+        const retry = h('button', 'act', 'Загрузить ещё раз');
+        retry.onclick = () => openLiveWork(who, iid, scroll);
+        b.append(retry, backButton('← К пунктам ученика', back));
+      }, back);
+    }
+  }
+
+  function backButton(text, back){
+    const button = h('button', 'act ghost', text);
+    button.onclick = back;
+    return button;
+  }
+
   /* --- карточка работы --- */
   function openReview(p){
     if (p.cut) return notify('Обновите очередь, чтобы открыть полное описание работы.');
     const it = ITEM[p.iid], pts = it ? ptsOf(it, p.who.gr) : 0;
+    const back = () => openStudent(p.who, '', p.returnScroll);
     sheet(iname(p.iid), b => {
       b.append(h('div', 'sht', p.who.name + ' · ' + p.who.gr + ' кл.'));
       if (it) b.append(withCat(h('div', 'shs'), E.cats[it.ci], E.cats[it.ci].t + ' · ' + fp(pts) + ' б.'));
@@ -884,6 +1039,16 @@ function renderCheck(){
       b.append(h('div', 'shs', 'Сдано ' + dmhm(p.sb) + (p.ver > 1 ? ' · версия ' + p.ver : '')));
       if (it && it.hint) b.append(h('div', 'shs', '🎯 ' + it.hint));
       workContents(b, it, p.text, p.file, p.code);
+      if (p.problems) {
+        const problems = h('div', 'rtext');
+        problems.append(h('div', 'k', 'Трудности'), h('p', '', p.problems));
+        b.append(problems);
+      }
+      for (let i = 0; i < (p.photos || 0); i++) {
+        const photo = h('button', 'act alt', '📷 Фото ' + (i + 1));
+        photo.onclick = () => openPhoto(photo, p, i);
+        b.append(photo);
+      }
       if (p.comment) {
         const comment = h('div', 'cmt');
         comment.append(h('b', '', '💬 Проверяющий: '), p.comment);
@@ -899,7 +1064,7 @@ function renderCheck(){
         acc.onclick = () => {
           if (score == null) { haptic('heavy'); hint.textContent = '👆 Сначала выберите оценку'; hint.style.color = 'var(--bad)'; return; }
           if (needKB()) return;
-          send({a: 'acc', r: p.rid, v: score}, 'принять с оценкой ' + score + ': ' + p.who.name + ', «' + iname(p.iid) + '»');
+          submitCheck({a: 'acc', r: p.rid, v: score}, 'Принято · ' + score + '/10', null, p);
         };
         rw.onclick = () => openRework(p);
         const actions = h('div', 'row2'); actions.append(acc, rw); b.append(actions);
@@ -908,12 +1073,13 @@ function renderCheck(){
         change.onclick = () => openScore(p.who, it, p.state.sc, p);
         b.append(change);
       }
-      if (!C.f || C.f.photos) {
+      if (liveReview) b.append(backButton('← К пунктам ученика', back));
+      else if (!C.f || C.f.photos) {
         const chat = h('button', 'act ghost', C.f && C.f.photos ? '📷 Фотографии в чате' : 'Открыть в чате');
         chat.onclick = () => openBot('rpo_' + p.sid + '_' + p.iid);
         b.append(chat);
       }
-    });
+    }, liveReview ? back : closeSheet);
   }
   if (C.f) {
     const [id, name, gr] = C.f.u;
@@ -938,11 +1104,11 @@ function renderCheck(){
       go.onclick = () => {
         if (!f.val()) { f.err('Напишите, что исправить'); return haptic('heavy'); }
         if (f.val().length > 1000) { f.err('Слишком длинно — до 1000 символов'); return haptic('heavy'); }
-        send({a: 'rw', r: p.rid, c: f.val()}, 'на доработку: ' + p.who.name + ', «' + iname(p.iid) + '»', () => store('rw_' + p.rid, null));
+        submitCheck({a: 'rw', r: p.rid, c: f.val()}, 'Возвращено на доработку', () => store('rw_' + p.rid, null), p);
       };
       back.onclick = () => openReview(p);
       b.append(go, back);
-    });
+    }, liveReview ? () => openReview(p) : closeSheet);
   }
   function openScore(p, it, sc, work){
     if (needKB()) return;
@@ -954,13 +1120,20 @@ function renderCheck(){
       scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; go.textContent = '⭐ Поставить ' + v; });
       b.append(hint);
       const go = h('button', 'act', '⭐ Выберите оценку');
-      go.onclick = () => score == null ? haptic('heavy') : send({a: 'sc', s: p.id, i: it.id, v: score}, 'оценка ' + score + ': ' + p.name + ', «' + it.t + '»');
+      go.onclick = () => score == null ? haptic('heavy') : submitCheck(
+        {a: 'sc', s: p.id, i: it.id, v: score, ...(liveReview ? {r: work.rid} : {})},
+        'Оценка изменена · ' + score + '/10', null, work);
       b.append(go);
       const back = h('button', 'act ghost', '← К работе'); back.onclick = () => openReview(work); b.append(back);
-    });
+    }, liveReview ? () => openReview(work) : closeSheet);
   }
-  function openStudent(p){
+  function openStudent(p, message, scroll = 0){
     sheet(p.name, b => {
+      if (message) {
+        const status = h('div', 'review-message', message);
+        status.setAttribute('role', 'status');
+        b.append(status);
+      }
       b.append(h('div', 'shs', p.gr + ' класс' + (p.off ? ' · не в группе' : '') + (p.debt ? ' · ⚠️ долг: ' + p.debt : '')));
       const rg = h('div', 'rings dark');
       E.cats.forEach((c, i) => { const x = h('div', 'rg'); x.append(ringSvg(p.P[i] / 10, fp(p.P[i]), 56), withCat(h('div', 'l'), c, c.t)); rg.append(x); });
@@ -976,13 +1149,15 @@ function renderCheck(){
           const pt = h('div', 'pt', s.k === 'a' ? fp(pts * s.sc / 10) : fp(pts)); pt.append(h('small', '', s.k === 'a' ? 'из ' + fp(pts) : 'б.'));
           r.append(ic, tx, pt);
           r.onclick = () => {
+            if (liveReview && s.k !== 'n') return openLiveWork(p, it.id, sh.scrollTop);
             const work = works.get(p.id + ':' + it.id);
             if (work) return openReview(work);
             if (s.k !== 'n') return requestWork(p.id, it.id);
             sheet(it.t, detail => {
               detail.append(h('div', 'shs', 'Работа ещё не сдана'));
               if (it.hint) detail.append(h('div', 'rtext', it.hint));
-            });
+              if (liveReview) detail.append(backButton('← К пунктам ученика', () => openStudent(p, '', scroll)));
+            }, liveReview ? () => openStudent(p, '', scroll) : closeSheet);
           };
           list.append(r);
         });
@@ -990,6 +1165,7 @@ function renderCheck(){
       });
 
     });
+    sh.scrollTop = message ? 0 : scroll;
   }
   function openCp(id, ts){
     if (needKB()) return;
@@ -1002,10 +1178,10 @@ function renderCheck(){
       go.onclick = () => {
         const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(f.inp.value);
         if (!m) { f.err('Выберите дату'); return haptic('heavy'); }
-        send({a: 'cp', k: id || 0, d: m[3] + '.' + m[2] + '.' + m[1]}, 'контрольная точка ' + m[3] + '.' + m[2]);
+        submitCheck({a: 'cp', k: id || 0, d: m[3] + '.' + m[2] + '.' + m[1]}, 'Контрольная точка сохранена');
       };
       b.append(go);
-      if (id) { const del = h('button', 'act ghost', '🗑 Удалить точку'); del.onclick = () => send({a: 'cp', k: id, d: 'none'}, 'удалить точку ' + dm(ts)); b.append(del); }
+      if (id) { const del = h('button', 'act ghost', '🗑 Удалить точку'); del.onclick = () => submitCheck({a: 'cp', k: id, d: 'none'}, 'Контрольная точка удалена'); b.append(del); }
     });
   }
 
@@ -1013,7 +1189,8 @@ function renderCheck(){
   const s = hero('chk', null, null, '🤖 ' + (C.g || 'ВсОШ'), 'Проверка ЕТЗ', null,
     [[String(total), plural(total, 'ученик', 'ученика', 'учеников')], [String(C.q || 0), 'ждут проверки'], [String(debtors), 'с долгом']]);
   const go = h('button', 'act lt', pend.length ? '🔎 Проверить следующий (' + (C.q || pend.length) + ')' : C.q ? '🔎 Загрузить следующую работу (' + C.q + ')' : '✅ Всё проверено');
-  go.onclick = () => pend.length ? openReview(pend[0]) : C.q ? requestWork() : haptic('light');
+  const openQueued = p => liveReview ? openLiveWork(p.who, p.iid) : openReview(p);
+  go.onclick = () => pend.length ? openQueued(pend[0]) : C.q && !liveReview ? requestWork() : haptic('light');
   const refresh = h('button', 'act lt', C.pa ? 'К началу очереди' : '🔄 Обновить очередь'); refresh.onclick = refreshQueue;
   s.append(go, refresh); pane.append(s);
 
@@ -1031,7 +1208,7 @@ function renderCheck(){
       const sub2 = h('div', 'sub', 'сдан ' + dmhm(p.sb) + (p.ver > 1 ? ' · исправление, версия ' + p.ver : '') + ' · ' + p.who.gr + ' кл.');
       el.append(r1, sub, sub2);
       if (p.text) el.append(h('div', 'ex', p.text));
-      el.onclick = () => openReview(p);
+      el.onclick = () => openQueued(p);
       return el;
     };
     pend.slice(0, SHOW).forEach(p => list.append(item(p)));
@@ -1071,7 +1248,8 @@ function renderCheck(){
   const sb = h('label', 'search fade'), inp = h('input'); inp.type = 'search'; inp.placeholder = 'Поиск по фамилии'; inp.autocomplete = 'off';
   sb.append(h('span', '', '🔍'), inp); pane.append(sb);
   const FL = [['all', 'Все'], ['r', '🕓 Ждут проверки'], ['w', '↻ Доработка'], ['d', '⚠️ Долг'], ['9', '9 кл'], ['10', '10 кл'], ['11', '11 кл']];
-  let filter = 'all', shown = PAGE;
+  let {filter, shown} = checkList;
+  inp.value = checkList.query;
   const chips = h('div', 'chips fade');
   FL.forEach(([k, t]) => { const b = h('button', k === filter ? 'on' : '', t); b.onclick = () => { filter = k; shown = PAGE; chips.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); haptic('sel'); draw(); }; chips.append(b); });
   pane.append(chips);
@@ -1096,6 +1274,7 @@ function renderCheck(){
     return r;
   }
   function draw(){
+    Object.assign(checkList, {query: inp.value, filter, shown});
     const q = norm(inp.value);
     const list = people.filter(p => (!q || norm(p.name).includes(q)) && pass(p));
     const frag = document.createDocumentFragment();
@@ -1113,6 +1292,7 @@ function renderCheck(){
   let tmr = 0;
   inp.oninput = () => { clearTimeout(tmr); tmr = setTimeout(() => { shown = PAGE; draw(); }, 120); };
   draw();
+  if (selection && byId[selection.id]) openStudent(byId[selection.id], selection.message, selection.scroll);
 }
 
 /* ---------- задачи с автопроверкой (tasks.app_part в боте) ---------- */
@@ -1242,16 +1422,18 @@ function showPending(p){
   b.append(t, go, x); $('banner').append(b);
 }
 
-renderReports(); renderTests(); renderJobs(); renderCheck(); renderPending();
+if (!liveReview) { renderReports(); renderTests(); renderJobs(); renderPending(); }
+renderCheck();
 
 /* ---------- вкладки ---------- */
-const hasC = !!data.c, hasJ = !!data.j;
-if (hasC && data.c.f) document.querySelector('#tabs').hidden = true;
+const hasC = liveReview || !!data.review || !!data.c, hasJ = !!data.j;
+if (liveReview || data.c?.f) document.querySelector('#tabs').hidden = true;
 if (hasC) document.querySelector('#tabs button[data-t="c"]').hidden = false;
 if (hasJ) document.querySelector('#tabs button[data-t="j"]').hidden = false;
 let tab = data.r && data.r.x === 'reg' ? (hasC ? 'c' : hasJ ? 'j' : 'r') : 'r';
 try { tab = localStorage.getItem('tab') || tab; } catch (e) {}
 if (QS.get('tab')) tab = QS.get('tab');
+if (liveReview) tab = 'c';
 function show(t){
   tab = t === 'k' ? 'k' : t === 'c' && hasC ? 'c' : t === 'j' && hasJ ? 'j' : 'r';
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
@@ -1262,12 +1444,12 @@ function show(t){
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => { show(b.dataset.t); haptic('sel'); window.scrollTo(0, 0); });
 show(tab);
 
-if (!demo && inTg) {
+if (!demo && inTg && !liveReview) {
   const rb = h('button', 'act ghost', '🔄 Обновить данные');
   rb.onclick = () => KB ? tg.sendData(JSON.stringify({a: 'upd'})) : openBot('app');
   $('foot').before(rb);
 }
-$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · свежие приходят с сообщениями бота' : '';
+$('foot').textContent = zfail ? '⚠️ Не удалось прочитать данные — обновите Telegram' : demo || liveReview ? '' : data.t ? 'Данные на ' + dmhm(data.t) + ' · свежие приходят с сообщениями бота' : '';
 if (demo) $('demo').style.display = 'block';
 if (inTg) {
   tg.ready(); tg.expand();
