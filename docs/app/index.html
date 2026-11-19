@@ -540,8 +540,14 @@ function chkFolder(u){
 function chkFile(u, folder){
   if (!URL_RE.test(u)) return 'Ссылка должна начинаться с https://';
   if (!folder) return 'Сначала укажите папку на диске — «Мои ссылки»';
-  if (YA.test(hostOf(folder)) && !(YA.test(hostOf(u)) && pathOf(u).startsWith(pathOf(folder) + '/')))
-    return 'Файл должен быть из вашей папки: откройте папку, нажмите на файл и скопируйте адрес';
+  if (YA.test(hostOf(folder))) {
+    if (YA.test(hostOf(u))) {
+      const path = pathOf(u), folderPath = pathOf(folder);
+      if (path === folderPath) return 'Это ссылка на вашу папку. Пришлите ссылку на конкретный файл';
+      if (path.startsWith(folderPath + '/') || /^\/[di]\/[A-Za-z0-9_-]+$/.test(path)) return '';
+    }
+    return 'Вставьте ссылку на файл из вашей папки или отдельную публичную ссылку Яндекс Диска';
+  }
   return '';
 }
 function chkRepo(u){
@@ -728,7 +734,7 @@ function itemForm(b, it, d){
     if (it.need.includes('t')) fs.t = field('Текст: что выбрали и почему', {multi: true, req: true, rows: 5, max: MAXT, value: saved.t, ph: 'Например: выбрали CoreXY — каретка легче, моторы стоят неподвижно…'});
     else fs.t = field('Комментарий для проверяющего', {multi: true, rows: 2, max: MAXT, value: saved.t, ph: 'По желанию'});
     if (it.need.includes('f')) fs.f = field('Ссылка на ' + fileLbl(it) + ' в вашей папке', {type: 'url', req: !opt('f'), value: saved.f, ph: (L.d || 'https://disk.yandex.ru/d/…') + '/…',
-      hint: L.d ? 'Откройте свою папку, нажмите на файл и скопируйте адрес' + (opt('f') ? ' · по желанию' : '') : '⚠️ Сначала укажите папку — «Мои ссылки»'});
+      hint: L.d ? 'Скопируйте адрес файла из папки или выберите у файла «Поделиться»' + (opt('f') ? ' · по желанию' : '') : '⚠️ Сначала укажите папку — «Мои ссылки»'});
     if (it.need.includes('c')) fs.k = field('Ссылка на коммит', {type: 'url', req: !opt('c'), value: saved.k, ph: (L.g || 'https://github.com/…') + '/commit/…',
       hint: L.g ? 'GitHub: Commits → нужный коммит → адрес страницы' : '⚠️ Сначала укажите репозиторий — «Мои ссылки»'});
     if (it.need.includes('r')) fs.k = field('Ссылка на репозиторий', {type: 'url', req: true, value: saved.k || L.g, ph: 'https://github.com/ivanov/robot', hint: 'Репозиторий должен быть открытым'});
