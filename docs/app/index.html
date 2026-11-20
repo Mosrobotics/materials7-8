@@ -1141,6 +1141,14 @@ function renderCheck(selection){
         b.append(status);
       }
       b.append(h('div', 'shs', p.gr + ' класс' + (p.off ? ' · не в группе' : '') + (p.debt ? ' · ⚠️ долг: ' + p.debt : '')));
+      if (C.l) {
+        const [disk, repo] = C.l[p.id] || [];
+        linkBtn(b, [['Папка на диске', disk], ['Git-репозиторий', repo]]);
+      } else if (!liveReview && !demo) {
+        const linksInChat = h('button', 'act alt', 'Папка и Git в чате');
+        linksInChat.onclick = () => openBot('rpst_' + p.id);
+        b.append(linksInChat);
+      }
       const rg = h('div', 'rings dark');
       E.cats.forEach((c, i) => { const x = h('div', 'rg'); x.append(ringSvg(p.P[i] / 10, fp(p.P[i]), 56), withCat(h('div', 'l'), c, c.t)); rg.append(x); });
       b.append(rg);
