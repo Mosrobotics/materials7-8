@@ -706,7 +706,12 @@ function openItem(it, gr){
     if (it.s.k === 'a') st.append('  оценка ' + it.s.sc + '/10 → ' + fp(pts * it.s.sc / 10) + ' из ' + fp(pts) + ' б.');
     else if (d.a != null) st.append('  сейчас действует оценка ' + d.a + '/10 → ' + fp(pts * d.a / 10) + ' из ' + fp(pts) + ' б.');
     b.append(st);
-    if (d.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', '💬 Проверяющий: '), d.c); b.append(cm); }
+    const reviewer = d.u && R.u?.[d.u - 1];
+    if (reviewer) {
+      const [name, username] = reviewer;
+      b.append(h('div', 'shs', 'Проверил: ' + [name, username && '@' + username].filter(Boolean).join(' · ')));
+    }
+    if (d.c) { const cm = h('div', 'cmt'); cm.append(h('b', '', 'Комментарий: '), d.c); b.append(cm); }
     if (fresh) return itemForm(b, it, d);
     const nd = R.nd ? 'до ' + dmhm(R.nd) : 'до срока ближайшей точки';
     b.append(h('div', 'shs', it.s.k === 'o' ? 'Сдан. Изменить можно ' + nd + ' — тренер получит последнюю версию.'
@@ -895,7 +900,7 @@ function renderTests(){
 
 /* ---------- проверка (только тренерам) ---------- */
 const PAGE = 40;   // учеников за раз — длинный список дорисовывается кнопкой, чтобы не тормозило
-const REWORK_HINTS = ['Ссылка не открывается — откройте доступ', 'Файл не из вашей папки', 'Нет видео работы', 'Не тот коммит', 'Опишите подробнее', 'Не выполнено то, что требует пункт'];
+
 const checkList = {query: '', filter: 'all', shown: PAGE};
 let reviewBusy = false;
 function setReviewData(result){
@@ -934,10 +939,9 @@ function renderCheck(selection){
   const pane = $('pane-c'), C = data.c;
   pane.textContent = '';
   if (data.review) {
-    const go = h('button', 'act', '📋 Открыть проверку ЕТЗ');
+    const go = h('button', 'act alt', 'Открыть кабинет в браузере');
     go.onclick = () => openBot('review');
     pane.append(go);
-    return;
   }
   if (!C) {
     if (liveReview) {
@@ -1061,19 +1065,20 @@ function renderCheck(selection){
         b.append(comment);
       }
       if (p.state.k === 'r') {
-        b.append(h('div', 'lbl2', 'Оценка 0–10 — обязательна при приёме'));
+        b.append(h('div', 'lbl2', 'Оценка 0–10'));
         let score = null;
         const hint = h('div', 'shs', 'Баллы ученика = ' + fp(pts) + ' × оценка / 10');
-        const acc = h('button', 'act ok dim', '✅ Принять — выберите оценку'), rw = h('button', 'act warn', '🔄 На доработку');
-        scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; acc.textContent = '✅ Принять · ' + v; acc.classList.remove('dim'); });
-        b.append(hint);
+        const acc = h('button', 'act ok dim', 'Сохранить оценку');
+        const note = field('Комментарий (необязательно)', {multi: true, rows: 2, max: 1000});
+        scorePicker(b, v => { score = v; hint.textContent = '= ' + fp(pts * v / 10) + ' из ' + fp(pts) + ' б.'; acc.classList.remove('dim'); });
+        b.append(hint, note.w);
         acc.onclick = () => {
           if (score == null) { haptic('heavy'); hint.textContent = '👆 Сначала выберите оценку'; hint.style.color = 'var(--bad)'; return; }
           if (needKB()) return;
-          submitCheck({a: 'acc', r: p.rid, v: score}, 'Принято · ' + score + '/10', null, p);
+          submitCheck({a: 'acc', r: p.rid, v: score, ...(note.val() ? {c: note.val()} : {})},
+            'Принято · ' + score + '/10', null, p);
         };
-        rw.onclick = () => openRework(p);
-        const actions = h('div', 'row2'); actions.append(acc, rw); b.append(actions);
+        b.append(acc);
       } else if (p.state.k === 'a' && C.a && it) {
         const change = h('button', 'act alt', '⭐ Изменить оценку');
         change.onclick = () => openScore(p.who, it, p.state.sc, p);
@@ -1095,26 +1100,6 @@ function renderCheck(selection){
     pane.append(reopen, queue);
     openReview(work);
     return;
-  }
-  function openRework(p){
-    if (needKB()) return;
-    sheet('На доработку', b => {
-      b.append(h('div', 'sht', p.who.name + ' · ' + iname(p.iid)), h('div', 'shs', 'Ученик получит комментарий и сможет сдать новую версию.'));
-      const f = field('Что исправить', {multi: true, req: true, rows: 4, max: 1000, value: (load('rw_' + p.rid) || {}).c, ph: 'Комментарий для ученика'});
-      f.inp.addEventListener('input', () => store('rw_' + p.rid, {c: f.inp.value}));
-      b.append(f.w);
-      const q = h('div', 'qchips');
-      REWORK_HINTS.forEach(t => { const c = h('button', '', '+ ' + t); c.onclick = e => { e.preventDefault(); f.inp.value = (f.inp.value.trim() ? f.inp.value.trim() + '. ' : '') + t; f.inp.dispatchEvent(new Event('input')); haptic('sel'); }; q.append(c); });
-      b.append(q);
-      const go = h('button', 'act warn', '🔄 Вернуть на доработку'), back = h('button', 'act ghost', '← К пункту');
-      go.onclick = () => {
-        if (!f.val()) { f.err('Напишите, что исправить'); return haptic('heavy'); }
-        if (f.val().length > 1000) { f.err('Слишком длинно — до 1000 символов'); return haptic('heavy'); }
-        submitCheck({a: 'rw', r: p.rid, c: f.val()}, 'Возвращено на доработку', () => store('rw_' + p.rid, null), p);
-      };
-      back.onclick = () => openReview(p);
-      b.append(go, back);
-    }, liveReview ? () => openReview(p) : closeSheet);
   }
   function openScore(p, it, sc, work){
     if (needKB()) return;
